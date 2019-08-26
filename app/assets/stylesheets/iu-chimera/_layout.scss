@@ -1,0 +1,69 @@
+
+html{font-size: 100%;}
+.search-bar--header{background: $dark-midnight; padding: 0 0 1.5em;margin: -15px 0 0;  ;}
+#branding-bar .row.pad, #footer .row.pad,.section .row,.search-bar-container{width:100%;max-width: 1200px;}
+
+.splash-container, .search-bar-container{max-width: 60rem;}
+
+.search-bar--header form{width: 100%;min-width: 290px; }
+#branding-bar{margin-bottom: 0;}
+div{box-sizing: border-box;}
+div,form, p{max-width: 100%; }
+
+.topNav{padding:  0 0 15px 5px; margin: 0 auto; max-width: 1200px; width: 100%;}
+.topNav .row{margin: 0;padding: 0;}
+.navbar{margin:0;padding: 0;height: auto; background: none; border:none;}
+
+.navbar.navbar-default,
+.navbar-header{width: 100%; margin: 0; padding: 0;}
+
+
+h1,h2,h3,h4,h5{color: $crimson; font-weight: 600;
+}
+.pandel-heading h1{border: 1px dotted green; font-weight: bold;}
+
+
+
+
+.home-content{ padding: 0 2em; border-radius: 1em;}
+.list-group-striped{margin: 1em;}
+.list-group-striped li{padding: 2em; border-radius: 1em;background:$limestone-light;margin-bottom: 1em; }
+.list-group-striped li:nth-child(odd) {background: #fff;}
+
+.image-masthead{padding: 1em;width: 100%;   background: asset-url("ocean.jpg");margin-top:-5px;}
+.image-masthead.dark{ background: asset-url("space.jpg")}
+.search-bar--header.dark{background: $black;}
+.image-masthead h1, .image-masthead p{color: #fff;}
+
+.section.bg-mahogany{min-height:200px; width: 100%;;margin-top:2em;}
+
+.bottomNav{list-style: none; margin: 4em 0;}
+
+.btn,.btn-primary,.btn-lg, .btn-sm{border: none;}
+
+.row.search-result-wrapper{margin: 0;}
+.search-result-title{margin-top:.5em;}
+
+.search-bar-container .btn.btn-primary.input-lg{margin:-2px 0 0 -10px;}
+
+.splash-container .splash-text--medium{padding: 0;text-align: left; padding-bottom: 2em; }
+.splash-container h1{font-size:1.4em; font-weight: bold;}
+
+
+
+
+
+.featured-works--home h2 {text-align: left; border: none;}
+ol.list-group.list-group-striped li:nth-of-type(2n+1){border: 1px solid $limestone-med; background: $limestone-light;}
+ol.list-group.list-group-striped li:nth-of-type(2n){border: 1px solid $limestone-med;}
+
+/* details */
+.work-description-panel-heading{background: $limestone-light!important;}
+
+form[role="search"] .btn.btn-default.dropdown-toggle{
+  border:1px solid $crimson!important;
+  border-left: 2px groove lighten($crimson, 50%) !important;
+   }
+
+
+ /*   */

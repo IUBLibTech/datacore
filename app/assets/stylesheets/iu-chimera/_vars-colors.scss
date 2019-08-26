@@ -1,0 +1,83 @@
+$black           : #191919;
+$crimson         : #990000;
+$gold            : #f1be48;
+$dark-gold       : #DC8823;
+$limestone       : #ACA39A;
+//$dark-limestone  : #83786F;// doesn't pass color contrast
+$dark-limestone  : #776d65;
+$mahogany        : #4A3C31;
+$majestic        : #66435A;
+$dark-majestic   : #512A44;
+$midnight        : #006298;
+$dark-midnight   : #01426A;
+$mint            : #008264;
+$dark-mint       : #285C4D;
+$bg-white        : #fff;
+$limestone-med   : #dbd8d7;
+$limestone-light : #F8F8F8;
+$kb-green        : #1f8242;
+$all-clear       : #009933;
+$minor           : #49AFC7;
+$moderate        : #F5BB17;
+$severe          : #F25B19;
+$extreme         : #BD0000;
+
+ .bg-mahogany {background: $mahogany}
+body{background: $limestone-light;}
+
+$a-tags               : 'a, a:active, a:hover, a:visited, a:focus,.nav.navbar-nav,
+#search-results a,#search-results a:active,#search-results a:hover,#search-results a:visited,#search-results a:focus,.dropdown-menu li a';
+$a-tags-hover         : 'a:active, a:hover, #search-results a:hover, #search-results a:active, .nav.navbar-nav a:hover';
+
+$dark-a-tags               : '.dark a,.dark a:active,.dark a:hover,.dark  a:visited,.dark  a:focus, #iu-campus a';
+$dark-a-tags-hover         : '.dark a:active,.dark a:hover';
+
+
+
+#{$a-tags} {
+  color           : $dark-midnight!important;
+  text-decoration : none;
+}
+
+#{$a-tags-hover} {
+  color : $crimson!important; border:none;
+}
+
+
+$btn      : '.btn,.btn-primary, .btn-primary, .btn-lg, .btn.btn-primary.btn-lg, .btn-sm, .btn:visited,.btn-default, .nav-pills > li > a:hover,  .btn.btn-default.btn-sm.remove.dropdown-toggle,.input-group .btn.btn-primary.input-lg';
+$btn-hover :  '.btn:hover, .btn-primary:hover, .nav-pills a,.btn.btn-default.btn-sm.remove.dropdown-toggle:hover ';
+
+
+#{$btn}{background-color: $crimson !important;;color:#fff!important;border-color: $crimson !important;; border-bottom-color: $crimson !important; border:1px solid $crimson  !important;}
+#{$btn-hover}{background-color: $midnight!important; color:#fff !important;border-color: $midnight !important;; border: 1px solid $midnight !important; }
+
+.btn.btn-default.dropdown-toggle{background: #fff; border: 1px solid $limestone-med !important;}
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+background: #fff !important;color:$limestone !important;border:1px solid $limestone-med !important;
+}
+
+.nav-pills > li a, .nav-pills > li  a:focus {
+background: $dark-midnight !important;color:#fff;border:none;
+
+}
+
+#appliedParams .constraint-value.btn.btn-sm.btn-default,
+#appliedParams .constraint-value.btn.btn-sm.btn-default:hover{border:none; text-decoration: none;background: #fff !important; color: $dark-limestone !important;}
+#startOverLink{border:1px solid $limestone !important; background: #fff !important; color: $dark-midnight !important;}
+#appliedParams .btn{ border:1px solid $limestone !important;}
+.btn.btn-default.btn-sm.remove.dropdown-toggle{background: #fff !important; color: $crimson!important;}
+
+#sortAndPerPage .btn{background: #fff !important; color: $dark-midnight !important;}
+#sortAndPerPage .btn:hover#startOverLink:hover {background: #fff !important; color: $crimson !important;}
+
+
+
+#{$dark-a-tags} {
+  color           : #fff!important;
+  text-decoration : none;
+}
+
+#{$dark-a-tags-hover} {
+  color : mint;
+}
