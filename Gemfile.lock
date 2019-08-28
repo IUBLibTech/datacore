@@ -449,6 +449,8 @@ GEM
       rdf-xsd (>= 2.2, < 4.0)
       sparql (>= 2.2, < 4.0)
       sxp (~> 1.0)
+    ldap_groups_lookup (0.6.1)
+      net-ldap
     ldp (0.7.2)
       deprecation
       faraday
@@ -524,6 +526,7 @@ GEM
       redic
     net-http-persistent (3.0.1)
       connection_pool (~> 2.2)
+    net-ldap (0.16.1)
     nio4r (2.3.1)
     noid (0.9.0)
     noid-rails (3.0.1)
@@ -544,7 +547,7 @@ GEM
     omniauth (1.9.0)
       hashie (>= 3.4.6, < 3.7.0)
       rack (>= 1.6.2, < 3)
-    omniauth-cas (1.1.1)
+    omniauth-iu-cas (1.1.1.1)
       addressable (~> 2.3)
       nokogiri (~> 1.5)
       omniauth (~> 1.2)
@@ -907,12 +910,13 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   jira-ruby (~> 1.1)
   jquery-rails
+  ldap_groups_lookup
   listen (~> 3.0.5)
   loofah (~> 2.2.3)
   mysql2
   okcomputer (~> 1.17)
   omniauth
-  omniauth-cas
+  omniauth-iu-cas
   pry
   pry-byebug
   pry-rails
