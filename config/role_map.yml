@@ -2,9 +2,9 @@ development:
   archivist:
     - archivist1@example.com
   admin:
-    - blancoj@umich.edu
-    - fritx@umich.edu
-    - fritx2@umich.edu
+    - dlpierce@iu.edu
+    - jhallida@iu.edu
+    - jvwitten@iu.edu
 test:
   archivist:
     - archivist1@example.com
