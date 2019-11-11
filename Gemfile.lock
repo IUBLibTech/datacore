@@ -914,6 +914,7 @@ DEPENDENCIES
   listen (~> 3.0.5)
   loofah (~> 2.2.3)
   mysql2
+  net-ldap
   okcomputer (~> 1.17)
   omniauth
   omniauth-iu-cas
