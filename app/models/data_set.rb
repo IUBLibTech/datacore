@@ -34,7 +34,8 @@ class DataSet < ActiveFedora::Base
   before_destroy :provenance_before_destroy_data_set
 
   def provenance_before_destroy_data_set
-    provenance_destroy( current_user: '' ) # , event_note: 'provenance_before_destroy_data_set' )
+    # workflow_destroy does this
+    # provenance_destroy( current_user: '' ) # , event_note: 'provenance_before_destroy_data_set' )
   end
 
   def set_defaults
@@ -240,6 +241,12 @@ class DataSet < ActiveFedora::Base
   rescue Exception => e # rubocop:disable Lint/RescueException
     Rails.logger.error "#{e.class} #{e.message} at #{e.backtrace[0]}"
     return e.to_s
+  end
+
+  def workflow_state
+    wgid = to_global_id.to_s
+    entity = Sipity::Entity.where( proxy_for_global_id: wgid )&.first
+    entity&.workflow_state_name
   end
 
   def map_provenance_attributes_override!( event:, # rubocop:disable Lint/UnusedMethodArgument

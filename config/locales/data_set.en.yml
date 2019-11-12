@@ -41,6 +41,9 @@ en:
       required_descriptions_deepblue: Please complete required descriptions
       required_agreement_deepblue: Check deposit agreement below
       form_files:
+        local_upload_contact_html: >
+          <p>If you have more than 100 files or files larger than 2 GB please <a href="%{contact_path}">Contact Us</a>
+          for assistance in uploading your data.</p>
         local_upload_html: >
           <p>Upload data files (e.g. .xls, .sas) and documentation files (e.g. codebooks, readme.txt).</p>
           <p>After you have uploaded files and submitted your Work, the system may take a few minutes to process the
@@ -58,6 +61,9 @@ en:
           <a href="/data/dbd-documentation-guide" target="_blank">
           Guide to Creating Documentation for Your Dataset</a>
           or <a href="/data/Deep_Blue_Data_Example_Readme.txt">this Example readme</a> for more information.</p>
+  provenance_log:
+    title:                  "Provenance Log"
+    id:                     "ID:"
   show:
     label:
       access_deepblue:      "Article access in Deep Blue"
@@ -83,12 +89,12 @@ en:
       total_file_size_human_readable: "Total file size"
   simple_form:
     actions:
-      display_provenance_log:           "Display or Update Provenance Log Entries"
       data_set:
-        analytics:                      "Analytics"
+        analytics:                      "View Work Analytics"
         confirm:                        "Confirm Your Deposit"
-        delete:                         "Delete"
+        delete:                         "Delete Work"
         edit:                           "Edit Metadata"
+        edit_work:                      "Edit Work/Add Files"
         globus:                         "Send to Globus to Download"
         globus_add_email:               "Add Email"
         globus_clean_download:          "Clean Globus Download Directory for this Work"
@@ -99,12 +105,16 @@ en:
         globus_download_and_notify_me:  "Download All for Globus and Email Me When Complete"
         globus_download_dont_notify_me: "Don't Add My Email"
         mint_doi:                       "Mint DOI"
-        mint_help:                      "You can mint a DOI once you have uploaded all your files. Once a DOI is minted, you may not upload additional files, edit, or delete your work. For questions or help, please contact us by email or use the Deep Blue contact page."
+        mint_help:                      "Once you have uploaded your files, you can mint a Digital Object Identifier (<a href=\"https://www.doi.org\" target=\"_blank\">DOI</a>) to provide persistent access to your deposit. You do not need to wait until your deposit is published to mint a DOI. Questions? <a href=\"https://deepblue.lib.umich.edu/data/contact\" target=\"_blank\">Contact us!</a>"
         save_metadata:                  "Save Metadata"
         save_metadata_public:           "Save Description (Public)"
         submit_help:                    "Submit your work for review and publication"
         tombstone:                      "Tombstone"
-        zip_download:                   "Download All Files"
+        zip_download:                   "Download Zipped Dataset"
+      provenance_log:
+        deleted_works:                  "Deleted Works"
+        display:                        "Display or Update Provenance Log Entries"
+        download:                       "Download Provenance Log"
     confirm:
       data_set:
         delete_all_globus_download_files: >
@@ -152,6 +162,10 @@ en:
         subject_other:        "Subject"
         tag:                  "Keywords"
         title:                "Title"
+      provenance_log:
+        find_id:              "Find ID"
+        find_id_placeholder:  "Search ID"
+        find_id_submit:       "Find"
     hints:
       data_set:
         access_deepblue: >
@@ -187,7 +201,7 @@ en:
         download_total_work_size_may_be_too_large: >
           Total work file size of %{total_file_size} may be too large to download directly. Consider using Globus (see below).
         download_general_message: >
-          Download will include text file of metadata.
+          Best for data sets < 3 GB. Downloads all files plus metadata into a zip file.
         fundedby: >
           Select the primary funding agency that supported the research and data collection from the drop-down list.
         fundedby_other: >
@@ -200,14 +214,14 @@ en:
         globus_files_are_ready:
           "Files are ready"
         globus_help:
-          "What is Globus?"
+          "More about Globus"
         globus_is_for_large_datasets:
-          "Globus is for large data sets."
+          "Best for data sets > 3 GB. Globus is the platform Deep Blue Data uses to make large data sets available."
         globus_is_currently_downloading_submit_email_address: >
           %{title} is currently downloading to Globus. If you would like to be sent an email when the files are
           available via Globus, please submit your email address:
         globus_link:
-          "Link to Globus download directory"
+          "Download Data from Globus"
         grantnumber: >
           If you have one, provide the grant number that was assigned by the University of Michigan’s Office of Research
           and Sponsored Projects (ORSP).

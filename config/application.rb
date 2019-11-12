@@ -81,11 +81,16 @@ module DeepBlueDocs
         File.exist?( config.box_access_and_refresh_token_file ) )
 
     ## configure embargo
-    config.embargo_enforce_future_release_date = false
+    config.embargo_enforce_future_release_date = true # now that we have automated embargo expiration
     config.embargo_visibility_after_default_status = ::Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
     config.embargo_visibility_during_default_status = ::Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
     config.embargo_manage_hide_files = true
     config.embargo_allow_children_unembargo_choice = false
+    config.embargo_email_rds_hostnames = [ 'testing.deepblue.lib.umich.edu',
+                                           'staging.deepblue.lib.umich.edu',
+                                           'deepblue.lib.umich.edu' ].freeze
+    config.embargo_about_to_expire_email_rds = config.embargo_email_rds_hostnames.include? config.hostname
+    config.embargo_deactivate_email_rds = config.embargo_email_rds_hostnames.include? config.hostname
 
     ## configure for Globus
     # -- To enable Globus for development, create /deepbluedata-globus/download and /deepbluedata-globus/prep
@@ -136,9 +141,7 @@ module DeepBlueDocs
                                           'testing.deepblue.lib.umich.edu',
                                           'staging.deepblue.lib.umich.edu',
                                           'deepblue.lib.umich.edu' ].freeze
-    config.jira_integration_hostnames_prod = [ 'testing.deepblue.lib.umich.edu',
-                                               'staging.deepblue.lib.umich.edu',
-                                               'deepblue.lib.umich.edu' ].freeze
+    config.jira_integration_hostnames_prod = [ 'deepblue.lib.umich.edu' ].freeze
     config.jira_integration_enabled = config.jira_integration_hostnames.include? config.hostname
     config.jira_test_mode = !config.jira_integration_hostnames_prod.include?( config.hostname )
     config.jira_manager_project_key = 'DBHELP'
@@ -186,11 +189,14 @@ module DeepBlueDocs
     config.email_enabled = true
     config.email_log_echo_to_rails_logger = true
 
+    config.provenance_log_name = "provenance_#{Rails.env}.log"
+    config.provenance_log_path = Rails.root.join( 'log', config.provenance_log_name )
     config.provenance_log_echo_to_rails_logger = true
     config.provenance_log_redundant_events = true
 
     config.scheduler_log_echo_to_rails_logger = true
-    config.scheduler_job_file = 'scheduler_jobs_test.yml'
+    config.scheduler_job_file = 'scheduler_jobs_prod.yml'
+    config.scheduler_heartbeat_email_targets = [ 'fritx@umich.edu' ] # leave empty to disable
 
     config.upload_log_echo_to_rails_logger = true
 
