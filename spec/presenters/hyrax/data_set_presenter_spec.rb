@@ -327,7 +327,7 @@ RSpec.describe Hyrax::DataSetPresenter do
   describe '#page_title' do
     subject { presenter.page_title }
 
-    it { is_expected.to eq 'Data Set | foo | ID: 888888 | Deep Blue Data' }
+    it { is_expected.to eq 'Data Set | foo | ID: 888888 | DataCORE' }
   end
 
   #   describe "#valid_child_concerns" do
