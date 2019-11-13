@@ -8,7 +8,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'hyrax', '2.5.1'
+gem 'hyrax', '~>2.6.0'
 
 gem 'mysql2' # still somehow in 0.x releases...
 
@@ -20,7 +20,7 @@ gem 'edtf'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.6'
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+gem 'sqlite3', '~> 1.3.6'
 # Use Puma as the app server
 gem 'puma', '~> 3.0'
 # Use SCSS for stylesheets
@@ -68,9 +68,9 @@ gem 'jbuilder', '~> 2.5'
 # Begin security vulnerability mitigation
 # bundle update --source gem-name
 gem 'bootstrap-sass', '~> 3.4.1'
-gem 'loofah', '~> 2.2.3'
+gem 'loofah', '~> 2.3.1'
 gem 'rack', '~> 2.0.6'
-gem 'rubyzip', '~> 1.2.2'
+gem 'rubyzip', '~> 1.3.0'
 gem 'sassc', '>= 2.0.0'
 gem 'sinatra', '~> 2.0.2'
 gem 'sprockets', '~> 3.7.2'
