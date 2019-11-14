@@ -22,7 +22,7 @@ relative_url_root: /data
 
 # Used to set Rails.configuration.notification_email; should be use directly
 # from Settings unless there is an engine reference somewhere.
-notification_email: <%= "#{ENV['USER']}@umich.edu" %>
+notification_email: <%= "example@iu.edu.test" %>
 
 # Used to set Rails.configuration.user_email, but value never seems to be set.
 # Should also be used directly from Settings rather than being inserted into
