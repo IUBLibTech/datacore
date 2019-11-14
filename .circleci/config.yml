@@ -7,7 +7,7 @@ version: 2
 default_environment: &default_environment
   RAILS_ENV: test
   RACK_ENV: test
-  FCREPO_TEST_PORT: 8080/fcrepo
+  FCREPO_TEST_PORT: 8080
   BUNDLE_JOBS: 4
   BUNDLE_RETRY: 3
   NOKOGIRI_USE_SYSTEM_LIBRARIES: true
