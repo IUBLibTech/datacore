@@ -56,7 +56,6 @@ jobs:
           name: Extra environment setup
           command: |
             echo 'unset BUNDLE_PATH' >> $BASH_ENV
-            echo 'export USER=$CIRCLE_USER' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
