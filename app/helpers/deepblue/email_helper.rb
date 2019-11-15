@@ -47,7 +47,7 @@ module Deepblue
       rv = Settings.hostname
       return rv unless rv.nil?
       # then we are in development mode
-      "http://localhost:3000/data/"
+      "http://localhost:3000/#{Settings.relative_url_root}/"
     end
 
     def self.log( class_name: 'UnknownClass',

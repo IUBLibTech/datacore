@@ -1,1 +1,7 @@
 <!-- link rel="icon" href="favicon.ico" type="image/ico"/ -->
+
+<!-- Set BASE_URL for use in JavaScript that won't have access to config helpers -->
+<script type="text/javascript">
+    // RELATIVE_ROOT_URL makes sure that a trailing slash is present
+    var RELATIVE_URL_ROOT = '<%= Settings.relative_url_root %>'.replace(/\/?$/, '/');
+</script>

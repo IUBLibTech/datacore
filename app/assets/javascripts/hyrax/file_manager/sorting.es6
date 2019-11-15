@@ -19,7 +19,7 @@ export default class SortManager {
     this.element.removeClass("success")
     this.element.removeClass("failure")
     let persisting = $.post(
-      `/data/concern/${this.class_name}/${this.id}.json`,
+      `${RELATIVE_URL_ROOT}concern/${this.class_name}/${this.id}.json`,
       this.params()
     ).done((response) => {
       this.element.data('version', response.version)
