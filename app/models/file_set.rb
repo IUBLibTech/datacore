@@ -7,6 +7,7 @@ class FileSet < ActiveFedora::Base
   include ::Deepblue::FileSetBehavior
   include ::Deepblue::MetadataBehavior
   include ::Deepblue::ProvenanceBehavior
+  include ::Deepblue::EmbargoableBehavior
 
   before_destroy :provenance_before_destroy_file_set
 
