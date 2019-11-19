@@ -1,8 +1,10 @@
-# DeepBlue
+# DataCORE
 
-University of Michigan Research Data Repository
+Indiana University Research Data Repository
 
-![deepblue](https://s3.amazonaws.com/ArchiveImages/LJ/2016/10/161014_DeepBlueData.jpg)
+[![CircleCI](https://circleci.com/gh/IUBLibTech/datacore.svg?style=svg)](https://circleci.com/gh/IUBLibTech/datacore)
+
+![datacore](https://assets.iu.edu/brand/3.2.x/trident-large.png)
 
 
 ## History
