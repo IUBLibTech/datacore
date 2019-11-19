@@ -11,6 +11,7 @@ class DataSet < ActiveFedora::Base
   # self.human_readable_type = 'Data Set' # deprecated
   include Umrdr::UmrdrWorkBehavior
   include Umrdr::UmrdrWorkMetadata
+  include ::Deepblue::EmbargoableBehavior
 
   validates :authoremail, presence: { message: 'You must have author contact information.' }
   validates :creator, presence: { message: 'Your work must have a creator.' }
