@@ -98,9 +98,7 @@ en:
       generic_work:
         describe_work: >
           Please provide information about your data set (referred to as a "work") in the following fields, keeping in
-          mind that your responses will enable people to discover, identify, and understand your data. If you are
-          uncertain of how to complete any of these fields, we recommend that you read or refer to the
-          <a href="/data/metadata-guidance">Guide to Metadata</a> in Deep Blue Data’s Help pages.
+          mind that your responses will enable people to discover, identify, and understand your data.
         title: >
           Provide a descriptive name for the Work. Consider including the words “data” or “dataset” and terms related to
           the methods, discipline, and topic associated with your research.
@@ -129,7 +127,6 @@ en:
           'The file format and/or physical medium of datasets contained in the work.'
         on_behalf_of_html: >
            If you are depositing data on behalf of someone else, please select the email of that person below.
-           <a href="/data/dashboard">More information on proxies</a>
         keyword: >
           Enter any terms or topics related to the research subject or methods that you would like associated with the
           Work.

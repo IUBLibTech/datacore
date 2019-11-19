@@ -16,7 +16,7 @@
           callback(data);
         },
         ajax: { // Use the jQuery.ajax wrapper provided by Select2
-          url: "/data/users.json",
+          url: RELATIVE_URL_ROOT + "users.json",
           dataType: "json",
           data: function (term, page) {
             return {

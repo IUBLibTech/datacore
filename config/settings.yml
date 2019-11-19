@@ -12,10 +12,7 @@ hostname: default.deepblue.lib.umich.edu
 # Relative URL segment at which the application resides, used to compute links
 # and assets. Used instead of RAILS_RELATIVE_URL_ROOT everywhere, because the
 # behavior with the environment variable has proven inconsistent.
-# FIXME: There are multiple places in the application that depend on this
-#        path being /data. They should all be cleaned up to generate paths
-#        based on the configuration of Rails / ActionController.
-relative_url_root: /data
+relative_url_root: /
 
 # Does not appear to be used anywhere
 # from_email: 'deepblue@umich.edu'

@@ -41,7 +41,7 @@ class AddParticipants {
 
     $.ajax({
       type: 'POST',
-      url: "/data" + url,
+      url: RELATIVE_URL_ROOT + url,
       data: serialized
     })
       .done(function(response) {
