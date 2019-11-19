@@ -62,7 +62,7 @@ module DeepBlueDocs
 
     # For properly generating URLs and minting DOIs - the app may not by default
     # Outside of a request context the hostname needs to be provided.
-    config.hostname = ENV['APP_HOSTNAME'] || Settings.hostname
+    config.hostname = Settings.hostname
     # puts "config.hostname=#{config.hostname}"
 
     ## configure box
@@ -100,7 +100,7 @@ module DeepBlueDocs
       config.globus_dir = '/tmp/deepbluedata-globus'
       Dir.mkdir config.globus_dir unless Dir.exist? config.globus_dir
     else
-      config.globus_dir = ENV['GLOBUS_DIR'] || '/deepbluedata-globus'
+      config.globus_dir = Settings.globus_dir
     end
     # puts "globus_dir=#{config.globus_dir}"
     config.globus_dir = Pathname.new config.globus_dir

@@ -34,9 +34,9 @@ notification_email: <%= ENV['USER'] %>@iu.edu
 hyrax:
   # Settings for email contact form and deposit notification
   contact_email: <%= ENV['USER'] %>@iu.edu
-  minter_statefile: <%= ENV['MINTER_FILE'] || "/tmp/umrdr-minter-#{Time.now.min}#{Time.now.sec}" %>
+  minter_statefile: <%= "/tmp/umrdr-minter-#{Time.now.min}#{Time.now.sec}" %>
   # Redis namespace used in both Hyrax and Resque initializers
-  redis_namespace: <%= ENV['REDIS_NS'] || 'deepbluedata' %>
+  redis_namespace: deepbluedata
 
 # Fedora connection information.
 # These values are used in fedora.yml; no literals should appear there. Each

@@ -1,7 +1,7 @@
-hostname: <%= ENV['APP_HOSTNAME'] || 'test.deepblue.lib.umich.edu' %>
+hostname: 'test.deepblue.lib.umich.edu'
 
 hyrax:
-  redis_namespace: <%= ENV['REDIS_NS'] || 'deepbluedata-test' %>
+  redis_namespace: 'deepbluedata-test'
 
 fedora:
   url: http://127.0.0.1:<%= ENV['FCREPO_TEST_PORT'] || 8986 %>/rest

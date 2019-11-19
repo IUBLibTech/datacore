@@ -3,7 +3,7 @@
 # imported here, except for one-off testing.
 
 default: &default
-  url: <%= ENV['SOLR_URL'] || Settings.solr.url %>
+  url: <%= Settings.solr.url %>
 
 development:
   <<: *default

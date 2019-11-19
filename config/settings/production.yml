@@ -4,10 +4,10 @@
 # they are compatible with a typical container-style approach, where default
 # ports on generic hostnames are used for each service/resource.
 
-hostname: <%= ENV['APP_HOSTNAME'] || 'deepblue.lib.umich.edu' %>
+hostname: 'deepblue.lib.umich.edu'
 
 hyrax:
-  redis_namespace: <%= ENV['REDIS_NS'] || 'deepbluedata-production' %>
+  redis_namespace: 'deepbluedata-production'
 
 fedora:
   url: http://fcrepo/fedora/rest
