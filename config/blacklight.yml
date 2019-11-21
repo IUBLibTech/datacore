@@ -7,12 +7,12 @@
 # there is no need to expose that as a setting unless another implementation
 # arises. We also assume that the ActiveFedora and Blacklight cores are the
 # same here; another preceding default for a Blacklight URL could be added.
+default: &default
+  adapter: solr
+  url: <%= Settings.solr.url %>
 development:
-  adapter: solr
-  url: <%= ENV['SOLR_URL'] || Settings.solr.url %>
-test: &test
-  adapter: solr
-  url: <%= ENV['SOLR_URL'] || Settings.solr.url %>
+  <<: *default
+test:
+  <<: *default
 production:
-  adapter: solr
-  url: <%= ENV['SOLR_URL'] || Settings.solr.url %>
+  <<: *default

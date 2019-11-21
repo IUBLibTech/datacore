@@ -45,9 +45,9 @@ module Deepblue
       puts "ENV['TMPDIR']=#{ENV['TMPDIR']}"
       # puts "DeepBlueDocs::Application.config.tmpdir=#{DeepBlueDocs::Application.config.tmpdir}"
       puts "ENV['_JAVA_OPTIONS']=#{ENV['_JAVA_OPTIONS']}"
-      @tmpdir = Pathname.new "/deepbluedata-prep/fedora-extract"
+      @tmpdir = Pathname.new Settings.file_derivatives_dir
       Dir.mkdir @tmpdir unless Dir.exist? @tmpdir
-      @java_io_tmpdir = @tmpdir
+      @java_io_tmpdir = Pathname.new Settings.java_io_tmpdir
       Dir.mkdir @java_io_tmpdir unless Dir.exist? @java_io_tmpdir
       ENV['_JAVA_OPTIONS'] = '-Djava.io.tmpdir=' + ENV['TMPDIR']
       puts "ENV['_JAVA_OPTIONS']=#{ENV['_JAVA_OPTIONS']}"

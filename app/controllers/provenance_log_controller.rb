@@ -54,7 +54,7 @@ class ProvenanceLogController < ApplicationController
                                            ::Deepblue::LoggingHelper.called_from,
                                            "" ]
 
-    tmp_dir = ENV['TMPDIR'] || "/tmp"
+    tmp_dir = Settings.tmpdir || '/tmp'
     tmp_dir = Pathname.new tmp_dir
     Deepblue::LoggingHelper.bold_debug [ "zip_log_download begin", "tmp_dir=#{tmp_dir}" ]
 

@@ -1,7 +1,7 @@
-hostname: <%= ENV['APP_HOSTNAME'] || 'deepblue.local' %>
+hostname: 'deepblue.local'
 
 hyrax:
-  redis_namespace: <%= ENV['REDIS_NS'] || 'deepbluedata-dev' %>
+  redis_namespace: 'deepbluedata-dev'
 
 fedora:
   url: http://127.0.0.1:<%= ENV['FCREPO_DEVELOPMENT_PORT'] || 8984 %>/rest
