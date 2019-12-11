@@ -4,6 +4,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def cas
     @user = User.find_for_iu_cas(request.env["omniauth.auth"])
     if @user.persisted?
+      @user.update_campus
       sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
       set_flash_message(:notice, :success, :kind => "IU CAS") if is_navigational_format?
     else

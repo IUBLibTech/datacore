@@ -71,3 +71,4 @@ config/skylight.yml
 config/settings.local.yml
 config/settings/*.local.yml
 
+/config/ldap_groups_lookup.yml

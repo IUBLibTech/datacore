@@ -26,7 +26,7 @@ class User < ApplicationRecord
 
   if Rails.configuration.authentication_method == "iu"
     devise :omniauthable, :omniauth_providers => [:cas]
-    alias_attribute :ldap_lookup_key, :username
+    alias_attribute :ldap_lookup_key, :uid
     include LDAPGroupsLookup::Behavior
   else
     devise :database_authenticatable, :registerable,
@@ -55,6 +55,21 @@ class User < ApplicationRecord
       user.email = [auth.uid,'@iu.edu'].join
       user.encrypted_password = Devise.friendly_token[0,20]
     end
+  end
+
+  def groups
+    super << self.campus
+  end
+
+  def update_campus
+    active_campuses = ::Datacore::CampusVisibilityService.new.active_ldap.to_h.invert
+    self.campus = active_campuses[ldap_campus.first]
+    Rails.logger.info "#{ldap_lookup_key}.campus = #{self.campus}"
+    save!
+  end
+
+  def ldap_campus
+    LDAPGroupsLookup.service.search(base: LDAPGroupsLookup.tree, filter: Net::LDAP::Filter.equals('cn', ldap_lookup_key), attributes: 'ou').first&.ou
   end
 
 end

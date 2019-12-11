@@ -56,6 +56,7 @@ module Deepbluedocs
         replaces
         resource_type
         tableofcontents
+        visibility_iu_campus
       ]
 
       self.required_fields += [:resource_type]

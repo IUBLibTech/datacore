@@ -1,0 +1,26 @@
+terms:
+  - id: iub
+    term: Indiana University Bloomington
+    active: true
+  - id: iupui
+    term: Indiana University - Purdue University Indianapolis
+    active: true
+  - id: iue
+    term: Indiana University East
+    active: true
+  - id: iufw
+    term: Indiana University Fort Wayne
+    active: true
+  - id: iuk
+    term: Indiana University Kokomo
+    active: true
+  - id: iun
+    term: Indiana University Northwest
+    active: true
+  - id: iusb
+    term: Indiana University South Bend
+    active: true
+  - id: ius
+    term: Indiana University Southeast
+    active: true
+
