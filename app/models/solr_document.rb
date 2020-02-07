@@ -151,6 +151,18 @@ class SolrDocument
     Time.parse self['system_create_dtsi']
   end
 
+  def geo_location_place
+    self['geo_location_place_tesim'] || []
+  end
+
+  def geo_location_box
+    self['geo_location_box_tesim'] || []
+  end
+
+  def comments
+    self['comments_tesim'] || []
+  end
+
   solrized_methods [
     'abstract',
     'academic_affiliation',

@@ -12,19 +12,22 @@ module Hyrax
         authoremail
         date_coverage
         description
+        resource_type
+        publisher
         fundedby
         fundedby_other
         doi
-        grantnumber
+        description_abstract
         keyword
         methodology
         referenced_by
         rights_license
         rights_license_other
-        subject_discipline
+        comments
         curation_notes_admin
         curation_notes_user
-        access_deepblue
+        geo_location_place
+        geo_location_box
       ]
 
     self.default_work_primary_terms =
@@ -33,20 +36,23 @@ module Hyrax
         creator
         authoremail
         methodology
+        resource_type
+        description_abstract
         description
+        publisher
         date_coverage
         rights_license
         rights_license_other
-        subject_discipline
+        comments
         fundedby
         fundedby_other
-        grantnumber
         keyword
         language
         referenced_by
         curation_notes_admin
         curation_notes_user
-        access_deepblue
+        geo_location_place
+        geo_location_box
       ]
 
     self.default_work_secondary_terms = []
@@ -59,7 +65,9 @@ module Hyrax
         methodology
         description
         rights_license
-        subject_discipline
+        resource_type
+        description_abstract
+        publisher
       ]
 
     def data_set?
