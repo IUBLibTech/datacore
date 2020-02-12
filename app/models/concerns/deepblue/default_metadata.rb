@@ -705,7 +705,7 @@ module Deepblue
         index.as :stored_searchable
       end
 
-      property :geo_location_place, predicate: ::RDF::Vocab::DC.spatial, multiple: false do |index|
+      property :geo_location_place, predicate: ::RDF::Vocab::DC11.coverage, multiple: false do |index|
         index.as :stored_searchable
       end
 
