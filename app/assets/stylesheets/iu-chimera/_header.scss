@@ -11,15 +11,15 @@
 
 .rvt-header {
     display: flex;
-    align-items: center;
-    border-bottom: 1px solid #eaeaea;
+    align-items: flex-start;
+    border: none;
     background-color: #fafafa;
     width: 100%
 }
 
 .rvt-header--light {
     background-color: #fff;
-    border-bottom: 1px solid #eaeaea
+    border: none;
 }
 
 .rvt-header__trident {
@@ -33,6 +33,22 @@
 
 .rvt-header__trident-large {
     display: none
+}
+
+.rvt-header__title {
+    font-size: 1.125rem;
+    line-height: 1;
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+.rvt-header__title a {
+    color: #333 !important;
+    text-decoration: none
+}
+
+.rvt-header__title a:hover {
+    text-decoration: underline
 }
 
 @media screen and (min-width: 67.5em) {
@@ -55,25 +71,22 @@
         width: 60px;
         height: 70px
     }
-}
 
-.rvt-header__title {
-    font-size: 1.125rem;
-    line-height: 1
-}
-
-.rvt-header__title a {
-    color: #333 !important;
-    text-decoration: none
-}
-
-.rvt-header__title a:hover {
-    text-decoration: underline
-}
-
-@media screen and (min-width: 67.5em) {
     .rvt-header__title {
-        font-size:1.4375rem
+        font-size:1.4375rem;
+        margin-top: 1.4375rem
+    }
+
+    .rvt-header__main-nav {
+        display: block
+    }
+
+    .hide-on-desktop {
+        display: none
+    }
+
+    .topNav {
+      margin-top: .7rem !important;
     }
 }
 
@@ -91,16 +104,6 @@
     text-decoration: underline
 }
 
-@media screen and (min-width: 67.5em) {
-    .rvt-header__main-nav {
-        display: block
-    }
-
-    .hide-on-desktop {
-        display: none
-    }
-}
-
 .rvt-header--no-border {
     border-bottom: none
 }
@@ -111,4 +114,7 @@
 
 .rvt-header__title a:hover span {
     text-decoration: underline
+}
+.navbar-toggle, .facets-toggle {
+    margin-right: 0;
 }
