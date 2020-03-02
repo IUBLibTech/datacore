@@ -30,25 +30,30 @@ RSpec.describe Hyrax::DataSetForm do
     methodology
     description
     rights_license
-    subject_discipline
+    resource_type
+    description_abstract
+    publisher
   ] }
   let( :expected_primary_terms ) { %i[
     title
     creator
     authoremail
     methodology
+    resource_type
+    description_abstract
     description
+    publisher
     date_coverage
     rights_license
     rights_license_other
-    subject_discipline
+    comments
     fundedby
     fundedby_other
-    grantnumber
     keyword
     language
     referenced_by
-    access_deepblue
+    geo_location_place
+    geo_location_box
   ] }
 
   describe "#required_fields" do

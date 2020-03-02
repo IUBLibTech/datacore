@@ -81,12 +81,15 @@ en:
       referenced_by:        "Citations to related material"
       language:             "Language"
       methodology:          "Methodology"
+      geo_location_place:   "Location"
+      geo_location_box:     "Coordinates"
       prior_identifier:     "Prior Identifier"
       rights_license:       "License"
       rights_license_other: "Other License"
       subject_discipline:   "Discipline"
       total_file_size:      "Total file size"
       total_file_size_human_readable: "Total file size"
+      comments:             "License Comments"
   simple_form:
     actions:
       data_set:
@@ -162,6 +165,9 @@ en:
         subject_other:        "Subject"
         tag:                  "Keywords"
         title:                "Title"
+        geo_location_place:   "Location"
+        geo_location_box:     "Coordinates"
+        comments:             "License Comments"
       provenance_log:
         find_id:              "Find ID"
         find_id_placeholder:  "Search ID"
@@ -194,7 +200,7 @@ en:
           uncertain of how to complete any of these fields, we recommend that you read or refer to the
           <a href="/data/metadata-guidance">Guide to Metadata</a> in Deep Blue Data’s Help pages.
         description: >
-          Provide a general description of the research that produced this data. If specific software or scripts 
+          Provide a general description of the research that produced this data. If specific software or scripts
           are required to access your data, this is a good place to document that as well.
         download_total_work_size_too_large: >
           Total work file size of %{total_file_size} is too large to download directly. Consider using Globus (see below).
@@ -229,8 +235,8 @@ en:
           A unique handle identifying the work. An example would be a DOI for a journal article, or an ISBN or OCLC
           number for a book.
         referenced_by: >
-          Include a citation, URL, or DOI for any publications that make use of or refer to this dataset. If your data 
-          deposit is reported on in an article, please include a citation for that article (if the article is still in 
+          Include a citation, URL, or DOI for any publications that make use of or refer to this dataset. If your data
+          deposit is reported on in an article, please include a citation for that article (if the article is still in
           press, provisional citations are acceptable and can be updated when finalized).
         curation_notes_admin: >
           This field is intended for Admins to enter curation information.
@@ -268,9 +274,19 @@ en:
           Select the disciplines(s) associated with the research for which the data were collected.
         subject_other: >
           Subject Other
+        comments: >
+          Comments to communicate any special licensing stipulations to users.
         title: >
           Provide a descriptive name for the Work. Consider including the words “data” or “dataset” and terms related to
           the methods, discipline, and topic associated with your research.
+        geo_location_place: >
+          Location associated with the resource.
+        geo_location_box: >
+          Coordinates associated with the resource. A bounding box is a rectangular region, often used to define the
+          extents of a map or a rough area of interest. A box contains two space separate latitude-longitude pairs, with
+          each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner.
+          (42.943 -71.032 43.039 -69.856)
+
       file_set:
         too_large_to_download_directly: >
           This file is too large to download directly. Consider using Globus.

@@ -701,6 +701,18 @@ module Deepblue
         index.as :stored_searchable
       end
 
+      property :geo_location_box, predicate: ::RDF::URI.new("http://opaquenamespace.org/ns/georss/box"), multiple: false do |index|
+        index.as :stored_searchable
+      end
+
+      property :geo_location_place, predicate: ::RDF::Vocab::DC11.coverage, multiple: false do |index|
+        index.as :stored_searchable
+      end
+
+      property :comments, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
+        index.as :stored_searchable
+      end
+
       # 166  identifier   slug
       property :identifier_slug, predicate: ::RDF::URI.new("http://opaquenamespace.org/ns/identifierSlug") do |index|
         index.as :stored_searchable
@@ -720,7 +732,8 @@ module Deepblue
       attr_accessor :current_username
 
       class_attribute :controlled_properties
-      self.controlled_properties = [:based_near]
+      #self.controlled_properties = [:based_near]
+      self.controlled_properties = []
 
       accepts_nested_attributes_for :based_near, allow_destroy: true, reject_if: proc { |a| a[:id].blank? }
       # accepts_nested_attributes_for :nested_geo, :allow_destroy => true, :reject_if => :all_blank

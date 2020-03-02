@@ -24,6 +24,9 @@ module Hyrax
               :subject_discipline,
               :total_file_size,
               :access_deepblue,
+              :geo_location_place,
+              :geo_location_box,
+              :comments,
               to: :solr_document
 
     # def initialize( solr_document, current_ability, request = nil )
