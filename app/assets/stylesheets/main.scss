@@ -108,8 +108,6 @@ caption {
 }
 
 #user_utility_links {
-  padding-top: .25em; 
-
   li > a {
     text-decoration: none;
     color: #fff;
@@ -244,7 +242,7 @@ a#browse_link {
 
   .form-control {
     border: 1px solid #ccc;
-    border-radius: 4px !important;
+    border-radius: 4px;
   }
 
   button#search {
@@ -451,7 +449,7 @@ table.table.table-striped.related-files  {
 }
 
 /** Edit Work/User Collection **/
-.set-access-controls h3, 
+.set-access-controls h3,
 .set-access-controls label,
 .section-add-sharing h3,
 .section-collection-sharing legend,
@@ -579,7 +577,7 @@ ul.tabular li.attribute-fundedby {
 .panel-admin,
 .panel-analytics {
   margin-bottom: 1.25em;
-  
+
   h2 {
     font-size: 1.25em; }
   p {
@@ -612,7 +610,7 @@ a#stats {
 
 .show-actions {
   padding: 0;
-  
+
   form,
   a {
     margin: 0.5em 0.25em;
@@ -716,7 +714,7 @@ div.facets h3 {
 
 .hyc-logos {
   padding-left: .5em;
-  padding-top: .5em;  
+  padding-top: .5em;
 
   img {
     max-width: 50px;
@@ -977,7 +975,7 @@ div.facets h3 {
 }
 
 .search-group {
-  display: flex; 
+  display: flex;
   justify-content: space-between;
 }
 

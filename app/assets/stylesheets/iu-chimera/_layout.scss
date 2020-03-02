@@ -1,6 +1,6 @@
 
 html{font-size: 100%;}
-.search-bar--header{background: $dark-midnight; padding: 0 0 1.5em;margin: -15px 0 0;  ;}
+.search-bar--header{background: $dark-midnight; padding: 0 0 1.5em;}
 #branding-bar .row.pad, #footer .row.pad,.section .row,.search-bar-container{width:100%;max-width: 1200px;}
 
 .splash-container, .search-bar-container{max-width: 60rem;}
@@ -10,7 +10,7 @@ html{font-size: 100%;}
 div{box-sizing: border-box;}
 div,form, p{max-width: 100%; }
 
-.topNav{padding:  0 0 15px 5px; margin: 0 auto; max-width: 1200px; width: 100%;}
+.topNav{padding:  0; margin: -.25rem auto 0; max-width: 1200px; width: 100%;}
 .topNav .row{margin: 0;padding: 0;}
 .navbar{margin:0;padding: 0;height: auto; background: none; border:none;}
 

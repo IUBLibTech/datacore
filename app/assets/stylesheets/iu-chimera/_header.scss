@@ -1,0 +1,120 @@
+.rvt-skip-link {
+    position: fixed;
+    top: -6rem;
+    padding: .5rem
+}
+
+.rvt-skip-link:focus {
+    top: 0;
+    background-color: #fff
+}
+
+.rvt-header {
+    display: flex;
+    align-items: flex-start;
+    border: none;
+    background-color: #fafafa;
+    width: 100%
+}
+
+.rvt-header--light {
+    background-color: #fff;
+    border: none;
+}
+
+.rvt-header__trident {
+    min-width: 41px;
+    flex-basis: 41px;
+    height: 47px;
+    margin-right: .5rem;
+    background-color: inherit;
+    color: inherit
+}
+
+.rvt-header__trident-large {
+    display: none
+}
+
+.rvt-header__title {
+    font-size: 1.125rem;
+    line-height: 1;
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+.rvt-header__title a {
+    color: #333 !important;
+    text-decoration: none
+}
+
+.rvt-header__title a:hover {
+    text-decoration: underline
+}
+
+@media screen and (min-width: 67.5em) {
+    .rvt-header__trident {
+        min-width:60px;
+        flex-basis: 60px;
+        height: 70px;
+        margin-right: 1rem
+    }
+
+    .rvt-header__trident-large {
+        display: block
+    }
+
+    .rvt-header__trident-small {
+        display: none
+    }
+
+    .rvt-header__trident-logo {
+        width: 60px;
+        height: 70px
+    }
+
+    .rvt-header__title {
+        font-size:1.4375rem;
+        margin-top: 1.4375rem
+    }
+
+    .rvt-header__main-nav {
+        display: block
+    }
+
+    .hide-on-desktop {
+        display: none
+    }
+
+    .topNav {
+      margin-top: .7rem !important;
+    }
+}
+
+.rvt-header__main-nav {
+    display: none;
+    margin-right: 4rem
+}
+
+.rvt-header__main-nav a {
+    text-decoration: none;
+    color: #333
+}
+
+.rvt-header__main-nav a:hover {
+    text-decoration: underline
+}
+
+.rvt-header--no-border {
+    border-bottom: none
+}
+
+.rvt-header__main-nav {
+    margin-right: 1.5rem
+}
+
+.rvt-header__title a:hover span {
+    text-decoration: underline
+}
+.navbar-toggle, .facets-toggle {
+    margin-right: 0;
+}
