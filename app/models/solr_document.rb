@@ -159,8 +159,8 @@ class SolrDocument
     self['geo_location_box_tesim'] || []
   end
 
-  def comments
-    self['comments_tesim'] || []
+  def license_other
+    self['license_other_tesim'] || []
   end
 
   solrized_methods [

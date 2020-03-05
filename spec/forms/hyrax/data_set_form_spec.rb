@@ -46,7 +46,7 @@ RSpec.describe Hyrax::DataSetForm do
     date_coverage
     rights_license
     rights_license_other
-    comments
+    license_other
     fundedby
     fundedby_other
     keyword

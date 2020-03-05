@@ -113,7 +113,7 @@
 
 <%= presenter.attribute_to_html(:rights_statement, render_as: :rights_statement ) %>
 
-<%= presenter.attribute_to_html(:comments, label: t('show.label.comments')) %>
+<%= presenter.attribute_to_html(:license_other, label: t('show.label.license_other')) %>
 
 <% if current_ability.admin? %>
   <%= presenter.attribute_to_html(:prior_identifier, label: t('show.label.prior_identifier') ) %>

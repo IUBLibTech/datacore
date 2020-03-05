@@ -26,7 +26,7 @@ module Hyrax
               :access_deepblue,
               :geo_location_place,
               :geo_location_box,
-              :comments,
+              :license_other,
               to: :solr_document
 
     # def initialize( solr_document, current_ability, request = nil )
