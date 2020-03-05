@@ -709,7 +709,7 @@ module Deepblue
         index.as :stored_searchable
       end
 
-      property :comments, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
+      property :license_other, predicate: ::RDF::Vocab::DC.license, multiple: true do |index|
         index.as :stored_searchable
       end
 

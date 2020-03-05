@@ -89,7 +89,7 @@ en:
       subject_discipline:   "Discipline"
       total_file_size:      "Total file size"
       total_file_size_human_readable: "Total file size"
-      comments:             "License Comments"
+      license_other:        "License Comments"
   simple_form:
     actions:
       data_set:
@@ -167,7 +167,7 @@ en:
         title:                "Title"
         geo_location_place:   "Location"
         geo_location_box:     "Coordinates"
-        comments:             "License Comments"
+        license_other:        "License Comments"
       provenance_log:
         find_id:              "Find ID"
         find_id_placeholder:  "Search ID"
@@ -274,7 +274,7 @@ en:
           Select the disciplines(s) associated with the research for which the data were collected.
         subject_other: >
           Subject Other
-        comments: >
+        license_other: >
           Comments to communicate any special licensing stipulations to users.
         title: >
           Provide a descriptive name for the Work. Consider including the words “data” or “dataset” and terms related to

@@ -23,7 +23,7 @@ module Hyrax
         referenced_by
         rights_license
         rights_license_other
-        comments
+        license_other
         curation_notes_admin
         curation_notes_user
         geo_location_place
@@ -43,7 +43,7 @@ module Hyrax
         date_coverage
         rights_license
         rights_license_other
-        comments
+        license_other
         fundedby
         fundedby_other
         keyword
