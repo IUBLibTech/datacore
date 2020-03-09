@@ -30,7 +30,7 @@ h1,h2,h3,h4,h5{color: $crimson; font-weight: 600;
 .list-group-striped li{padding: 2em; border-radius: 1em;background:$limestone-light;margin-bottom: 1em; }
 .list-group-striped li:nth-child(odd) {background: #fff;}
 
-.image-masthead{padding: 1em;width: 100%;   background: asset-url("ocean.jpg");margin-top:-5px;}
+.image-masthead{padding: 1em; width: 100%; background: asset-url("datacore_home.jpg"); background-size: cover; margin-top:-5px;}
 .image-masthead.dark{ background: asset-url("space.jpg")}
 .search-bar--header.dark{background: $black;}
 .image-masthead h1, .image-masthead p{color: #fff;}
@@ -46,7 +46,7 @@ h1,h2,h3,h4,h5{color: $crimson; font-weight: 600;
 
 .search-bar-container .btn.btn-primary.input-lg{margin:-2px 0 0 -10px;}
 
-.splash-container .splash-text--medium{padding: 0;text-align: left; padding-bottom: 2em; }
+.splash-container .splash-text--medium{padding: 0;text-align: left; padding-bottom: 2em; text-shadow: 1px 1px 1px #000; font-weight: 500;}
 .splash-container h1{font-size:1.4em; font-weight: bold;}
 
 

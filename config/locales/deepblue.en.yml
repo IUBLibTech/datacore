@@ -27,7 +27,7 @@ en:
     dashboard:
       my_embargo_table_headers:
           viz_current: Current Visibility
-          viz_after: Intended Visibility  
+          viz_after: Intended Visibility
     file_manager:
       link_text: "Re-order Files"
 
@@ -36,11 +36,9 @@ en:
 
   homepage:
     marketing_blurb: >
-      Lorem ipsum dolor sit amet
-      Peos deleniti platonem at, mei partem indoctum id. Sea ferri timeam at, pri expetendis repudiandae ei, et ornatus
-      theophrastus mea. Ex sed ludus populo putent, in nec novum oblique fuisset. Novum possit ad per, duo id purto
-      laudem tibique, mei ut inani noluisse disputationi.
-
+      IU Data CORE is a repository offered by Indiana University Libraries
+      that provides access and preservation services for digital research data
+      that were developed or used in the support of research activities at IU.
   contact:
     by_email:        "by email"
     by_contact_form: "use the Deep Blue contact page"
@@ -272,7 +270,7 @@ en:
     api:
       unprocessable_entity:
         too_large_file: "The file you uploaded is too large."
-        
+
   blacklight:
     search:
       fields:
