@@ -276,10 +276,15 @@ body.dashboard {
 
 .dashboard #content-wrapper {
   padding: 0;
+  min-height: 100vh;
 }
 
 .dashboard .main-header {
   padding: 1em 0.5em;
+}
+
+.sidebar {
+  min-height: calc(100vh - 40px);
 }
 
 .main-content.maximized,
