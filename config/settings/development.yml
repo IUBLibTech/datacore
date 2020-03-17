@@ -1,4 +1,5 @@
 hostname: 'deepblue.local'
+globus_dir: <%= Rails.root.join 'globus-data' %>
 
 hyrax:
   redis_namespace: 'deepbluedata-dev'
