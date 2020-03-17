@@ -1,0 +1,6 @@
+<% campus_visibility_service = Datacore::CampusVisibilityService.new %>
+<%= f.input :visibility_iu_campus, as: :multi_value_select,
+    collection: campus_visibility_service.select_active_options,
+    include_blank: true,
+    item_helper: campus_visibility_service.method(:include_current_value),
+    input_html: { class: 'form-control' } %>

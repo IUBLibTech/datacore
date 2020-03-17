@@ -56,6 +56,19 @@ RSpec.describe User, type: :model do
     expect(user).to respond_to(:orcid)
   end
 
+  describe "campus group" do
+    before do
+      allow(user).to receive(:ldap_campus) { ["BL"] }
+    end
+
+    it "sets from ldap" do
+      expect(Datacore::CampusVisibilityService.new.active_ids).to include 'BL'
+      expect(user).to respond_to(:campus)
+      user.update_campus
+      expect(user.campus).to eq 'BL'
+    end
+  end
+
   # describe 'Arkivo and Zotero integration' do
   #   it 'sets an Arkivo token after_initialize if API is enabled' do
   #     expect(described_class.new).to respond_to(:arkivo_token)

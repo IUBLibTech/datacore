@@ -2,7 +2,6 @@ development:
   archivist:
     - archivist1@example.com
   admin:
-    - dlpierce@iu.edu
     - jhallida@iu.edu
     - jvwitten@iu.edu
 test:

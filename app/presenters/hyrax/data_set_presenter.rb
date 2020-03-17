@@ -23,6 +23,7 @@ module Hyrax
               :rights_license_other,
               :subject_discipline,
               :total_file_size,
+              :visibility_iu_campus,
               :access_deepblue,
               :geo_location_place,
               :geo_location_box,
@@ -50,6 +51,14 @@ module Hyrax
     #                                          "@solr_document.doi_pending? = #{@solr_document.doi_pending?}",
     #                                          "" ]
     # end
+
+    def permission_badge
+      permission_badge_class.new(solr_document.visibility, visibility_iu_campus).render
+    end
+
+    def permission_badge_class
+      Datacore::DataSetPermissionBadge
+    end
 
     # begin box
 

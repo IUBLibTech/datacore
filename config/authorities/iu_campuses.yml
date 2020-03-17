@@ -1,0 +1,26 @@
+terms:
+  - id: BL
+    term: IU Bloomington
+    active: true
+  - id: IN
+    term: IUPUI
+    active: true
+  - id: EA
+    term: IU East
+    active: true
+  - id: FW
+    term: IU Fort Wayne
+    active: true
+  - id: KO
+    term: IU Kokomo
+    active: true
+  - id: NW
+    term: IU Northwest
+    active: true
+  - id: SB
+    term: IU South Bend
+    active: true
+  - id: SE
+    term: IU Southeast
+    active: false
+

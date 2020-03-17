@@ -20,6 +20,7 @@ class DataSet < ActiveFedora::Base
   validates :rights_license, presence: { message: 'You must select a license for your work.' }
   validates :title, presence: { message: 'Your work must have a title.' }
 
+  include ::Datacore::VisibilityMetadataBehavior
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Deepblue::DefaultMetadata

@@ -144,6 +144,9 @@ module Umrdr
       Array(self[Solrizer.solr_name('virus_scan_status_date')]).first
     end
 
+    def visibility_iu_campus
+      fetch('visibility_iu_campus_ssim', [])
+    end
   end
 
 end

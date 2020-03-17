@@ -72,3 +72,4 @@ config/settings.local.yml
 config/settings/*.local.yml
 .secrets.sh
 
+/config/ldap_groups_lookup.yml

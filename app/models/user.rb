@@ -26,7 +26,7 @@ class User < ApplicationRecord
 
   if Rails.configuration.authentication_method == "iu"
     devise :omniauthable, :omniauth_providers => [:cas]
-    alias_attribute :ldap_lookup_key, :username
+    alias_attribute :ldap_lookup_key, :uid
     include LDAPGroupsLookup::Behavior
   else
     devise :database_authenticatable, :registerable,
@@ -55,6 +55,32 @@ class User < ApplicationRecord
       user.email = [auth.uid,'@iu.edu'].join
       user.encrypted_password = Devise.friendly_token[0,20]
     end
+  end
+
+  def groups
+    (super << self.campus).compact
+  end
+
+  # Fetches a user's campus code and filters it through the app's active campuses
+  def update_campus
+    active_list = campus_service.new.active_ids
+    ldap_list = ldap_campus
+    user_campus = active_list.select { |c| c == ldap_list.first }
+    self.campus = user_campus.first
+    save!
+  end
+
+  def campus_service
+    ::Datacore::CampusVisibilityService
+  end
+
+private
+
+  # @return Array containing campus code string
+  def ldap_campus
+    result = LDAPGroupsLookup.service.search(base: LDAPGroupsLookup.tree, filter: Net::LDAP::Filter.equals('cn', ldap_lookup_key), attributes: 'ou').first&.ou
+    Rails.logger.debug "#{LDAPGroupsLookup.service.host} reports campus for #{ldap_lookup_key} is #{result}"
+    result
   end
 
 end
