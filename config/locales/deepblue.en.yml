@@ -41,7 +41,7 @@ en:
       that were developed or used in the support of research activities at IU.
   contact:
     by_email:        "by email"
-    by_contact_form: "use the Deep Blue contact page"
+    by_contact_form: "use the DataCORE contact page"
     contact_us:      "Contact Us"
     email_us:        "Email Us"
 
@@ -81,7 +81,7 @@ en:
     make_your_work_citable:
       "Make your work citable!"
     thank_you_for_depositing_your_work:
-      "Thank You for Your Deposit in Deep Blue Data!"
+      "Thank You for Your Deposit in IU DataCORE!"
     your_work_will_remain_private_until: >
       Your work will remain private until Research Data Services has reviewed your submission.
       You will be notified once your data set is published.

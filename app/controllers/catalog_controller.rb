@@ -250,7 +250,7 @@ class CatalogController < ApplicationController
     end
 
     config.add_search_field('access_deepblue') do |field|
-      field.label = "Article access to Deep Blue"
+      field.label = "Article access to DataCORE"
       solr_name = solr_name("access_deepblue_label", :stored_searchable)
       field.solr_local_parameters = {
         qf: solr_name,
