@@ -66,7 +66,7 @@ en:
     id:                     "ID:"
   show:
     label:
-      access_deepblue:      "Article access in Deep Blue"
+      access_deepblue:      "Article access in DataCORE"
       authoremail:          "Contact information"
       creator:              "Creator"
       date_coverage:        "Date coverage"
@@ -124,7 +124,7 @@ en:
           Are you sure you want to delete all Globus files in this works download directory?
     labels:
       data_set:
-        access_deepblue:      "Article access in Deep Blue"
+        access_deepblue:      "Article access in DataCORE"
         authoremail:          "Contact Information"
         admin_set_id:         "Add as member of administrative set"
         based_near:           "Location"
@@ -175,7 +175,7 @@ en:
     hints:
       data_set:
         access_deepblue: >
-          If the article(s) accompanying your dataset are available in <a href='https://deepblue.lib.umich.edu/documents' target='_blank'>Deep Blue</a>, enter the handle for the record(s) here. If you have questions about depositing your article(s) in Deep Blue, please <a href='https://deepblue.lib.umich.edu/data/contact' target='_blank'>contact us</a>.
+          If the article(s) accompanying your dataset are available in <a href='https://deepblue.lib.umich.edu/documents' target='_blank'>DataCORE</a>, enter the handle for the record(s) here. If you have questions about depositing your article(s) in DataCORE, please <a href='https://deepblue.lib.umich.edu/data/contact' target='_blank'>contact us</a>.
         authoremail: >
           Enter the contact information (email address) for the individual who can best respond to questions about the
           Work.
@@ -198,7 +198,7 @@ en:
           Please provide information about your data set (referred to as a "work") in the following fields, keeping in
           mind that your responses will enable people to discover, identify, and understand your data. If you are
           uncertain of how to complete any of these fields, we recommend that you read or refer to the
-          <a href="/data/metadata-guidance">Guide to Metadata</a> in Deep Blue Data’s Help pages.
+          <a href="/data/metadata-guidance">Guide to Metadata</a> in DataCORE’s Help pages.
         description: >
           Provide a general description of the research that produced this data. If specific software or scripts
           are required to access your data, this is a good place to document that as well.
@@ -222,7 +222,7 @@ en:
         globus_help:
           "More about Globus"
         globus_is_for_large_datasets:
-          "Best for data sets > 3 GB. Globus is the platform Deep Blue Data uses to make large data sets available."
+          "Best for data sets > 3 GB. Globus is the platform DataCORE uses to make large data sets available."
         globus_is_currently_downloading_submit_email_address: >
           %{title} is currently downloading to Globus. If you would like to be sent an email when the files are
           available via Globus, please submit your email address:
