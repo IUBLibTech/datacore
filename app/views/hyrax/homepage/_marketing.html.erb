@@ -19,7 +19,7 @@
               <% if @presenter.display_share_button? %>
                 <div class="home_share_work row">
                   <div class="col-sm-12 text-center">
-                    <% if signed_in? %>
+                    <% if signed_in? && (current_ability.can? :manage_any, Collection) %>
                       <% if @presenter.create_many_work_types? %>
                         <%= link_to '#',
                           class: "btn btn-primary btn-lg",
@@ -33,11 +33,11 @@
                           <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('hyrax.share_button') %>
                         <% end %>
                       <% end %>
-                    <% else %>
-                      <%= link_to hyrax.my_works_path,
+                    <%# else %>
+                      <%#= link_to hyrax.my_works_path,
                         class: "btn btn-primary btn-lg", style: 'width: 100%'  do %>
-                        <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('hyrax.share_button') %>
-                      <% end %>
+                        <!--<i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('hyrax.share_button') %>-->
+                      <%# end %>
                     <% end %>
                   </div>
                 </div>
