@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 module Deepblue
-
-  class AbstractEventError < RuntimeError
-  end
-
   module AbstractEventBehavior
 
     EVENT_CHARACTERIZE      = 'characterize'
