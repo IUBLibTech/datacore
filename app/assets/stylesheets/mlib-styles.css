@@ -159,12 +159,12 @@ body {
     flex: 0 0 25%; } }
 body {
   font-family: 'Source Sans Pro', sans-serif;
-  color: #262626; 
+  color: #262626;
 }
 
 a {
   color: #126DC1; }
-  
+
 a:hover {
     color: #093864; }
 
@@ -250,39 +250,16 @@ p,
 .list-number {
   list-style-type: decimal; }
 
-.button,
-input[type="submit"] {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background: #126DC1;
-  color: white;
-  text-decoration: none;
+.panel-footer .btn, .modal-footer .btn {
+  margin: 2px;
+}
+
+.btn-link {
   border-radius: 4px;
-  font-size: 1rem;
-  border: 0;
-  line-height: 1.2;
-  border-radius: 4px;
-  border-bottom: #1060aa;
-  border-bottom-width: 3px;
-  border-bottom-style: solid; }
-  .button:focus,
-  input[type="submit"]:focus {
-    background: #126DC1; }
-  .button:hover,
-  input[type="submit"]:hover {
-    cursor: pointer;
-    background: #1060aa;
-    border-color: #0e5392;
-    color: white; }
-  .button:visited,
-  input[type="submit"]:visited {
-    color: white; }
-  .button[disabled="disabled"],
-  input[type="submit"][disabled="disabled"] {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: #126DC1;
-    border-color: #0e5392; }
+  a {
+    text-decoration: none;
+  }
+}
 
 .button--start {
   font-size: 1.2rem;
@@ -811,8 +788,8 @@ code.code-tag {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
-  display: flex; 
-  height: 60px; 
+  display: flex;
+  height: 60px;
   align-items: center; }
 
 .site-link {

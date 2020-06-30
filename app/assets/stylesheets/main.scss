@@ -41,25 +41,6 @@ caption {
 
 /** Buttons **/
 
-.btn-primary {
-  padding: 0.5rem 1rem;
-  border-radius: 2px;
-  border-style: none none solid !important;
-  background: rgb(18, 109, 193) !important;
-  text-decoration: none;
-  //font-size: .85em;
-}
-
-.btn-secondary {
-  color: rgb(38, 38, 38) !important;
-  padding: 0.5rem 1rem;
-  border-radius: 2px !important;
-  background: transparent;
-  text-decoration: none;
-  background-color: #fff !important;
-  border: 1px solid rgb(78, 78, 78) !important ;
-}
-
 .btn-subtle {
   color: rgb(38, 38, 38) !important;
   padding: 0.5rem 1rem;
@@ -113,8 +94,8 @@ caption {
     color: #fff;
   }
 
-  :hover {
-  text-decoration: underline;
+  li:hover {
+    text-decoration: underline;
   }
 }
 
@@ -430,7 +411,7 @@ table.table.table-striped.related-files  {
   display: inline-block;
   padding: 0.2rem 0.4rem;
   position: relative;
-  bottom: 0.2rem;
+  bottom: -0.2rem;
   background-color: #0c5292;
   border-radius: 0.2rem;
   vertical-align: super;
@@ -513,7 +494,8 @@ div.branding-banner-row {
 
   span.label.label-success,
   span.label.label-primary {
-    vertical-align: top !important;
+    position: relative;
+    top: -0.4rem;
   }
 }
 .work-show.data_set {
@@ -591,9 +573,6 @@ ul.tabular li.attribute-fundedby {
   }
   .panel-body {
     padding: .5em;
-  }
-  .btn.btn-danger {
-    padding: .75em 1em;
   }
 }
 
