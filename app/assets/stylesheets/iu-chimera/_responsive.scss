@@ -1,27 +1,25 @@
 
 
 
-   @media (max-width: 480px) {
-     /* line 10, /N/hydrogen/home/app_umrdr/.gem/ruby/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_grid.scss */
-
+@media (max-width: 480px) {
+  /* line 10, /N/hydrogen/home/app_umrdr/.gem/ruby/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_grid.scss */
   .featured-item .featured-field,.recent-item .recent-field{padding: 0;}
   .list-group-striped{margin: 0;}
   .nav-pills li{margin-top:5px;}
-   }
+}
 
-   @media (max-width: 768px) {
-     #footer, #footer .row.pad{padding: 0;}
+@media (max-width: 768px) {
+  #footer, #footer .row.pad{padding: 0;}
   #footer .tagline{width: 100%;  margin: 0 0 1em; ; text-align: center;}
-#new_contact_form{margin: 5px 10px;}
-   }
+  #new_contact_form{margin: 5px 10px;}
+  .navbar-default {width: 15rem;}
+}
 
+@media (min-width: 768px) {
+  .navbar-default {width: 100%;}
+}
 
-   @media (max-width: 992px) {
-     /* line 10, /N/hydrogen/home/app_umrdr/.gem/ruby/gems/bootstrap-sass-3.4.1/assets/stylesheets/bootstrap/_grid.scss */
-     /* .topNav{ padding: 3.3em 0 1.1em 1em;} */
-   }
-
- .search-bar--header .form-group{margin: 20px 0 0 ;}
+.search-bar--header .form-group{margin: 20px 0 0 ;}
 
 
 /*   @media (min-width: 1200px) {

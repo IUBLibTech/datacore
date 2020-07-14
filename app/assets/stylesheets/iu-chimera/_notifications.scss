@@ -1,0 +1,111 @@
+
+.rvt-notifications {
+    position: relative;
+    margin-top: 8px;
+    margin-left: 14px;
+    margin-bottom: 6px;
+}
+
+.rvt-notifications__toggle {
+    background-color: #eee;
+    border: 2px solid #ddd;
+    border-radius: 999rem;
+    color: #333;
+    height: 2rem;
+    padding: 0;
+    width: 2rem;
+    position: relative;
+    line-height: 1;
+    margin-right: 5px;
+}
+
+@media screen and (min-width: 67.5em) {
+    .rvt-notifications__toggle {
+        height:2.5rem;
+        width: 2.5rem
+    }
+}
+
+.rvt-notifications__toggle:focus {
+    box-shadow: 0 0 0 2px #fff,0 0 0 4px #006298;
+    outline: none
+}
+
+.rvt-notifications__toggle:hover {
+    background-color: #006298;
+    color: #fff;
+    border-color: #006298
+}
+
+.rvt-notifications__toggle:active {
+    background-color: #006298;
+    border-color: #fff;
+    color: #fff
+}
+
+.rvt-notifications__toggle--has-unread:active {
+    background-color: #008a28;
+    color: #fff;
+    border-color: #008a28
+}
+
+.rvt-notifications__toggle--has-unread {
+    background-color: transparent;
+    border-color: #008a28;
+    color: #008a28
+}
+
+.rvt-notifications__toggle--has-unread:hover {
+    background-color: #008a28;
+    color: #fff;
+    border-color: #008a28
+}
+
+.rvt-notifications__toggle--has-unread:focus {
+    box-shadow: 0 0 0 2px #fff,0 0 0 4px #008a28
+}
+
+.rvt-notifications__toggle[aria-expanded="true"]>span>svg.rvt-closed-icon {
+    display: none
+}
+
+.rvt-notifications__toggle[aria-expanded="true"]>span>svg.rvt-open-icon {
+    margin-top: .2rem
+}
+
+.rvt-notifications__toggle[aria-expanded="false"]>span>svg.rvt-open-icon {
+    display: none
+}
+
+.rvt-notifications__toggle-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+@media screen and (min-width: 67.5em) {
+    .rvt-notifications__toggle {
+        margin-right:.5rem
+    }
+    .rvt-notifications {
+        margin-top: 2px;
+        margin-left: 0;
+    }
+}
+
+.rvt-notifications__toggle-count {
+    position: absolute;
+    top: -.5rem;
+    right: -.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .625rem;
+    background-color: #008a28;
+    padding: .25rem;
+    color: #fff;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 999rem;
+    border: 2px solid #fff
+}
