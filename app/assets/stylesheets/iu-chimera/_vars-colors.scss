@@ -35,12 +35,12 @@ $dark-a-tags-hover         : '.dark a:active,.dark a:hover';
 
 
 #{$a-tags} {
-  color           : $dark-midnight!important;
+  color           : $dark-midnight;
   text-decoration : none;
 }
 
 #{$a-tags-hover} {
-  color : $crimson!important; border:none;
+  color : $crimson; border:none;
 }
 
 

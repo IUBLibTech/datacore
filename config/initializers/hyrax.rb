@@ -55,7 +55,7 @@ Hyrax.config do |config|
   # Enable displaying usage statistics in the UI
   # Defaults to false
   # Requires a Google Analytics id and OAuth2 keyfile.  See README for more info
-  config.analytics = true
+  config.analytics = false
 
   # Google Analytics tracking ID to gather usage statistics
   # config.google_analytics_id = Rails.application.secrets.analytics_id
