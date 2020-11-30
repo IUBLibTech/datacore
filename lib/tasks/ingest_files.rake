@@ -15,12 +15,18 @@ module DataCore
   class IngestFilesFromDirectoryTask
     include ActionView::Helpers::NumberHelper
     def run
-      puts "Starting ingest."
 
       user_key = 'bkeese@iu.edu'
       ingest_dirname = '/N/beryllium/srv/digitize/datacore'
       sda_dropbox = '/N/beryllium/srv/digitize/Archiver_spool/datacore'
       size_limit = 5 * 2**30 # 5 GB
+      log  = 'log/ingest.log'
+
+      $stdout.reopen(log, "a")
+      $stdout.sync = true
+      $stderr.reopen($stdout)
+
+      puts "Starting ingest."
 
       user = User.find_by_user_key(user_key)
 
