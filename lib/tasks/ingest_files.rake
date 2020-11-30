@@ -18,13 +18,13 @@ module DataCore
       puts "Starting ingest."
 
       user_key = 'bkeese@iu.edu'
-      ingest_dirname = '/home/bkeese/datacore_dropbox'
-      sda_dropbox = '/home/bkeese/datacore_sda_dropbox'
+      ingest_dirname = '/N/beryllium/srv/digitize/datacore'
+      sda_dropbox = '/N/beryllium/srv/digitize/Archiver_spool/datacore'
       size_limit = 5 * 2**30 # 5 GB
 
       user = User.find_by_user_key(user_key)
 
-      Dir.each_child(ingest_dirname) do |filename|
+      (Dir.entries(ingest_dirname) - [".", ".."]).each do |filename|
         filepath = File.join(ingest_dirname, filename)
 
         # if the file is not currently open by another process
