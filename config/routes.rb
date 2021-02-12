@@ -8,6 +8,7 @@ resque_web_constraint = lambda do |request|
 end
 
 Rails.application.routes.draw do
+  mount Bulkrax::Engine, at: '/'
   mount BrowseEverything::Engine => '/browse'
 
   mount Blacklight::Engine => '/'
