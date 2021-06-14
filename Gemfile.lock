@@ -676,7 +676,7 @@ GEM
       rdf
     raabro (1.4.0)
     racc (1.5.2)
-    rack (2.0.9)
+    rack (2.1.4)
     rack-protection (2.0.8.1)
       rack
     rack-test (1.1.0)
@@ -1037,7 +1037,7 @@ DEPENDENCIES
   pry-byebug
   pry-rails
   puma (~> 3.0)
-  rack (~> 2.0.6)
+  rack (~> 2.1.4)
   rails (~> 5.1.6)
   rails-controller-testing
   resque
