@@ -71,10 +71,10 @@ gem 'jbuilder', '~> 2.5'
 # bundle update --source gem-name
 gem 'bootstrap-sass', '~> 3.4.1'
 gem 'loofah', '~> 2.3.1'
-gem 'rack', '~> 2.0.6'
+gem 'rack', '~> 2.2.4'
 gem 'rubyzip', '~> 1.3.0'
 gem 'sassc', '>= 2.0.0'
-gem 'sinatra', '~> 2.0.2'
+gem 'sinatra', '~> 3.0.4'
 gem 'sprockets', '~> 3.7.2'
 # End security vulnerability mitigation
 
