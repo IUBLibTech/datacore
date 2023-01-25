@@ -4,7 +4,7 @@ module Deepblue
 
   class DoiMintingService
 
-    PUBLISHER = "University of Michigan".freeze
+    PUBLISHER = "Indiana University".freeze
     RESOURCE_TYPE = "Dataset".freeze
 
     attr :current_user, :work, :metadata
