@@ -37,6 +37,9 @@ class AttachFilesToWorkJob < ::Hyrax::ApplicationJob
     work_permissions = work.permissions.map( &:to_hash )
     metadata = visibility_attributes( work_attributes )
     uploaded_files.each do |uploaded_file|
+      # COPY uploaded file to SDA dropbox here. After upload_file call, uploaded file will be gone
+      sda_file = "#{Settings.sda.dropbox}/#{work.id}_#{uploaded_file.file.file.original_filename}"
+      FileUtils.cp(uploaded_file.file.file.file, sda_file)
       upload_file( work, uploaded_file, user, work_permissions, metadata, uploaded_file_ids: uploaded_file_ids )
     end
     failed = uploaded_files - @processed
