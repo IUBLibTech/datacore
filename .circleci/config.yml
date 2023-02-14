@@ -19,7 +19,7 @@ jobs:
   build:
     docker:
       # legacy needed for phantomjs
-      - image: circleci/ruby:2.5-stretch-node-browsers-legacy
+      - image: circleci/ruby:2.6-stretch-node-browsers-legacy
       - image: circleci/redis:5
       - image: samvera/fcrepo4:4.7.5
         environment:
