@@ -29,46 +29,54 @@ module DataCore
       puts "Starting ingest."
 
       user = User.find_by_user_key(USER_KEY)
+      ingest_directory(directory, user)
+    end
 
-      (Dir.entries(INGEST_DIR) - [".", ".."]).each do |filename|
-        filepath = File.join(INGEST_DIR, filename)
+    def ingest_directory(directory, user)
+      (Dir.entries(directory) - [".", ".."]).each do |filename|
+        filepath = File.join(directory, filename)
+        ingest_file(filepath, user)
+      end
+    end
 
-        # if the file is not currently open by another process
-        pids = `lsof -t '#{filepath}'`
-        if pids.present?
-          puts "Skipping file that is in use: #{filename}"
-          next
-        end
-        # Look for files with names matching the pattern "<workid>_<filename>"
-        #   (a work_id is a string of 9 alphanumberic characters)
-        filename.match(/^(?<work_id>([a-z]|\d){9})_(?<filenamepart>.*)$/) do |m|
-          # if the filename matches the pattern
-          if m
-            work_id = m[:work_id]
-            filenamepart = m[:filenamepart]
-            size = File.size(filepath)
-            puts "Attempting ingest of file #{filename} as #{work_id} (#{number_to_human_size(size)})"
-            if size > size_limit
-              #TODO: set a metadata field on the datacore fileset that points to the SDA rest api
-              puts" - File is too big to store directly in DataCore"
-            else
-              begin
-                w = DataSet.find(work_id)
-                puts " - Found a work for #{work_id}. Performing ingest."
-                f = File.open(filepath,'r')
-                uf = Hyrax::UploadedFile.new(file: f, user: user)
-                AttachFilesToWorkJob.perform_now( w, [uf], user.user_key, work_attributes(w) )
-                f.close()
+    def ingest_file(filepath, user)
+      # if the file is not currently open by another process
+      pids = `lsof -t '#{filepath}'`
+      if pids.present?
+        puts "Skipping file that is in use: #{filename}"
+        next
+      end
+      # Look for files with names matching the pattern "<workid>_<filename>"
+      #   (a work_id is a string of 9 alphanumberic characters)
+      filename.match(/^(?<work_id>([a-z]|\d){9})_(?<filenamepart>.*)$/) do |m|
+        # if the filename matches the pattern
+        if m
+          work_id = m[:work_id]
+          filenamepart = m[:filenamepart]
+          size = File.size(filepath)
+          puts "Attempting ingest of file #{filename} as #{work_id} (#{number_to_human_size(size)})"
+          if size > SIZE_LIMIT
+            #TODO: set a metadata field on the datacore fileset that points to the SDA rest api
+            puts" - File is too big to store directly in DataCore"
+          else
+            begin
+              w = DataSet.find(work_id)
+              puts " - Found a work for #{work_id}. Performing ingest."
+              f = File.open(filepath,'r')
+              uf = Hyrax::UploadedFile.new(file: f, user: user)
+              AttachFilesToWorkJob.perform_now( w, [uf], user.user_key, work_attributes(w) )
+              f.close()
 
-                # move file with work id in filename to sda dropbox, remove work id from filename
-                newpath = File.join(SDA_DROPBOX, filename)
-                FileUtils.mv(filepath,newpath)
+              # move file with work id in filename to sda dropbox, remove work id from filename
+              newpath = File.join(SDA_DROPBOX, filename)
+              FileUtils.mv(filepath,newpath)
 
-              rescue ActiveFedora::ObjectNotFoundError
-                puts " - No work found for #{work_id}"
-              end
+            rescue ActiveFedora::ObjectNotFoundError
+              puts " - No work found for #{work_id}"
             end
           end
+        else
+          puts "Invalid filename for #{filename}, skipping."
         end
       end
     end
