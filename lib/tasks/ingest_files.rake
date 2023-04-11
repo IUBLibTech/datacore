@@ -14,24 +14,24 @@ module DataCore
 
   class IngestFilesFromDirectoryTask
     include ActionView::Helpers::NumberHelper
+
+    USER_KEY = 'bkeese@iu.edu'
+    INGEST_DIR = '/N/beryllium/srv/digitize/datacore'
+    SDA_DROPBOX = '/N/beryllium/srv/digitize/Archiver_spool/datacore'
+    SIZE_LIMIT = 5 * 2**30 # 5 GB
+    LOG_PATH  = 'log/ingest.log'
+
     def run
-
-      user_key = 'bkeese@iu.edu'
-      ingest_dirname = '/N/beryllium/srv/digitize/datacore'
-      sda_dropbox = '/N/beryllium/srv/digitize/Archiver_spool/datacore'
-      size_limit = 5 * 2**30 # 5 GB
-      log  = 'log/ingest.log'
-
-      $stdout.reopen(log, "a")
+      $stdout.reopen(LOG_PATH, "a")
       $stdout.sync = true
       $stderr.reopen($stdout)
 
       puts "Starting ingest."
 
-      user = User.find_by_user_key(user_key)
+      user = User.find_by_user_key(USER_KEY)
 
-      (Dir.entries(ingest_dirname) - [".", ".."]).each do |filename|
-        filepath = File.join(ingest_dirname, filename)
+      (Dir.entries(INGEST_DIR) - [".", ".."]).each do |filename|
+        filepath = File.join(INGEST_DIR, filename)
 
         # if the file is not currently open by another process
         pids = `lsof -t '#{filepath}'`
@@ -57,11 +57,11 @@ module DataCore
                 puts " - Found a work for #{work_id}. Performing ingest."
                 f = File.open(filepath,'r')
                 uf = Hyrax::UploadedFile.new(file: f, user: user)
-                AttachFilesToWorkJob.perform_now( w, [uf], user_key, work_attributes(w) )
+                AttachFilesToWorkJob.perform_now( w, [uf], user.user_key, work_attributes(w) )
                 f.close()
 
                 # move file with work id in filename to sda dropbox, remove work id from filename
-                newpath = File.join(sda_dropbox, filename)
+                newpath = File.join(SDA_DROPBOX, filename)
                 FileUtils.mv(filepath,newpath)
 
               rescue ActiveFedora::ObjectNotFoundError
