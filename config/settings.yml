@@ -105,3 +105,9 @@ omniauth:
   service_validate_url: /idp/profile/cas/serviceValidate
   logout_url: /idp/profile/cas/logout
   callback_url: /users/auth/cas/callback
+
+ingest:
+  user_key: username@iu.edu
+  standard_inbox: tmp/ingest/in
+  large_inbox: tmp/ingest/large
+  outbox: tmp/ingest/out

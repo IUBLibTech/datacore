@@ -35,9 +35,10 @@ class AttachFilesToWorkJob < ::Hyrax::ApplicationJob
                                 asynchronous: ATTACH_FILES_TO_WORK_UPLOAD_FILES_ASYNCHRONOUSLY)
     validate_files!(uploaded_files)
     work_permissions = work.permissions.map( &:to_hash )
+    bypass_fedora = work_attributes.delete(:bypass_fedora)
     metadata = visibility_attributes( work_attributes )
     uploaded_files.each do |uploaded_file|
-      upload_file( work, uploaded_file, user, work_permissions, metadata, uploaded_file_ids: uploaded_file_ids )
+      upload_file( work, uploaded_file, user, work_permissions, metadata, uploaded_file_ids: uploaded_file_ids, bypass_fedora: bypass_fedora )
     end
     failed = uploaded_files - @processed
     if failed.empty?
@@ -185,7 +186,7 @@ class AttachFilesToWorkJob < ::Hyrax::ApplicationJob
       work.on_behalf_of.blank? ? work.depositor : work.on_behalf_of
     end
 
-    def upload_file( work, uploaded_file, user, work_permissions, metadata, uploaded_file_ids: [] )
+    def upload_file( work, uploaded_file, user, work_permissions, metadata, uploaded_file_ids: [], bypass_fedora: false)
       Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
                                            Deepblue::LoggingHelper.called_from,
                                            "work.id=#{work.id}",
@@ -220,7 +221,8 @@ class AttachFilesToWorkJob < ::Hyrax::ApplicationJob
       uploaded_file.update( file_set_uri: actor.file_set.uri )
       actor.create_content( uploaded_file,
                             continue_job_chain_later: ATTACH_FILES_TO_WORK_UPLOAD_FILES_ASYNCHRONOUSLY,
-                            uploaded_file_ids: uploaded_file_ids )
+                            uploaded_file_ids: uploaded_file_ids,
+                            bypass_fedora: bypass_fedora)
       @processed << uploaded_file
     rescue Exception => e # rubocop:disable Lint/RescueException
       Rails.logger.error "#{e.class} work.id=#{work.id} -- #{e.message} at #{e.backtrace[0]}"
