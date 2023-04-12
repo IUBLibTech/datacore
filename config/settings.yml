@@ -96,10 +96,12 @@ rails:
   cable:
     adapter: async
 
+sda_api:
+  show: ''
+
 omniauth:
   host: idp-stg.login.iu.edu
   login_url: /idp/profile/cas/login
   service_validate_url: /idp/profile/cas/serviceValidate
   logout_url: /idp/profile/cas/logout
   callback_url: /users/auth/cas/callback
-
