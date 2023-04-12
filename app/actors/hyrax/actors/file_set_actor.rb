@@ -26,7 +26,8 @@ module Hyrax
                           relation = :original_file,
                           from_url: false,
                           continue_job_chain_later: true,
-                          uploaded_file_ids: [] )
+                          uploaded_file_ids: [],
+                          bypass_fedora: false)
         Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
                                              Deepblue::LoggingHelper.called_from,
                                              "file=#{file}",
@@ -35,18 +36,20 @@ module Hyrax
                                              "from_url=#{from_url}",
                                              "continue_job_chain_later=#{continue_job_chain_later}",
                                              "uploaded_file_ids=#{uploaded_file_ids}",
+                                             "bypass_fedora=#{bypass_fedora}",
                                               "" ]
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
         file_set.title = [file_set.label] if file_set.title.blank?
         return false unless file_set.save # Need to save to get an id
         io_wrapper = wrapper!( file: file, relation: relation )
+        # FIXME: handle bypass_fedora
         if from_url
           # If ingesting from URL, don't spawn an IngestJob; instead
           # reach into the FileActor and run the ingest with the file instance in
           # hand. Do this because we don't have the underlying UploadedFile instance
           file_actor = build_file_actor( relation )
-          file_actor.ingest_file( io_wrapper, continue_job_chain_later: continue_job_chain_later )
+          file_actor.ingest_file( io_wrapper, continue_job_chain_later: continue_job_chain_later, bypass_fedora: bypass_fedora)
           parent = file_set.parent
           # Copy visibility and permissions from parent (work) to
           # FileSets even if they come in from BrowseEverything

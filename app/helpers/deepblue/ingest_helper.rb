@@ -175,7 +175,7 @@ module Deepblue
     # @option opts [String] mime_type
     # @option opts [String] filename
     # @option opts [String] relation, ex. :original_file
-    def self.ingest( file_set, path, _user, uploaded_file_ids = [], _opts = {} )
+    def self.ingest( file_set, path, _user, uploaded_file_ids = [], opts = {} )
       Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
                                            Deepblue::LoggingHelper.called_from,
                                            "file_set=#{file_set}",
@@ -189,42 +189,52 @@ module Deepblue
       # See Hyrax gem: app/job/ingest_local_file_job.rb
       # def perform(file_set, path, user)
       file_set.label ||= File.basename(path)
-      file_set_actor_create_content( file_set, File.open(path), uploaded_file_ids: uploaded_file_ids )
+      file_set_actor_create_content( file_set, File.open(path), uploaded_file_ids: uploaded_file_ids, bypass_fedora: opts[:bypass_fedora])
     end
 
-    def self.file_set_actor_create_content( file_set, file, relation = :original_file, uploaded_file_ids: [] )
+    def self.file_set_actor_create_content( file_set, file, relation = :original_file, uploaded_file_ids: [], bypass_fedora: false )
       # If the file set doesn't have a title or label assigned, set a default.
       file_set.label ||= label_for( file )
       file_set.title = [file_set.label] if file_set.title.blank?
       return false unless file_set.save # Need to save to get an id
-      # if from_url
-      #   # If ingesting from URL, don't spawn an IngestJob; instead
-      #   # reach into the FileActor and run the ingest with the file instance in
-      #   # hand. Do this because we don't have the underlying UploadedFile instance
-      #   file_actor = build_file_actor(relation)
-      #   file_actor.ingest_file(wrapper!(file: file, relation: relation))
-      #   # Copy visibility and permissions from parent (work) to
-      #   # FileSets even if they come in from BrowseEverything
-      #   VisibilityCopyJob.perform_later(file_set.parent)
-      #   InheritPermissionsJob.perform_later(file_set.parent)
-      # else
-      #   IngestJob.perform_later(wrapper!(file: file, relation: relation))
-      # end
-      io = JobIoWrapper.create_with_varied_file_handling!( user: user, file: file, relation: relation, file_set: file_set )
-      # FileActor#ingest_file(io)
-      # def ingest_file(io)
-      # Skip versioning because versions will be minted by VersionCommitter as necessary during save_characterize_and_record_committer.
-      Hydra::Works::AddFileToFileSet.call( file_set,
-                                           io,
-                                           relation,
-                                           versioning: false )
-      return false unless file_set.save
-      repository_file = related_file( file_set, relation )
-      Hyrax::VersioningService.create( repository_file, user )
-      virus_scan( file_set )
-      # pathhint = io.uploaded_file.uploader.path if io.uploaded_file # in case next worker is on same filesystem
-      # CharacterizeJob.perform_later(file_set, repository_file.id, pathhint || io.path)
-      characterize( file_set, repository_file.id, io.path )
+      if bypass_fedora
+        Hydra::Works::AddExternalFileToFileSet.call( file_set,
+                                                     bypass_fedora,
+                                                     relation,
+                                                     versioning: false )
+        return false unless file_set.save
+        repository_file = related_file( file_set, relation )
+        Hyrax::VersioningService.create( repository_file, user )
+      else
+        # if from_url
+        #   # If ingesting from URL, don't spawn an IngestJob; instead
+        #   # reach into the FileActor and run the ingest with the file instance in
+        #   # hand. Do this because we don't have the underlying UploadedFile instance
+        #   file_actor = build_file_actor(relation)
+        #   file_actor.ingest_file(wrapper!(file: file, relation: relation))
+        #   # Copy visibility and permissions from parent (work) to
+        #   # FileSets even if they come in from BrowseEverything
+        #   VisibilityCopyJob.perform_later(file_set.parent)
+        #   InheritPermissionsJob.perform_later(file_set.parent)
+        # else
+        #   IngestJob.perform_later(wrapper!(file: file, relation: relation))
+        # end
+        io = JobIoWrapper.create_with_varied_file_handling!( user: user, file: file, relation: relation, file_set: file_set )
+        # FileActor#ingest_file(io)
+        # def ingest_file(io)
+        # Skip versioning because versions will be minted by VersionCommitter as necessary during save_characterize_and_record_committer.
+        Hydra::Works::AddFileToFileSet.call( file_set,
+                                             io,
+                                             relation,
+                                             versioning: false )
+        return false unless file_set.save
+        repository_file = related_file( file_set, relation )
+        Hyrax::VersioningService.create( repository_file, user )
+        virus_scan( file_set )
+        # pathhint = io.uploaded_file.uploader.path if io.uploaded_file # in case next worker is on same filesystem
+        # CharacterizeJob.perform_later(file_set, repository_file.id, pathhint || io.path)
+        characterize( file_set, repository_file.id, io.path )
+      end
     end
 
     # For the label, use the original_filename or original_name if it's there.
