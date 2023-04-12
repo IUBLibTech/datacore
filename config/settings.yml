@@ -95,3 +95,6 @@ rails:
   # Action Cable settings applied in cable.yml
   cable:
     adapter: async
+
+sda_api:
+  show: ''
