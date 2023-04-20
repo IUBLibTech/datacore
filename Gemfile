@@ -22,9 +22,10 @@ gem 'rails', '~> 5.1.6'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3', '~> 1.3.6'
 # Use Puma as the app server
-gem 'puma', '~> 3.0'
+gem 'puma'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
+gem 'font-awesome-sass', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
@@ -42,7 +43,8 @@ gem 'active_scheduler'
 
 gem 'net-ldap'
 
-gem 'bulkrax', git: 'https://github.com/samvera-labs/bulkrax.git'
+# temporarily hold back bulkrax version to 0.1.0
+gem 'bulkrax', git: 'https://github.com/samvera-labs/bulkrax.git', ref: '5299b81' # branch: 'main'
 
 # EZID client from Duke
 gem 'ezid-client'
@@ -54,7 +56,7 @@ gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 3.0'
+gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -125,7 +127,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'rspec-retry'
   gem 'rspec_junit_formatter'
-  gem 'selenium-webdriver'
+  gem 'selenium-webdriver', '~> 4.2.0'
   gem 'shoulda-matchers', '~> 3.1'
   gem 'solr_wrapper', '~> 2.1.0'
 end
