@@ -132,6 +132,7 @@ describe GlobusCopyJob, "GlobusJob globus_enabled: :true", globus_enabled: :true
       before do
         allow( File ).to receive( :exist? ).with( prep_file_name ).and_return( true )
         msg = "Globus:  skipping copy because #{prep_file_name} already exists"
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( msg )
       end
       it "returns false." do
