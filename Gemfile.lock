@@ -133,6 +133,7 @@ GEM
     bcp47 (0.3.3)
       i18n
     bcrypt (3.1.16)
+    bigdecimal (1.4.4)
     bindex (0.8.1)
     blacklight (6.24.0)
       bootstrap-sass (~> 3.2)
@@ -1005,6 +1006,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_scheduler
+  bigdecimal (~> 1.4)
   bootstrap-sass (~> 3.4.1)
   bulkrax!
   byebug
@@ -1072,4 +1074,4 @@ DEPENDENCIES
   willow_sword!
 
 BUNDLED WITH
-   2.0.2
+   2.1.4
