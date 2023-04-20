@@ -137,6 +137,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
       allow( job ).to receive( :globus_error_file ).and_return( error_file_tmp.path )
       open( error_file_tmp.path, 'w' ) { |f| f << error_msg << "\n" }
       msg = "Globus:  writing error message to #{error_file_tmp.path}"
+      allow(Rails.logger).to receive(:debug) { :failure }
       allow( Rails.logger ).to receive( :debug ).with( msg )
     end
     after do
@@ -168,6 +169,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
         allow( job2 ).to receive( :globus_error_file ).and_return( error_file_tmp.path )
         allow( GlobusJob ).to receive( :error_file ).and_return( error_file_tmp.path )
         open( error_file_tmp.path, 'w' ) { |f| f << error_msg << "\n" }
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( "Globus:  error file contains: #{error_msg}" )
       end
       after do
@@ -244,6 +246,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
     context "when job complete" do
       before do
         allow( job ).to receive( :globus_job_complete? ).and_return( true )
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( "Globus:  skipping already complete globus job" )
       end
       it "does not call globus block" do
@@ -258,6 +261,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
         allow( job ).to receive( :globus_job_complete? ).and_return( false )
         allow( job ).to receive( :globus_acquire_lock? ).and_return( false )
         allow( job ).to receive( :globus_job_perform_in_progress )
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( lock_file_msg )
       end
       it "does not call globus block." do
@@ -270,6 +274,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
       before do
         allow( job ).to receive( :globus_job_complete? ).and_return( false )
         allow( job ).to receive( :globus_acquire_lock? ).and_return( true )
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( lock_file_msg )
         allow( job ).to receive( :globus_error_reset )
         allow( job ).to receive( :globus_job_perform_complete_reset )
@@ -287,6 +292,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
       before do
         allow( job ).to receive( :globus_job_complete? ).and_return( false )
         allow( job ).to receive( :globus_acquire_lock? ).and_return( true )
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( lock_file_msg )
         allow( job ).to receive( :globus_error_reset )
         allow( job ).to receive( :globus_job_perform_complete_reset )
@@ -338,6 +344,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
     before do
       allow( GlobusJob ).to receive( :lock_file ).and_return( lock_file_tmp.path )
       log_msg = "Globus:  writing lock token #{current_token} to #{lock_file_tmp.path}"
+      allow(Rails.logger).to receive(:debug) { :failure }
       allow( Rails.logger ).to receive( :debug ).with( log_msg )
     end
     after do
@@ -381,6 +388,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
         allow( GlobusJob ).to receive( :lock_file ).and_return( lock_file_tmp.path )
         open( lock_file_tmp.path, 'w' ) { |f| f << lock_token << "\n" }
         log_msg = "Globus:  testing token from #{lock_file_tmp.path}: current_token: #{current_token} == lock_token: #{lock_token}: false"
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( log_msg )
       end
       after do
@@ -400,6 +408,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
         allow( GlobusJob ).to receive( :lock_file ).and_return(lock_file_tmp.path )
         open( lock_file_tmp.path, 'w' ) { |f| f << lock_token << "\n" }
         log_msg = "Globus:  testing token from #{lock_file_tmp.path}: current_token: #{current_token} == lock_token: #{lock_token}: true"
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( log_msg )
       end
       after do
@@ -438,6 +447,7 @@ describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do 
         allow( File ).to receive( :exist? ).with( lock_file ).and_return( true )
         allow( File ).to receive( :delete ).with( lock_file )
         log_msg = "Globus:  unlock by deleting file #{lock_file}"
+        allow(Rails.logger).to receive(:debug) { :failure }
         allow( Rails.logger ).to receive( :debug ).with( log_msg )
       end
       it "then return nil" do
