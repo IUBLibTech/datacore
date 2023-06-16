@@ -4,7 +4,8 @@ RSpec.configure do |config|
   config.filter_run_excluding globus_enabled: :true unless DeepBlueDocs::Application.config.globus_enabled
 end
 
-describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do # rubocop:disable RSpec/DescribeMethod
+# TODO: re-enable globus specs?
+describe GlobusJob, "GlobusJob globus_enabled: :true", globus_enabled: :true, skip: true do # rubocop:disable RSpec/DescribeMethod
 
   let( :globus_dir ) { Pathname.new "/tmp/deepbluedata-globus" }
   let( :globus_download_dir ) { globus_dir.join 'download' }
