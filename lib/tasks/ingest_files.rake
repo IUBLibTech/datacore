@@ -17,11 +17,11 @@ module DataCore
 
     USER_KEY = 'bkeese@iu.edu'
     INGEST_DIR = '/N/capybara/srv/digitize/datacore'
-    LARGE_INGEST_DIR = '/N/capybara/srv/digitize/datacore_large' # FIXME: if subdir, filter from Dir.entries
+    LARGE_INGEST_DIR = '/N/capybara/srv/digitize/datacore/large'
     SDA_DROPBOX = '/N/capybara/srv/digitize/Archiver_spool/datacore'
     SIZE_LIMIT = 5 * 2**30 # 5 GB
     LOG_PATH  = 'log/ingest.log'
-    EMPTY_FILEPATH = 'lib/tasks/empty.txt' # FIXME: refactor EMPTY_FILEPATH
+    EMPTY_FILEPATH = 'lib/tasks/empty.txt' # TODO: refactor EMPTY_FILEPATH
 
     def run
       $stdout.reopen(LOG_PATH, "a")
@@ -36,9 +36,16 @@ module DataCore
     end
 
     def ingest_directory(directory, user, bypass_fedora: false)
-      (Dir.entries(directory) - [".", ".."]).each do |filename| # FIXME: filter subdir?"
-        filepath = File.join(directory, filename)
+      directory_files(directory).each do |filepath|
         ingest_file(filepath, user, bypass_fedora: bypass_fedora)
+      end
+    end
+
+    def directory_files(directory)
+      (Dir.entries(directory) - [".", ".."] - ['large', 'small']).map do |filename|
+        File.join(directory, filename)
+      end.reject do |filepath|
+        File.directory?(filepath)
       end
     end
 
