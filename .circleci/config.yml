@@ -6,6 +6,7 @@ version: 2.1
 
 orbs:
   browser-tools: circleci/browser-tools@1.4.1
+  ruby: circleci/ruby@1.8.0
 
 default_environment: &default_environment
   RAILS_ENV: test
@@ -21,9 +22,8 @@ default_environment: &default_environment
 jobs:
   build:
     docker:
-      # legacy needed for phantomjs
-      - image: cimg/ruby:2.7-browsers
-      - image: cimg/redis:5.0
+      - image: cimg/ruby:2.7.8-browsers
+      - image: cimg/redis:6.2
       - image: ghcr.io/samvera/fcrepo4:4.7.5
         environment:
           CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
@@ -83,7 +83,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            gem update --system 3.2.3 # raises permission error, but build passes
+            gem update --system
             gem update bundler
             bundle config path $CIRCLE_WORKING_DIRECTORY/vendor/bundle
             bundle install
