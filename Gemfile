@@ -136,6 +136,3 @@ group :development, :test do
 end
 
 gem 'willow_sword', github: 'notch8/willow_sword'
-
-# needed for ruby 2.7 upgrade
-gem 'bigdecimal', '~> 1.4'
