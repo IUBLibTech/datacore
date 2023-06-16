@@ -1,8 +1,12 @@
-# Ruby CircleCI 2.0 configuration file
+# Ruby CircleCI 2.1 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
-version: 2
+version: 2.1
+
+orbs:
+  browser-tools: circleci/browser-tools@1.4.0
+  ruby: circleci/ruby@1.8.0
 
 default_environment: &default_environment
   RAILS_ENV: test
@@ -18,13 +22,12 @@ default_environment: &default_environment
 jobs:
   build:
     docker:
-      # legacy needed for phantomjs
-      - image: circleci/ruby:2.5-stretch-node-browsers-legacy
-      - image: circleci/redis:5
-      - image: samvera/fcrepo4:4.7.5
+      - image: cimg/ruby:2.7.8-browsers
+      - image: cimg/redis:6.2
+      - image: ghcr.io/samvera/fcrepo4:4.7.5
         environment:
           CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
-      - image: solr:6
+      - image: solr:7
         command: bin/solr -cloud -noprompt -f -p 8985
 
     # Specify service dependencies here if necessary
