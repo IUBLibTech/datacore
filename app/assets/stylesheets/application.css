@@ -19,4 +19,5 @@
  *= require 'bulkrax/application'
  *= require_self
  *= require iu-chimera/styles
+ *= require brand
  */
