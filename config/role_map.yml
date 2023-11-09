@@ -5,6 +5,7 @@ development:
     - dlpierce@iu.edu
     - jhallida@iu.edu
     - jvwitten@iu.edu
+    - aploshay@iu.edu
 test:
   archivist:
     - archivist1@example.com
