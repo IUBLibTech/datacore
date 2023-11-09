@@ -73,3 +73,5 @@ config/settings/*.local.yml
 .secrets.sh
 
 import/*
+vendor/*
+*.swp
