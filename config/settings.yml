@@ -96,5 +96,8 @@ rails:
   cable:
     adapter: async
 
-sda_api:
-  show: ''
+archive_api:
+  url: archive.url.invalid/%s/%s
+  username: archiveusername.invalid
+  password: archivepassword.invalid
+
