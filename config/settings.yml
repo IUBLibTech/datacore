@@ -111,3 +111,8 @@ ingest:
   standard_inbox: tmp/ingest/in
   large_inbox: tmp/ingest/large
   outbox: tmp/ingest/out
+
+archive_api:
+  url: archive.url.invalid/%s/%s
+  username: archiveusername.invalid
+  password: archivepassword.invalid

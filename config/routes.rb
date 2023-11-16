@@ -142,7 +142,9 @@ Rails.application.routes.draw do
   post '/provenance_log_deleted_works/', to: 'provenance_log#deleted_works'
   get '/guest_user_message', to: 'guest_user_message#show'
 
-  get '/sda/request/(:collection)/(:object)', to: 'sda#show'
+  get '/sda/request/(:collection)/(:object)', to: 'archive#download_request'
+  get '/sda/show/(:collection)/(:object)', to: 'archive#show'
+  get '/sda/status/(:collection)/(:object)', to: 'archive#status'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
