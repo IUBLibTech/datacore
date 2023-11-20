@@ -64,7 +64,6 @@ class ArchiveController < ApplicationController
       when '503'
         redirect_to destination, notice: 'File found in archives and requested for download'
       when '404'
-        debugger
         redirect_to destination, alert: 'File not found in archives'
       else
         redirect_to destination, alert: "Unexpected response from archives: #{code}"
