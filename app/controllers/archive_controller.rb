@@ -50,15 +50,24 @@ class ArchiveController < ApplicationController
     result = file_request(string: string, filename: filename)
     code = result.try(:code) || 'No response from file archiver service'
     case code
-      when '503'
-        redirect_to [main_app, FileSet.find('zs25x844t')], notice: 'File found in archives and requested for download'
       when '200'
-        #render plain: result.body
         send_data result.body, filename: filename
-      when '404'
-        redirect_to [main_app, FileSet.find('zs25x844t')], alert: 'File not found in archives'
       else
-        redirect_to [main_app, FileSet.find('zs25x844t')], alert: "Unexpected response from archives: #{code}"
+        failed_file_request(filename: filename, code: code)
+    end
+  end
+
+  def failed_file_request(filename:, code:)
+    file_set = FileSet.where(title: filename).first
+    destination = file_set ? [main_app, file_set] : main_app.root_url
+    case code
+      when '503'
+        redirect_to destination, notice: 'File found in archives and requested for download'
+      when '404'
+        debugger
+        redirect_to destination, alert: 'File not found in archives'
+      else
+        redirect_to destination, alert: "Unexpected response from archives: #{code}"
     end
   end
 
