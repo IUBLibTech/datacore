@@ -11,6 +11,11 @@ class ArchiveController < ApplicationController
     end
   end
 
+  def request_file
+    handle_file_request(string: archive_url_for(params[:collection], params[:object]),
+                        filename: params[:object])
+  end
+
   def request_factory(method)
     case method
     when :get

@@ -142,7 +142,7 @@ Rails.application.routes.draw do
   post '/provenance_log_deleted_works/', to: 'provenance_log#deleted_works'
   get '/guest_user_message', to: 'guest_user_message#show'
 
-  get '/sda/request/(:collection)/(:object)', to: 'archive#request'
+  get '/sda/request/(:collection)/(:object)', to: 'archive#request_file'
   get '/sda/show/(:collection)/(:object)', to: 'archive#show'
   get '/sda/status/(:collection)/(:object)', to: 'archive#status'
 
