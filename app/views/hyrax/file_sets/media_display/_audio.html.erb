@@ -6,11 +6,20 @@
         <source src="<%= hyrax.download_path(file_set, file: 'mp3') %>" type="audio/mpeg" />
         Your browser does not support the audio tag.
       </audio>
+      <% if file_set.in_fedora? %>
       <%= link_to t('hyrax.file_set.show.downloadable_content.audio_link'),
                   hyrax.download_path(file_set),
                   data: { label: file_set.id },
                   target: :_blank,
                   id: "file_download" %>
+      <% end %>   
+      <% if file_set.in_archive? %>
+      <p>
+      <%= link_to 'Download from archival server (takes longer)',
+                  file_set.archive_request_url,
+                  id: "sda_download" %>
+      </p>          
+      <% end %>  
     </div>
 <% else %>
     <div>

@@ -3,11 +3,20 @@
     <div class="no-preview">
       <%= t('hyrax.works.show.no_preview') %>
       <% if Hyrax.config.display_media_download_link? %>
+      <% if file_set.in_fedora? %>
         <p /><%= link_to t('hyrax.file_set.show.download'),
                          hyrax.download_path(file_set),
                          id: "file_download",
                          data: { label: file_set.id },
                          target: "_new" %>
+      <% end %>   
+      <% if file_set.in_archive? %>
+      <p>
+      <%= link_to 'Download from archival server (takes longer)',
+                  file_set.archive_request_url,
+                  id: "sda_download" %>
+      </p>          
+      <% end %>  
       <% end %>
     </div>
   <% end %>

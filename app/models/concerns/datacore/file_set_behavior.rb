@@ -10,13 +10,13 @@ module Datacore
       !archive_only?
     end
 
-    def in_archives?
+    def in_archive?
       true
       # TODO: make api call to check
     end
 
     def archive_filename
-      Array.wrap(self.original_file.file_name).first
+      self.original_file.file_name.first
     end
 
     def archive_status_url

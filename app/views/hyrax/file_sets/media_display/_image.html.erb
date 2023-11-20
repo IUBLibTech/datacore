@@ -5,11 +5,20 @@
                     class: "representative-media",
                     alt: "",
                     role: "presentation" %>
+      <% if file_set.in_fedora? %>
       <%= link_to t('hyrax.file_set.show.downloadable_content.image_link'),
                   hyrax.download_path(file_set),
                   data: { label: file_set.id },
                   target: :_blank,
                   id: "file_download" %>
+      <% end %>   
+      <% if file_set.in_archive? %>
+      <p>
+      <%= link_to 'Download from archival server (takes longer)',
+                  file_set.archive_request_url,
+                  id: "sda_download" %>
+      </p>          
+      <% end %>  
     </div>
 <% else %>
     <div>

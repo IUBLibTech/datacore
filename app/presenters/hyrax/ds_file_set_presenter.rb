@@ -85,6 +85,15 @@ module Hyrax
       !@solr_document.file_size.nil? && @solr_document.file_size >= DeepBlueDocs::Application.config.max_work_file_size_to_download
     end
 
+    # stubbed archives support
+    def file_set
+      @file_set ||= ::FileSet.find(self.id)
+    end
+
+    delegate :archive_request_url,
+             :in_fedora?,
+             :in_archive?,
+             to: :file_set
   end
 
 end
