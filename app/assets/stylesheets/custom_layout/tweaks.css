@@ -448,3 +448,8 @@ table.datatable thead th.no-sort {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* added for accessibility */
+a {
+	text-decoration: underline;
+}
