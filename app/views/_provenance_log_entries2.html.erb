@@ -2,6 +2,7 @@
   <div class="panel panel-default panel-items panel-provenance-log-entries">
     <% if @presenter.provenance_log_entries? %>
       <% provenance_log_entries = Deepblue::ProvenanceLogService.entries( @presenter.id ) %>
+      <% if provenance_log_entries.present? %>
       <div class="panel-heading">
         <h2>Provenance Log (<%= provenance_log_entries.size %> entries)</h2>
       </div>
@@ -42,6 +43,7 @@
           </tbody>
         </table>
       </div>
+      <% end %>
     <% end %>
   </div>
 <% end %>
