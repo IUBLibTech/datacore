@@ -24,7 +24,7 @@
                       hyrax.download_path(member),
                       title: t('.download_title', file_set: member),
                       target: "_blank",
-                      id: "file_download",
+                      id: "file_download-#{member.id}",
                       data: { label: member.id } %>
         </td>
       <% else %>

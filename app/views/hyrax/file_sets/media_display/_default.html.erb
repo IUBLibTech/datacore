@@ -5,7 +5,7 @@
       <% if Hyrax.config.display_media_download_link? %>
         <p /><%= link_to t('hyrax.file_set.show.download'),
                          hyrax.download_path(file_set),
-                         id: "file_download",
+                         id: "file_download-##{file_set.id}",
                          data: { label: file_set.id },
                          target: "_new" %>
       <% end %>
