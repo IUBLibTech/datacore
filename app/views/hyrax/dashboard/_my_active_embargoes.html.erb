@@ -1,3 +1,4 @@
+<% if my_assets_under_embargo( current_ability.current_user.email.to_s ).present? %>
 <table class="embargoes table table-striped datatable">
   <thead>
     <tr>
@@ -19,3 +20,4 @@
   <% end %>
   </tbody>
 </table>
+<% end %>

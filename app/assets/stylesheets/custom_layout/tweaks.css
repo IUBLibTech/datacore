@@ -1,3 +1,19 @@
+/* override bootstrap */
+.badge, td.status span {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: #555555; /* override for greater contrast ratio */
+  border-radius: 10px;
+}
+
 .text-bold {
   font-weight: bold;
 }
@@ -447,4 +463,9 @@ table.datatable thead th.no-sort {
 .dl-horizontal {
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* added for accessibility */
+a {
+	font-weight: bold;
 }
