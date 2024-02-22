@@ -17,6 +17,9 @@ gem 'config'
 # Date range support
 gem 'edtf'
 
+# ruby 2.7 support
+gem 'bigdecimal', '~> 1.4.4'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.6'
 # Use sqlite3 as the database for Active Record
@@ -133,6 +136,3 @@ group :development, :test do
 end
 
 gem 'willow_sword', github: 'notch8/willow_sword'
-
-# needed for ruby 2.7 upgrade
-gem 'bigdecimal', '~> 1.4'
