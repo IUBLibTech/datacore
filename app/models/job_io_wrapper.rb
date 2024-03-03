@@ -74,7 +74,8 @@ class JobIoWrapper < ApplicationRecord
   def ingest_file( continue_job_chain: true,
                    continue_job_chain_later: true,
                    delete_input_file: true,
-                   uploaded_file_ids: [] )
+                   uploaded_file_ids: [],
+                   bypass_fedora: false)
 
     actor = file_actor
     Deepblue::LoggingHelper.bold_debug [ "#{caller_locations(1, 1)[0]}",
@@ -84,6 +85,7 @@ class JobIoWrapper < ApplicationRecord
                                          "continue_job_chain_later=#{continue_job_chain_later}",
                                          "delete_input_file=#{delete_input_file}",
                                          "uploaded_file_ids=#{uploaded_file_ids}",
+                                         "bypass_fedora=#{bypass_fedora}",
                                          "" ]
 
     user_key = nil
@@ -96,7 +98,8 @@ class JobIoWrapper < ApplicationRecord
                       continue_job_chain_later: continue_job_chain_later,
                       current_user: user_key,
                       delete_input_file: delete_input_file,
-                      uploaded_file_ids: uploaded_file_ids )
+                      uploaded_file_ids: uploaded_file_ids,
+                      bypass_fedora: bypass_fedora)
   end
 
   private
