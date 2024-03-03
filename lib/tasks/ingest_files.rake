@@ -20,20 +20,24 @@ module DataCore
     LARGE_INGEST_DIR = Settings.ingest.large_inbox
     INGEST_OUTBOX = Settings.ingest.outbox
     SIZE_LIMIT = 5 * 2**30 # 5 GB
-    LOG_PATH  = 'log/ingest.log'
+    LOG_PATH  = Rails.root.join('log', 'ingest.log')
     EMPTY_FILEPATH = 'lib/tasks/empty.txt' # TODO: refactor EMPTY_FILEPATH
 
-    def run
-      $stdout.reopen(LOG_PATH, "a")
-      $stdout.sync = true
-      $stderr.reopen($stdout)
+    def self.logger
+      @@logger ||= Logger.new(LOG_PATH)
+    end
 
-      puts "Starting ingest."
+    def logger
+      self.class.logger
+    end
+
+    def run
+      logger.info("Starting ingest.")
       user = User.find_by_user_key(USER_KEY)
       if user
-        puts "Ingest user found for #{USER_KEY}"
+        logger.info("Ingest user found for #{USER_KEY}")
       else user
-        puts "No user found for #{USER_KEY}"
+        logger.error("No user found for #{USER_KEY}.  Aborting ingest.")
         return
       end
       ingest_directory(STANDARD_INGEST_DIR, user, bypass_fedora: false)
@@ -41,13 +45,19 @@ module DataCore
     end
 
     def ingest_directory(directory, user, bypass_fedora: false)
-      puts "Starting ingest from #{directory} for user #{user} with bypass_fedora: #{bypass_fedora.to_s}"
-      directory_files(directory).each do |filepath|
-        puts "Starting file ingest for #{filepath} for user #{user} with bypass_fedora: #{bypass_fedora.to_s}"
-        ingest_file(filepath, user, bypass_fedora: bypass_fedora)
-        puts "Finished ingest from #{filepath}"
+      logger.info("Starting ingest from #{directory} for user #{user} with bypass_fedora: #{bypass_fedora.to_s}")
+      @directory_files = directory_files(directory)
+      if @directory_files.any?
+        logger.info("#{@directory_files.size} files found.")
+        @directory_files.each_with_index do |filepath, index|
+          logger.info("Starting file ingest #{index+1}/#{@directory_files.size} for #{filepath} for user #{user} with bypass_fedora: #{bypass_fedora.to_s}")
+          ingest_file(filepath, user, bypass_fedora: bypass_fedora)
+          logger.info("Finished ingest from #{filepath}")
+        end
+      else
+        logger.info("No files found.")
       end
-      puts "Finished ingest from #{directory}"
+      logger.info("Finished ingest from #{directory}")
     end
 
     def directory_files(directory)
@@ -62,7 +72,7 @@ module DataCore
       # if the file is not currently open by another process
       pids = `lsof -t '#{filepath}'`
       if pids.present?
-        puts "Skipping file that is in use: #{filename}"
+        logger.error("Skipping file that is in use: #{filename}")
         return
       end
       # Look for files with names matching the pattern "<workid>_<filename>"
@@ -74,16 +84,16 @@ module DataCore
           work_id = m[:work_id]
           filenamepart = m[:filenamepart]
           size = File.size(filepath)
-          puts "Attempting ingest of file #{filenamepart} as #{work_id} (#{number_to_human_size(size)})"
+          logger.info("Attempting ingest of file #{filenamepart} as #{work_id} (#{number_to_human_size(size)})")
           if bypass_fedora
-            puts "File ingest called bypassing fedora storage"
+            logger.info("File ingest called bypassing fedora storage")
           elsif size > SIZE_LIMIT
-            puts "File ingest called for fedora stroage, but file is too big to store directly in DataCore"
+            logger.info("File ingest called for fedora storage, but triggering bypass due to excessive file size: #{number_to_human_size(size)}")
             bypass_fedora = true
           end
           begin
             w = DataSet.find(work_id)
-            puts " - Found a work for #{work_id}. Performing ingest."
+            logger.info("Found a work for #{work_id}. Performing ingest.")
             if bypass_fedora
               #TODO: set a metadata field on the datacore fileset that points to the SDA rest api
               f = File.open(EMPTY_FILEPATH,'r')
@@ -91,7 +101,6 @@ module DataCore
               AttachFilesToWorkJob.perform_now( w, [uf], user.user_key, work_attributes(w).merge(bypass_fedora: bypass_url(w, filename)) )
               f.close()
             else
-
               f = File.open(filepath,'r')
               uf = Hyrax::UploadedFile.new(file: f, user: user)
               AttachFilesToWorkJob.perform_now( w, [uf], user.user_key, work_attributes(w) )
@@ -102,10 +111,10 @@ module DataCore
               FileUtils.mv(filepath,newpath)
             end
           rescue ActiveFedora::ObjectNotFoundError
-            puts " - No work found for #{work_id}"
+            logger.error("No work found for #{work_id}.  Skipping ingest.")
           end
         else
-          puts "Invalid filename for #{filename}, skipping."
+          logger.error("Invalid filename for #{filename}. Skipping ingest.")
         end
       end
     end
@@ -127,6 +136,5 @@ module DataCore
         visibility_after_embargo: work.visibility_after_embargo
       }
     end
-
   end
 end
