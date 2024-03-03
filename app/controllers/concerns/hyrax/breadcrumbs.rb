@@ -27,7 +27,11 @@ module Hyrax
       else
         default_trail_start
         add_breadcrumb_for_controller if user_signed_in?
-        add_breadcrumb_for_action
+        begin
+          add_breadcrumb_for_action # errors when parent is missing
+        rescue
+          # noop
+        end
       end
     end
 
