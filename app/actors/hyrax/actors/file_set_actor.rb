@@ -39,7 +39,8 @@ module Hyrax
                                              "bypass_fedora=#{bypass_fedora}",
                                               "" ]
         # If the file set doesn't have a title or label assigned, set a default.
-        file_set.label ||= label_for(file)
+        file_set.label ||= label_for(file, bypass_fedora: bypass_fedora)
+        remove_work_id_from_label(file_set)
         file_set.title = [file_set.label] if file_set.title.blank?
         return false unless file_set.save # Need to save to get an id
         io_wrapper = wrapper!( file: file, relation: relation )
@@ -228,7 +229,9 @@ module Hyrax
         # If the file was imported via URL, parse the original filename.
         # If all else fails, use the basename of the file where it sits.
         # @note This is only useful for labeling the file_set, because of the recourse to import_url
-        def label_for(file)
+        def label_for(file, bypass_fedora: nil)
+          external_filename = bypass_fedora.to_s.split('/').last
+          return external_filename if external_filename.present?
           if file.is_a?(Hyrax::UploadedFile) # filename not present for uncached remote file!
             file.uploader.filename.present? ? file.uploader.filename : File.basename(Addressable::URI.parse(file.file_url).path)
           elsif file.respond_to?(:original_name) # e.g. Hydra::Derivatives::IoDecorator
@@ -239,6 +242,11 @@ module Hyrax
           else
             File.basename(file)
           end
+        end
+
+        def remove_work_id_from_label(file_set)
+          work_id = file_set.parent&.id
+          file_set.label = file_set.label.sub("#{work_id}_", '') if work_id.present?
         end
 
         def assign_visibility?(file_set_params = {})
