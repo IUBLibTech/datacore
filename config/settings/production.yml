@@ -41,3 +41,6 @@ rails:
     adapter: redis
     url: redis://redis/
     channel_prefix: deepbluedata-production
+
+omniauth:
+  host: idp.login.iu.edu

@@ -95,3 +95,11 @@ rails:
   # Action Cable settings applied in cable.yml
   cable:
     adapter: async
+
+omniauth:
+  host: idp-stg.login.iu.edu
+  login_url: /idp/profile/cas/login
+  service_validate_url: /idp/profile/cas/serviceValidate
+  logout_url: /idp/profile/cas/logout
+  callback_url: /users/auth/cas/callback
+
