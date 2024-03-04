@@ -1,4 +1,4 @@
-# unmodified from hyrax
+# modified from hyrax for bypass_fedora case
 module Extensions
   module Hyrax
     module DownloadsController
@@ -8,8 +8,14 @@ module Extensions
         def show
           case file
           when ActiveFedora::File
-            # For original files that are stored in fedora
-            super
+            case file.mime_type
+            when /access-type=URL/
+              # for original files that bypass fedora
+              redirect_to file.file_name.first # file_name contains archival controller path
+            else
+              # For original files that are stored in fedora
+              super
+            end
           when String
             # For derivatives stored on the local file system
             send_local_content
