@@ -14,6 +14,17 @@ Bundler.require(*Rails.groups)
 module DeepBlueDocs
 
   class Application < Rails::Application
+    config.autoload_paths += [Rails.root.join('lib')]
+    config.eager_load_paths += [Rails.root.join('lib')]
+
+    # https://bibwild.wordpress.com/2016/12/27/a-class_eval-monkey-patching-pattern-with-prepend/
+    config.to_prepare do
+      # Load any monkey-patching extensions in to_prepare for Rails dev-mode class-reloading.
+      Dir.glob(File.join(File.dirname(__FILE__), "../lib/extensions/extensions.rb")) do |c|
+        Rails.configuration.cache_classes ? require(c) : load(c)
+      end
+    end
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
