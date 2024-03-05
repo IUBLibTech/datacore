@@ -470,17 +470,17 @@ a {
 	font-weight: bold;
 }
 
-/* hyrax/_work-show.scss import */
+/* hyrax/_work-show.scss modifications */
 .panel-workflow {
   background: #fff;
   border-color: #e0e0e0;
 
   .panel-heading {
     background-color: #e6ab5f;
-    color: #ffffff;
+    color: #191919; /* improved contrast ratio from #ffffff */
 
     a {
-      color: #ffffff;
+      color: #191919; /* improved contrast ratio from #ffffff */
     }
   }
 
@@ -489,7 +489,7 @@ a {
   }
 }
 
-/* iu-chimera/_vars-colors.scss import */
+/* iu-chimera/_vars-colors.scss modifications */
 .nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
-background: #fff !important;color: #ACA39A !important;border:1px solid #dbd8d7 !important;
+background: #fff !important;color: #191919 !important;border:1px solid #dbd8d7 !important; /* modified from #ACA39A for improved contrast ratio */
 }
