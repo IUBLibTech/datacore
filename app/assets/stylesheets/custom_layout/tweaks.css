@@ -469,3 +469,27 @@ table.datatable thead th.no-sort {
 a {
 	font-weight: bold;
 }
+
+/* hyrax/_work-show.scss modifications */
+.panel-workflow {
+  background: #fff;
+  border-color: #e0e0e0;
+
+  .panel-heading {
+    background-color: #e6ab5f;
+    color: #191919; /* improved contrast ratio from #ffffff */
+
+    a {
+      color: #191919; /* improved contrast ratio from #ffffff */
+    }
+  }
+
+  .panel-body {
+    background-color: #f2f1eb;
+  }
+}
+
+/* iu-chimera/_vars-colors.scss modifications */
+.nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+background: #fff !important;color: #191919 !important;border:1px solid #dbd8d7 !important; /* modified from #ACA39A for improved contrast ratio */
+}
