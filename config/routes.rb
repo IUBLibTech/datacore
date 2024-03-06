@@ -11,6 +11,12 @@ Rails.application.routes.draw do
   mount Bulkrax::Engine, at: '/'
   mount BrowseEverything::Engine => '/browse'
 
+  # block Blacklight bookmark routes
+  get '/bookmarks', to: 'application#rescue_404'
+  post '/bookmarks', to: 'application#rescue_404'
+  get '/bookmarks/*all', to: 'application#rescue_404'
+  post '/bookmarks/*all', to: 'application#rescue_404'
+
   mount Blacklight::Engine => '/'
 
   get '/concern/generic_works/*rest', to: redirect( '/data/concern/data_sets/%{rest}', status: 302 )
