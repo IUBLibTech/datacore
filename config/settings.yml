@@ -116,3 +116,6 @@ archive_api:
   url: archive.url.invalid/%s/%s
   username: archiveusername.invalid
   password: archivepassword.invalid
+  local: /path/to/archive_files/%s
+  timeout_before_download: 86400 # 24 hours
+  timeout_after_download: 172800 # 48 hours

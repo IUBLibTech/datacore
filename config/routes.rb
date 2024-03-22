@@ -143,7 +143,6 @@ Rails.application.routes.draw do
   get '/guest_user_message', to: 'guest_user_message#show'
 
   get '/sda/request/(:collection)/(:object)', to: 'archive#download_request'
-  get '/sda/show/(:collection)/(:object)', to: 'archive#show'
   get '/sda/status/(:collection)/(:object)', to: 'archive#status'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
