@@ -4,6 +4,7 @@
 # - created by file get! calls
 # - updated when download is completed
 # - used to track deleting files after completion
+# makes side-effect calls to archive server for staging request, file download
 require 'fileutils'
 
 namespace :datacore do
@@ -34,14 +35,14 @@ module DataCore
 
     def run
       directory = DOWNLOAD_DIR
-      logger.info("Starting archive downloads from #{directory}")
+      logger.info("Starting archive job processing from #{directory}")
       @directory_files = directory_files(directory)
       if @directory_files.any?
         logger.info("#{@directory_files.size} files found.")
         @directory_files.each_with_index do |yaml_path, index|
-          logger.info("Starting archive download #{index+1}/#{@directory_files.size} for #{yaml_path}")
+          logger.info("Starting archive job processing #{index+1}/#{@directory_files.size} for #{yaml_path}")
           process_file(yaml_path)
-          logger.info("Finished archive download #{index+1}/#{@directory_files.size} for #{yaml_path}")
+          logger.info("Finished archive job processing #{index+1}/#{@directory_files.size} for #{yaml_path}")
         end
       else
         logger.info("No files found.")
@@ -60,8 +61,8 @@ module DataCore
     end
 
     def archive_file_for(yaml_path)
-      yaml = YAML.load_file(yaml_path)
-      ArchiveFile.new(collection: yaml[:collection], object: yaml[:object])
+      job_yaml = YAML.load_file(yaml_path)
+      ArchiveFile.new(collection: job_yaml[:collection], object: job_yaml[:object])
     end
 
     def process_file(yaml_path)
@@ -75,48 +76,60 @@ module DataCore
       case current_status
       when :local
         clean_local_file(yaml_path)
-      when :unstaged
+      when :staging_available
         stage_file(yaml_path)
-      when :staged
+      when :staging_requested
+        stage_file(yaml_path) # TODO: reconsider?
+      when :staged_after_request, :staged_without_request
         download_file(yaml_path)
       else
         process_error(yaml_path, "unexpected file status: #{current_status}")
       end
     end
 
+    def update_job_yaml(yaml_path, hash)
+      job_yaml = YAML.load_file(yaml_path)
+      hash.each do |k,v|
+        case v
+        when Hash
+          job_yaml[k] ||= {}
+          job_yaml[k] = job_yaml[k].merge(v)
+        when Array
+          job_yaml[k] ||= []
+          job_yaml[k] = job_yaml[k] + v
+        else
+          job_yaml[k] = v
+        end
+      end
+      File.write(yaml_path, job_yaml.to_yaml)
+    end
+
     def process_error(yaml_path, error)
       logger.error(error)
-      yaml = YAML.load_file(yaml_path)
-      yaml[:errors] ||= {}
-      yaml[:errors][Time.now.to_s] = error
-      File.write(yaml_path, yaml.to_yaml)
+      update_job_yaml(yaml_path, { errors: { Time.now => error }})
     end
 
     def stage_file(yaml_path)
       logger.info("Staging request for #{yaml_path}")
-      yaml = YAML.load_file(yaml_path)
-      yaml[:staging_requested] ||= []
-      yaml[:staging_requested] << Time.now.to_s
-      File.write(yaml_path, yaml.to_yaml)
+      update_job_yaml(yaml_path, { staging_requested: [Time.now], status: :staging_requested })
 
-      system(curl_command(yaml: yaml, output: false))
+      job_yaml = YAML.load_file(yaml_path)
+      system(curl_command(yaml: job_yaml, output: false))
 
       logger.info("Staging request submitted")
     end
 
     def download_file(yaml_path)
       logger.info("Download initiated for #{yaml_path}")
-      yaml = YAML.load_file(yaml_path)
-      yaml[:download_started] = Time.now.to_s
-      File.write(yaml_path, yaml.to_yaml)
+      update_job_yaml(yaml_path, { status: :staged_after_request, download_started: Time.now })
 
-      file_path = yaml[:file_path]
-      download_path = yaml[:file_path] + '.datacore.download'
-      system(curl_command(yaml: yaml, output: download_path))
+      job_yaml = YAML.load_file(yaml_path)
+      file_path = job_yaml[:file_path]
+      download_path = job_yaml[:file_path] + '.datacore.download'
+      system(curl_command(yaml: job_yaml, output: download_path))
       FileUtils.mv(download_path, file_path)
 
-      yaml[:download_completed] = Time.now.to_s
-      File.write(yaml_path, yaml.to_yaml)
+      update_job_yaml(yaml_path, { status: :local, download_completed: Time.now })
       logger.info("Download completed at #{file_path}")
     end
 
@@ -125,26 +138,29 @@ module DataCore
       if output
         "curl -H '#{header}' #{yaml[:url]} --output #{output}"
       else
-        "curl -I -H '#{header}' #{yaml[:url]}"
+        "curl -H '#{header}' #{yaml[:url]}"
       end
     end
 
     def clean_local_file(yaml_path)
-      yaml = YAML.load_file(yaml_path)
       if delete_file?(yaml_path)
-        yaml[:deleted] = Time.now.to_s
-        FileUtils.rm(yaml[:file_path])
-        logger.info("Deleted #{yaml[:file_path]}")
-        File.write(yaml_path, yaml.to_yaml)
+        logger.info("Deletion timeout met")
+        job_yaml = YAML.load_file(yaml_path)
+        FileUtils.rm(job_yaml[:file_path])
+        logger.info("Deleted #{job_yaml[:file_path]}")
+        update_job_yaml(yaml_path, { deleted_at: Time.now, status: :deleted })
         FileUtils.mv(yaml_path, yaml_path + '.deleted')
+        logger.info("File deleted")
+      else
+        logger.info("Local file in place, leaving until deletion timeout conditions met")
       end
     end
 
     def delete_file?(yaml_path)
-      yaml = YAML.load_file(yaml_path)
-      return false unless yaml[:user_downloaded] || yaml[:download_completed]
-      return true if yaml[:user_downloaded] && ((Time.now - Time.parse(yaml[:user_downloaded])).to_i > TIMEOUT_AFTER_DOWNLOAD.to_i)
-      return true if yaml[:download_completed] && ((Time.now - Time.parse(yaml[:download_completed])).to_i > TIMEOUT_BEFORE_DOWNLOAD.to_i)
+      job_yaml = YAML.load_file(yaml_path)
+      return false unless job_yaml[:user_downloaded] || job_yaml[:download_completed]
+      return true if job_yaml[:user_downloaded] && ((Time.now - job_yaml[:user_downloaded]).to_i > TIMEOUT_AFTER_DOWNLOAD.to_i)
+      return true if job_yaml[:download_completed] && ((Time.now - job_yaml[:download_completed]).to_i > TIMEOUT_BEFORE_DOWNLOAD.to_i)
     end
   end
 end
