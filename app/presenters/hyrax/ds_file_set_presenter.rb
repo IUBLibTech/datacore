@@ -28,6 +28,28 @@ module Hyrax
     #   @solr_document[ Solrizer.solr_name( 'doi', :symbol ) ].first == ::Deepblue::DoiBehavior::DOI_PENDING
     # end
 
+    # archive files bypass fedora storage
+    def archive_file?
+      mime_type.match(/^message\/external-body\;.*access-type=URL/).present?
+    end
+
+    def archive_request_url
+      return '/' unless archive_file?
+      mime_type.split('"').last
+    end
+
+    def archive_status_url
+      archive_request_url.sub('/request/', '/status/')
+    end
+
+    def archive_file
+      @archive_file ||=
+        if archive_file?
+          collection, object = mime_type.split('"').last.sub('/sda/request/', '').split('/')
+          ArchiveFile.new(collection: collection, object: object)
+        end
+    end
+
     def relative_url_root
       rv = ::DeepBlueDocs::Application.config.relative_url_root
       return rv if rv

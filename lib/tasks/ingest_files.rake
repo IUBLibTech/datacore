@@ -52,7 +52,7 @@ module DataCore
         @directory_files.each_with_index do |filepath, index|
           logger.info("Starting file ingest #{index+1}/#{@directory_files.size} for #{filepath} for user #{user} with bypass_fedora: #{bypass_fedora.to_s}")
           ingest_file(filepath, user, bypass_fedora: bypass_fedora)
-          logger.info("Finished ingest from #{filepath}")
+          logger.info("Finished file ingest #{index+1}/#{@directory_files.size} for #{filepath}")
         end
       else
         logger.info("No files found.")
@@ -72,15 +72,14 @@ module DataCore
       # if the file is not currently open by another process
       pids = `lsof -t '#{filepath}'`
       if pids.present?
-        logger.error("Skipping file that is in use: #{filename}")
+        logger.error("Skipping file that is in use: #{filepath}")
         return
       end
       # Look for files with names matching the pattern "<workid>_<filename>"
       #   (a work_id is a string of 9 alphanumberic characters)
       filename = filepath.split('/').last
-      filename.match(/^(?<work_id>([a-z]|\d){9})_(?<filenamepart>.*)$/) do |m|
-        # if the filename matches the pattern
-        if m
+      if filename.match(/^(?<work_id>([a-z]|\d){9})_(?<filenamepart>.*)$/)
+        filename.match(/^(?<work_id>([a-z]|\d){9})_(?<filenamepart>.*)$/) do |m|
           work_id = m[:work_id]
           filenamepart = m[:filenamepart]
           size = File.size(filepath)
@@ -113,9 +112,9 @@ module DataCore
           rescue ActiveFedora::ObjectNotFoundError
             logger.error("No work found for #{work_id}.  Skipping ingest.")
           end
-        else
-          logger.error("Invalid filename for #{filename}. Skipping ingest.")
         end
+      else
+        logger.error("Invalid filename for #{filename}. Skipping ingest.")
       end
     end
 
