@@ -117,5 +117,17 @@ archive_api:
   username: archiveusername.invalid
   password: archivepassword.invalid
   local: /path/to/archive_files/%s
+  # note this limit is checked before a job is run, without accounting for incoming file size -- final unblocked job can exceed this value
+  maximum_disk_space: 10995116277760 # 10.terabytes
+  maximum_concurrent_jobs:
+    - limit: 5
+      statuses: # staging, download requests
+      -  :staging_available
+      -  :staging_requested
+      -  :staged_after_request
+      -  :staged_without_request
+    - limit: 10
+      statuses:
+        - :local # retained downloaded files
   timeout_before_download: 86400 # 24 hours
   timeout_after_download: 172800 # 48 hours

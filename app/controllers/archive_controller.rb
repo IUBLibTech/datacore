@@ -23,7 +23,11 @@ class ArchiveController < ApplicationController
         send_file(result[:file_path], filename: result[:filename])
         @archive_file.downloaded!
       else
-        redirect_back fallback_location: root_url, notice: result[:message]
+        if result[:alert]
+          redirect_back fallback_location: root_url, alert: result[:message]
+        else
+          redirect_back fallback_location: root_url, notice: result[:message]
+        end
       end
     else
       redirect_back fallback_location: root_url, alert: 'Action unavailable'
