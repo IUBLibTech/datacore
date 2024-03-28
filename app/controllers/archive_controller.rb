@@ -5,7 +5,7 @@ class ArchiveController < ApplicationController
 
   def user_is_authorized?
     set_variables
-    user_signed_in? && current_ability.admin? # FIXME: reconsider admin requirement
+    true # satisfy open access requirement
   end
 
   def status
@@ -26,7 +26,7 @@ class ArchiveController < ApplicationController
         redirect_back fallback_location: root_url, notice: result[:message]
       end
     else
-      redirect_to root_url, error: 'Action unavailable'
+      redirect_back fallback_location: root_url, alert: 'Action unavailable'
     end
   end
 
