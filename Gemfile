@@ -136,3 +136,6 @@ group :development, :test do
 end
 
 gem 'willow_sword', github: 'notch8/willow_sword'
+
+gem 'dotenv-rails'
+gem 'recaptcha'

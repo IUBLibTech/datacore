@@ -229,6 +229,10 @@ GEM
       devise
     diff-lcs (1.5.1)
     docopt (0.5.0)
+    dotenv (2.8.1)
+    dotenv-rails (2.8.1)
+      dotenv (= 2.8.1)
+      railties (>= 3.2)
     down (4.8.1)
       addressable (~> 2.5)
     draper (4.0.2)
@@ -781,6 +785,7 @@ GEM
     rdf-xsd (3.2.1)
       rdf (~> 3.2)
       rexml (~> 3.2)
+    recaptcha (5.16.0)
     redic (1.5.3)
       hiredis
     redis (4.8.1)
@@ -1048,6 +1053,7 @@ DEPENDENCIES
   database_cleaner
   devise
   devise-guests (~> 0.6)
+  dotenv-rails
   down (~> 4.4)
   edtf
   ezid-client
@@ -1073,6 +1079,7 @@ DEPENDENCIES
   rack (~> 2.2.6)
   rails (~> 5.1.6)
   rails-controller-testing
+  recaptcha
   redis (~> 4.0)
   resque
   resque-pool

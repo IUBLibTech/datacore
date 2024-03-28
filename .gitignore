@@ -71,6 +71,9 @@ config/skylight.yml
 config/settings.local.yml
 config/settings/*.local.yml
 .secrets.sh
+.env
 
+# other things to ignore
+vendor/*
 import/*
 *.swp

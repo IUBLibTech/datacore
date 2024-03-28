@@ -131,3 +131,13 @@ archive_api:
         - :local # retained downloaded files
   timeout_before_download: 86400 # 24 hours
   timeout_after_download: 172800 # 48 hours
+
+recaptcha:
+  use?: false
+  minimum_score: 0.5
+  v2:
+    site_key: 'your_recaptcha_v2_site_key'
+    secret_key: 'your_recaptcha_v2_secret_key'
+  v3:
+    site_key: 'your_recaptcha_v3_site_key'
+    secret_key: 'your_recaptcha_v3_secret_key'
