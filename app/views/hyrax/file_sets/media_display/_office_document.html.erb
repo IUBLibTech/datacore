@@ -1,4 +1,4 @@
-<% if Hyrax.config.display_media_download_link? %>
+<% if Hyrax.config.display_media_download_link? && !@presenter.try(:archive_file?) %>
     <div>
       <h2 class="sr-only"><%= t('hyrax.file_set.show.downloadable_content.heading') %></h2>
       <%= image_tag thumbnail_url(file_set),
@@ -8,7 +8,7 @@
       <%= link_to t('hyrax.file_set.show.downloadable_content.office_link'),
                   hyrax.download_path(file_set),
                   target: :_blank,
-                  id: "file_download",
+                  id: "file_download-#{file_set.id}",
                   data: { label: file_set.id } %>
     </div>
 <% else %>
