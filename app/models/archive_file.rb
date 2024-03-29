@@ -56,7 +56,7 @@ class ArchiveFile
       stage_request!(current_status)
     when :staging_requested, :staged_after_request
       # no action -- wait for DownloadArchivalFilesTask to stage and download
-      { status: current_status, action: nil, message: display_messages[:stating_requested] }
+      { status: current_status, action: nil, message: display_messages[:staging_requested] }
     when :not_found, :no_response, :unexpected
       { status: current_status, action: nil, message: display_messages[current_status] }
     else
