@@ -33,9 +33,16 @@
         &nbsp;
       <% else %>
         <%# TODO: render 'show_descriptions' See https://github.com/samvera/hyrax/issues/1481 %>
+        <%# FIXME: hide details if archive_file? %>
         <%= render 'show_details' %>
         <% if @presenter.archive_file? %>
           <strong>Archival file status:</strong> <%= @presenter.archive_file&.display_status %>
+          <form action="<%= @presenter.archive_request_url %>" method="get">
+            <input type="submit" name='request' value="<%= @presenter.request_action %>" <%= 'disabled' unless @presenter.request_actionable? %> class="btn btn-primary">
+          </form>
+          <% unless @presenter.request_actionable? %>
+            Refresh this page to check for updated download availability
+          <% end %>
         <% end %>
         <%= render 'hyrax/users/activity_log', events: @presenter.events %>
         <%= render '/provenance_log_entries', presenter: @presenter %>

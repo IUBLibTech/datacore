@@ -38,21 +38,49 @@ class ArchiveFile
     @display_messages ||= begin
       available = 'File found in archives but not yet staged for download.  Attempt file download to initiate transfer from archives.'
       requested = 'File transfer from archives has started.  Please allow up to 1 hour for transfer to complete, then re-attempt download.'
-      messages = { staging_available: available, # refined 503/unstaged status
-                   staging_requested: requested, # refined 503/unstaged status
-                   staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
-                   staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
-                   local: 'File is available for immediate download',
-                   not_found: 'File not found in archives',
-                   no_response: 'File archives server is not responding',
-                   unexpected: 'Unexpected response from file archives server',
-                   too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
+      { staging_available: available, # refined 503/unstaged status
+        staging_requested: requested, # refined 503/unstaged status
+        staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
+        staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
+        local: 'File is available for immediate download',
+        not_found: 'File not found in archives',
+        no_response: 'File archives server is not responding',
+        unexpected: 'Unexpected response from file archives server',
+        too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
     end
   end
 
   def display_message_for(current_status)
     Rails.logger.error("#display_message_for called with invalid key: #{current_status}") unless current_status.in?(display_messages.keys)
     display_messages[current_status]
+  end
+
+  def request_action
+    request_action_for(status)
+  end
+
+  def request_action_for(current_status)
+    request_actions[current_status]
+  end
+
+  def request_actions
+    @request_actions ||= begin
+      available = 'Request file from archives'
+      requested = 'File transfer from archives has started'
+      { staging_available: available, # refined 503/unstaged status
+        staging_requested: requested, # refined 503/unstaged status
+        staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
+        staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
+        local: 'Download',
+        not_found: 'File not found in archives',
+        no_response: 'File archives server is not responding',
+        unexpected: 'Unexpected response from file archives server',
+        too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
+    end
+  end
+
+  def request_actionable?(request_status = status)
+    request_status.in? [:staging_available, :staged_without_request, :local]
   end
 
   # requests staging (if available and not requested yet)

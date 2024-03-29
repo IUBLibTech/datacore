@@ -50,6 +50,18 @@ module Hyrax
         end
     end
 
+    def archive_status
+      @archive_status ||= archive_file.status
+    end
+
+    def request_action
+      @request_action ||= archive_file.request_action
+    end
+
+    def request_actionable?
+      @request_actionable ||= archive_file.request_actionable?(archive_status)
+    end
+
     def relative_url_root
       rv = ::DeepBlueDocs::Application.config.relative_url_root
       return rv if rv

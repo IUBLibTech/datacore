@@ -40,7 +40,7 @@ class ArchiveController < ApplicationController
 
   private
     def variable_params
-      params.permit(:collection, :object, :format)
+      params.permit(:collection, :object, :format, :request)
     end
 
     def set_variables
