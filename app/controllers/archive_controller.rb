@@ -23,6 +23,10 @@ class ArchiveController < ApplicationController
         send_file(result[:file_path], filename: result[:filename])
         @archive_file.downloaded!
       else
+        unless result[:message]
+          Rails.logger.error("Message missing from #{@archive_file} result: #{result}")
+          result[:message] = 'Request failed.  Please request technical support.'
+        end
         if result[:alert]
           redirect_back fallback_location: root_url, alert: result[:message]
         else
