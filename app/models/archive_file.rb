@@ -28,90 +28,107 @@ class ArchiveFile
     end
   end
 
-  def display_status
-    display_message_for(status)
+  def description_for_status(method:, lookup_status:, lookup_hash:)
+    Rails.logger.error("##{method} called with invalid key: #{lookup_status}") unless lookup_status.in?(lookup_hash.keys)
+    lookup_hash[lookup_status]
   end
 
+  # used in descriptive fields, above action button
   # a single archive_status can map to more than one #status
   # multiple #status values map to the same end user message
-  def display_messages
-    @display_messages ||= begin
-      available = 'File found in archives but not yet staged for download.  Attempt file download to initiate transfer from archives.'
-      requested = 'File transfer from archives has started.  Please allow up to 1 hour for transfer to complete, then re-attempt download.'
+  def status_messages
+    @status_messages ||= begin
+      available = 'File found in archives but not yet staged for download.  Request retreival from archives to make available for download.'
+      requested = 'File retrieval from archives has started, and the file can be downloaded once the transfer is complete.  Please allow up to 1 hour for the transfer to complete.'
       { staging_available: available, # refined 503/unstaged status
         staging_requested: requested, # refined 503/unstaged status
         staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
         staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
         local: 'File is available for immediate download',
-        not_found: 'File not found in archives',
-        no_response: 'File archives server is not responding',
-        unexpected: 'Unexpected response from file archives server',
-        too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
+        not_found: 'File not found in archives.  Unable to request file.',
+        no_response: 'File archives server is not responding.  Unable to request file.',
+        unexpected: 'Unexpected response from file archives server.  Unable to request file.',
+        too_many_requests: 'File is available in archives, but too many transfer requests are currently running.  Please try again later.' }
     end
   end
 
-  def display_message_for(current_status)
-    Rails.logger.error("#display_message_for called with invalid key: #{current_status}") unless current_status.in?(display_messages.keys)
-    display_messages[current_status]
+  # used in descriptive fields, above action button
+  def display_status(current_status = status)
+    description_for_status(method: :display_status, lookup_status: current_status, lookup_hash: status_messages)
   end
 
-  def request_action
-    request_action_for(status)
-  end
-
-  def request_action_for(current_status)
-    request_actions[current_status]
-  end
-
+  # used for button text
   def request_actions
     @request_actions ||= begin
-      available = 'Request file from archives'
-      requested = 'File transfer from archives has started'
-      { staging_available: available, # refined 503/unstaged status
-        staging_requested: requested, # refined 503/unstaged status
-        staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
-        staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
+      available = 'Initiate file retrieval from archives'
+      requested = 'File retrieval from archives is in process'
+      unavailable = 'File is not available'
+      { staging_available: available,
+        staging_requested: requested,
+        staged_after_request: requested,
+        staged_without_request: available,
         local: 'Download',
-        not_found: 'File not found in archives',
-        no_response: 'File archives server is not responding',
-        unexpected: 'Unexpected response from file archives server',
-        too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
+        not_found: unavailable,
+        no_response: unavailable,
+        unexpected: unavailable,
+        too_many_requests: unavailable
+      }
     end
+  end
+
+  # used for button text
+  def request_action(current_status = status)
+    description_for_status(method: :request_action, lookup_status: current_status, lookup_hash: request_actions)
   end
 
   def request_actionable?(request_status = status)
     request_status.in? [:staging_available, :staged_without_request, :local]
   end
 
+  # used for :notice and :alert messages
+  def flash_messages
+    @flash_messages ||= begin
+      status_messages
+    end
+  end
+
+  def flash_message(current_status = status)
+    description_for(method: :flash_message, lookup_status: current_status, lookup_hash: request_actions)
+  end
+
   # requests staging (if available and not requested yet)
   # returns describing status, action taken (if any), and descriptive message
   # @return Hash
-  def get!
+  def get!(request_hash = {})
     current_status = status
+    request_hash.merge!({ status: current_status })
     case current_status
     when :local
-      { status: current_status, action: nil, file_path: local_path, filename: local_filename, message: display_message_for(current_status) }
+      create_or_update_job_file!({ latest_user_download: Time.now, downloads: [request_hash] })
+      { status: current_status, action: nil, file_path: local_path, filename: local_filename, message: display_status(current_status) }
     when :staging_available, :staged_without_request
-      stage_request!(current_status)
+      stage_request!(request_hash)
     when :staging_requested, :staged_after_request
       # no action -- wait for DownloadArchivalFilesTask to stage and download
-      { status: current_status, action: nil, message: display_message_for(:staging_requested) }
+      create_or_update_job_file!({ requests: [request_hash] })
+      { status: current_status, action: nil, message: display_status(:staging_requested) }
     when :not_found, :no_response, :unexpected
-      { status: current_status, action: nil, message: display_message_for(current_status) }
+      create_or_update_job_file!({ requests: [request_hash] })
+      { status: current_status, action: nil, message: display_status(current_status) }
     else
       Rails.logger.warn("Unexpected archive file status: #{current_status}")
+      create_or_update_job_file!({ requests: [request_hash] })
       { status: current_status, action: nil, message: 'Unknown file status' }
     end
+  end
+
+  def log_denied_attempt!(request_hash = {})
+    create_or_update_job_file!({ denials: [request_hash] })
   end
 
   # bypasses status in job file via checking directly
   def downloaded?
     File.exist?(local_path)
-  end
-
-  # called by ArchiveController after successful user download
-  def downloaded!
-    create_or_update_job_file!({ user_downloaded: Time.now })
   end
 
   def staged?
@@ -225,13 +242,14 @@ class ArchiveFile
  
     # if not yet staged: requests for staging (if possible)
     # @return Hash
-    def stage_request!(current_status)
+    def stage_request!(request_hash = {})
       Rails.logger.warn("Staging request for #{archive_url} made in status: #{status}") if staged? # log :staged_without_request cases
       if block_new_jobs?
-         { status: current_status, action: :throttled, message: display_message_for(:too_many_requests), alert: true }
+        log_denied_attempt!(request_hash.merge({ reason: 'block_new_jobs' }))
+        { status: request_hash[:status], action: :throttled, message: display_status(:too_many_requests), alert: true }
       else
-        create_or_update_job_file!
-        { status: current_status, action: :create_or_update_job_file!, message: display_message_for(:staging_requested) }
+        create_or_update_job_file!({ requests: [request_hash.merge({ action: 'create_or_update_job_file!'})] })
+        { status: request_hash[:status], action: :create_or_update_job_file!, message: display_status(:staging_requested) }
       end
     end
 
@@ -241,17 +259,19 @@ class ArchiveFile
 
     # @return nil, Symbol [:staging_available, :staging_requested, :staged_after_request, :local]
     def job_status
-      return unless job_file?
-      current_job_parameters[:status]
+      archive_file_worker&.job_status
     end
 
     def job_file?
       File.exist?(job_file_path)
     end
 
-    def current_job_parameters
-      return {} unless job_file?
-      YAML.load_file(job_file_path)
+    # avoid memoization for current results
+    def archive_file_worker
+      @archive_worker ||= begin
+        return unless job_file?
+        ArchiveFileWorker.new(job_file_path, logger: Rails.logger)
+      end
     end
 
     def default_job_parameters
@@ -264,12 +284,12 @@ class ArchiveFile
           Rails.logger.warn("Ignoring duplicate call to create default job parameters file for #{archive_url}")
           return
         end
-        new_params = current_job_parameters.merge(new_params)
+        archive_file_worker.update_job_yaml(new_params)
       else
         new_params ||= {}
         new_params = default_job_parameters.merge(new_params)
+        new_params = new_params.merge(updated_at: Time.now)
+        File.write(job_file_path, new_params.to_yaml)
       end
-      new_params = new_params.merge(updated_at: Time.now)
-      File.write(job_file_path, new_params.to_yaml)
     end
 end

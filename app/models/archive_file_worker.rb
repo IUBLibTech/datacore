@@ -14,6 +14,11 @@ class ArchiveFileWorker
     YAML.load_file(yaml_path)
   end
 
+  # @return Symbol [:staging_available, :staging_requested, :staged_after_request, :local]
+  def job_status
+    job_yaml[:status]
+  end
+
   # memoization is okay here -- collection, object values are stable
   def archive_file
     @archive_file ||= ::ArchiveFile.new(collection: job_yaml[:collection], object: job_yaml[:object])
@@ -62,7 +67,7 @@ class ArchiveFileWorker
     when :staging_requested
       stage_file # TODO: reconsider?
     when :staged_after_request, :staged_without_request
-      download_file
+      file
     else
       process_error("unexpected file status: #{current_status}")
     end
@@ -99,17 +104,17 @@ class ArchiveFileWorker
     logger.info("Staging request submitted")
   end
 
-  def download_file
+  def file
     logger.info("Download initiated for #{yaml_path}")
     update_job_yaml({ status: :staged_after_request })
 
     if too_much_space_used?
       logger.warn("Disk quota exceeded.  Blocking file download until space is available.")
     else
-      update_job_yaml({ download_started: Time.now })
+      update_job_yaml({ transfer_started: Time.now })
       system(curl_command(output: true))
-      FileUtils.mv(download_path, file_path)
-      update_job_yaml({ status: :local, download_completed: Time.now })
+      FileUtils.mv(path, file_path)
+      update_job_yaml({ status: :local, transfer_completed: Time.now })
       logger.info("Download completed at #{file_path}")
     end
   end
@@ -118,14 +123,14 @@ class ArchiveFileWorker
     job_yaml[:file_path]
   end
 
-  def download_path
+  def path
     file_path = '.datacore.yml'
   end
 
   def curl_command(output: false)
     header = "Authorization: #{Settings.archive_api.username}:#{Settings.archive_api.password}"
     if output
-      "curl -H '#{header}' #{job_yaml[:url]} --output #{download_path}"
+      "curl -H '#{header}' #{job_yaml[:url]} --output #{path}"
     else
       "curl -H '#{header}' #{job_yaml[:url]}"
     end
@@ -145,8 +150,8 @@ class ArchiveFileWorker
   end
 
   def delete_file?
-    return false unless job_yaml[:user_downloaded] || job_yaml[:download_completed]
-    return true if job_yaml[:user_downloaded] && ((Time.now - job_yaml[:user_downloaded]).to_i > TIMEOUT_AFTER_DOWNLOAD.to_i)
-    return true if job_yaml[:download_completed] && ((Time.now - job_yaml[:download_completed]).to_i > TIMEOUT_BEFORE_DOWNLOAD.to_i)
+    return false unless job_yaml[:latest_user_download] || job_yaml[:transfer_completed]
+    return true if job_yaml[:latest_user_download] && ((Time.now - job_yaml[:latest_user_download]).to_i > TIMEOUT_AFTER_DOWNLOAD.to_i)
+    return true if job_yaml[:transfer_completed] && ((Time.now - job_yaml[:transfer_completed]).to_i > TIMEOUT_BEFORE_DOWNLOAD.to_i)
   end
 end
