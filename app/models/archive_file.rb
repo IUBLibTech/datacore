@@ -40,7 +40,8 @@ class ArchiveFile
                  local: 'File is available for immediate download',
                  not_found: 'File not found in archives',
                  no_response: 'File archives server is not responding',
-                 unexpected: 'Unexpected response from file archives server' }
+                 unexpected: 'Unexpected response from file archives server',
+                 too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
   end
 
   # requests staging (if available and not requested yet)
@@ -52,11 +53,10 @@ class ArchiveFile
     when :local
       { status: current_status, action: nil, file_path: local_path, filename: local_filename, message: display_messages[current_status] }
     when :staging_available, :staged_without_request
-      stage_request!
-      { status: current_status, action: 'stage_request!', message: display_messages[:staging_requested] }
+      stage_request!(current_status)
     when :staging_requested, :staged_after_request
       # no action -- wait for DownloadArchivalFilesTask to stage and download
-      { status: current_status, action: 'stage_request!', message: display_messages[:stating_requested] }
+      { status: current_status, action: nil, message: display_messages[:stating_requested] }
     when :not_found, :no_response, :unexpected
       { status: current_status, action: nil, message: display_messages[current_status] }
     else
@@ -84,10 +84,10 @@ class ArchiveFile
   end
 
   private
-  
+    delegate :jobs_dir, :block_new_jobs?, to: ArchiveFileWorker
     def local_path
-      return unless Dir.exists?(Settings.archive_api.local % '')
-      @local_path ||= Settings.archive_api.local % local_filename
+      return unless Dir.exists?(jobs_dir)
+      @local_path ||= jobs_dir + local_filename
     end
 
     # collection is only the parent folder
@@ -181,9 +181,15 @@ class ArchiveFile
     alias_method :status_request, :archive_request
  
     # if not yet staged: requests for staging (if possible)
-    def stage_request!
+    # @return Hash
+    def stage_request!(current_status)
       Rails.logger.warn("Staging request for #{archive_url} made in status: #{status}") if staged? # log :staged_without_request cases
-      create_or_update_job_file!
+      if block_new_jobs?
+         { status: current_status, action: :throttled, message: display_messages[:too_many_requests], alert: true }
+      else
+        create_or_update_job_file!
+        { status: current_status, action: :create_or_update_job_file!, message: display_messages[:staging_requested] }
+      end
     end
 
     def job_file_path
