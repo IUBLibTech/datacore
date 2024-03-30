@@ -10,7 +10,9 @@
   <dd itemprop="dateModified"><%= @presenter.date_modified %></dd>
   <dt><%= t('show.file_set.label.characterization') %></dt>
   <dd>
-    <% if @presenter.characterized? %>
+    <% if @presenter.archive_file? %>
+      not applicable for archived files
+    <% elsif @presenter.characterized? %>
       <%= render 'show_characterization_details' %>
     <% else %>
       <%= t('hyrax.file_sets.not_yet_characterized') %>

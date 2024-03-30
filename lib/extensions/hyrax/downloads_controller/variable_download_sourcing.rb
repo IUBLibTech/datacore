@@ -10,8 +10,8 @@ module Extensions
           when ActiveFedora::File
             case file.mime_type
             when /access-type=URL/
-              # for original files that bypass fedora
-              redirect_to file.file_name.first # file_name contains archival controller path
+              # for original files that bypass fedora, manage archival file interactions on FileSet show page
+              redirect_to "/concern/file_sets/#{file.id.split('/').first}"
             else
               # For original files that are stored in fedora
               super

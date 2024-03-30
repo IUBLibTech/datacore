@@ -13,6 +13,10 @@ class ArchiveFile
     @object = object
   end
 
+  def to_s
+    "collection: #{collection}, object: #{object}, status: #{status}"
+  end
+
   # no memoization, to ensure up-to-date results
   # overrides #virtual_status by directly checking for file
   # @return Symbol [:staging_available, :staging_requested, :staged_after_request, :staged_without_request, :local, :not_found, :no_response, :unexpected]
@@ -25,23 +29,58 @@ class ArchiveFile
   end
 
   def display_status
-    display_messages[status]
+    display_message_for(status)
   end
 
   # a single archive_status can map to more than one #status
   # multiple #status values map to the same end user message
   def display_messages
-    available = 'File found in archives but not yet staged for download.  Attempt file download to initiate transfer from archives.'
-    requested = 'File transfer from archives has started.  Please allow up to 1 hour for transfer to complete, then re-attempt download.'
-    messages = { staging_available: available, # refined 503/unstaged status
-                 staging_requested: requested, # refined 503/unstaged status
-                 staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
-                 staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
-                 local: 'File is available for immediate download',
-                 not_found: 'File not found in archives',
-                 no_response: 'File archives server is not responding',
-                 unexpected: 'Unexpected response from file archives server',
-                 too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
+    @display_messages ||= begin
+      available = 'File found in archives but not yet staged for download.  Attempt file download to initiate transfer from archives.'
+      requested = 'File transfer from archives has started.  Please allow up to 1 hour for transfer to complete, then re-attempt download.'
+      { staging_available: available, # refined 503/unstaged status
+        staging_requested: requested, # refined 503/unstaged status
+        staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
+        staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
+        local: 'File is available for immediate download',
+        not_found: 'File not found in archives',
+        no_response: 'File archives server is not responding',
+        unexpected: 'Unexpected response from file archives server',
+        too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
+    end
+  end
+
+  def display_message_for(current_status)
+    Rails.logger.error("#display_message_for called with invalid key: #{current_status}") unless current_status.in?(display_messages.keys)
+    display_messages[current_status]
+  end
+
+  def request_action
+    request_action_for(status)
+  end
+
+  def request_action_for(current_status)
+    request_actions[current_status]
+  end
+
+  def request_actions
+    @request_actions ||= begin
+      available = 'Request file from archives'
+      requested = 'File transfer from archives has started'
+      { staging_available: available, # refined 503/unstaged status
+        staging_requested: requested, # refined 503/unstaged status
+        staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
+        staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
+        local: 'Download',
+        not_found: 'File not found in archives',
+        no_response: 'File archives server is not responding',
+        unexpected: 'Unexpected response from file archives server',
+        too_many_requests: 'File is available in archives, but too many transfer requests are running.  Please try again later.' }
+    end
+  end
+
+  def request_actionable?(request_status = status)
+    request_status.in? [:staging_available, :staged_without_request, :local]
   end
 
   # requests staging (if available and not requested yet)
@@ -51,14 +90,14 @@ class ArchiveFile
     current_status = status
     case current_status
     when :local
-      { status: current_status, action: nil, file_path: local_path, filename: local_filename, message: display_messages[current_status] }
+      { status: current_status, action: nil, file_path: local_path, filename: local_filename, message: display_message_for(current_status) }
     when :staging_available, :staged_without_request
       stage_request!(current_status)
     when :staging_requested, :staged_after_request
       # no action -- wait for DownloadArchivalFilesTask to stage and download
-      { status: current_status, action: nil, message: display_messages[:stating_requested] }
+      { status: current_status, action: nil, message: display_message_for(:staging_requested) }
     when :not_found, :no_response, :unexpected
-      { status: current_status, action: nil, message: display_messages[current_status] }
+      { status: current_status, action: nil, message: display_message_for(current_status) }
     else
       Rails.logger.warn("Unexpected archive file status: #{current_status}")
       { status: current_status, action: nil, message: 'Unknown file status' }
@@ -99,6 +138,10 @@ class ArchiveFile
     # TODO: add version support?
     def archive_url
       @archive_url ||= Settings.archive_api.url % [collection, object]
+    end
+
+    def request_url
+      @request_url ||= "/sda/request/#{collection}/#{object}"
     end
 
     # numeric keys are possible responses from archives server
@@ -185,10 +228,10 @@ class ArchiveFile
     def stage_request!(current_status)
       Rails.logger.warn("Staging request for #{archive_url} made in status: #{status}") if staged? # log :staged_without_request cases
       if block_new_jobs?
-         { status: current_status, action: :throttled, message: display_messages[:too_many_requests], alert: true }
+         { status: current_status, action: :throttled, message: display_message_for(:too_many_requests), alert: true }
       else
         create_or_update_job_file!
-        { status: current_status, action: :create_or_update_job_file!, message: display_messages[:staging_requested] }
+        { status: current_status, action: :create_or_update_job_file!, message: display_message_for(:staging_requested) }
       end
     end
 
