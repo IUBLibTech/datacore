@@ -89,6 +89,8 @@ group :development, :test do
   # gem 'rubocop'
   gem 'rubocop'
   gem 'rubocop-rspec'
+  gem 'vcr'
+  gem 'webmock'
 end
 
 gem 'clamav-client'
