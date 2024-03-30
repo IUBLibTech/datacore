@@ -5,12 +5,12 @@ namespace :datacore do
 
   desc "Ingest dataset files from directory for previously created datasets."
   task ingest_directory: :environment do
-    DataCore::IngestFilesFromDirectoryTask.new.run
+    Datacore::IngestFilesFromDirectoryTask.new.run
   end
 
 end
 
-module DataCore
+module Datacore
 
   class IngestFilesFromDirectoryTask
     include ActionView::Helpers::NumberHelper
