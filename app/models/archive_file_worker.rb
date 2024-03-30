@@ -39,17 +39,19 @@ class ArchiveFileWorker
       job_files.select { |job_file| YAML.load_file(job_file)[:status].in?(max_settings[:statuses]) }.size >= max_settings[:limit]
     end.any?
   end
+  delegate :too_many_jobs?, to: :class
 
   def self.too_much_space_used?
-    file_paths = ArchiveFileWorker.job_files.map { |job_file| YAML.load_file(job_file)[:file_path] }
+    file_paths = job_files.map { |job_file| YAML.load_file(job_file)[:file_path] }
     size_used = file_paths.map { |path| (File.size(path) if File.file?(path)).to_i }.sum
-    size_used > Settings.archive_api.maximum_disk_space
+    size_used >= Settings.archive_api.maximum_disk_space
   end
   delegate :too_much_space_used?, to: :class
 
   def self.block_new_jobs?
     too_many_jobs? || too_much_space_used?
   end
+  delegate :bloack_new_jobs?, to: :class
 
   def process_file
     # if the file is not currently open by another process

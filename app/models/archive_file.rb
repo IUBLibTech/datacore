@@ -34,66 +34,22 @@ class ArchiveFile
   end
 
   # used in descriptive fields, above action button
-  # a single archive_status can map to more than one #status
-  # multiple #status values map to the same end user message
-  def status_messages
-    @status_messages ||= begin
-      available = 'File found in archives but not yet staged for download.  Request retreival from archives to make available for download.'
-      requested = 'File retrieval from archives has started, and the file can be downloaded once the transfer is complete.  Please allow up to 1 hour for the transfer to complete.'
-      { staging_available: available, # refined 503/unstaged status
-        staging_requested: requested, # refined 503/unstaged status
-        staged_after_request: requested, # refined 200/staged status -- don't consider available for download  until "local" status, copied from SDA cache to scratch
-        staged_without_request: available, # refined 200/staged status -- requires user request to start downloading workflow
-        local: 'File is available for immediate download',
-        not_found: 'File not found in archives.  Unable to request file.',
-        no_response: 'File archives server is not responding.  Unable to request file.',
-        unexpected: 'Unexpected response from file archives server.  Unable to request file.',
-        too_many_requests: 'File is available in archives, but too many transfer requests are currently running.  Please try again later.' }
-    end
-  end
-
-  # used in descriptive fields, above action button
   def display_status(current_status = status)
-    description_for_status(method: :display_status, lookup_status: current_status, lookup_hash: status_messages)
-  end
-
-  # used for button text
-  def request_actions
-    @request_actions ||= begin
-      available = 'Initiate file retrieval from archives'
-      requested = 'File retrieval from archives is in process'
-      unavailable = 'File is not available'
-      { staging_available: available,
-        staging_requested: requested,
-        staged_after_request: requested,
-        staged_without_request: available,
-        local: 'Download',
-        not_found: unavailable,
-        no_response: unavailable,
-        unexpected: unavailable,
-        too_many_requests: unavailable
-      }
-    end
+    description_for_status(method: :display_status, lookup_status: current_status, lookup_hash: Settings.archive_api.status_messages.to_hash.with_indifferent_access)
   end
 
   # used for button text
   def request_action(current_status = status)
-    description_for_status(method: :request_action, lookup_status: current_status, lookup_hash: request_actions)
+    description_for_status(method: :request_action, lookup_status: current_status, lookup_hash: Settings.archive_api.request_actions.to_hash.with_indifferent_access)
   end
 
   def request_actionable?(request_status = status)
     request_status.in? [:staging_available, :staged_without_request, :local]
   end
 
-  # used for :notice and :alert messages
-  def flash_messages
-    @flash_messages ||= begin
-      status_messages
-    end
-  end
-
+  # used for :notice and :alert messages in controller flash
   def flash_message(current_status = status)
-    description_for(method: :flash_message, lookup_status: current_status, lookup_hash: request_actions)
+    description_for(method: :flash_message, lookup_status: current_status, lookup_hash: Settings.archive_api.flash_messages.to_hash.with_indifferent_access)
   end
 
   # requests staging (if available and not requested yet)
@@ -245,7 +201,7 @@ class ArchiveFile
     def stage_request!(request_hash = {})
       Rails.logger.warn("Staging request for #{archive_url} made in status: #{status}") if staged? # log :staged_without_request cases
       if block_new_jobs?
-        log_denied_attempt!(request_hash.merge({ reason: 'block_new_jobs' }))
+        log_denied_attempt!(request_hash.merge({ reason: 'block_new_jobs' })) # FIXME: update_only false or true here?
         { status: request_hash[:status], action: :throttled, message: display_status(:too_many_requests), alert: true }
       else
         create_or_update_job_file!({ requests: [request_hash.merge({ action: 'create_or_update_job_file!'})] })
