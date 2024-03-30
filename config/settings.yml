@@ -113,6 +113,7 @@ ingest:
   outbox: tmp/ingest/out
 
 archive_api:
+  require_user_authentication: false
   url: archive.url.invalid/%s/%s
   username: archiveusername.invalid
   password: archivepassword.invalid

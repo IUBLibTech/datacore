@@ -122,8 +122,8 @@ class ArchiveFile
     end
   end
 
-  def log_denied_attempt!(request_hash = {})
-    create_or_update_job_file!({ denials: [request_hash] })
+  def log_denied_attempt!(request_hash = {}, update_only: false)
+    create_or_update_job_file!({ denials: [request_hash] }, update_only: update_only)
   end
 
   # bypasses status in job file via checking directly
@@ -278,14 +278,14 @@ class ArchiveFile
       { url: archive_url, filename: local_filename, file_path: local_path, collection: collection, object: object, status: status, created_at: Time.now }
     end
 
-    def create_or_update_job_file!(new_params = nil)
+    def create_or_update_job_file!(new_params = nil, update_only: false)
       if job_file?
         unless new_params # only update an existing file with new, non-default job parameters
           Rails.logger.warn("Ignoring duplicate call to create default job parameters file for #{archive_url}")
           return
         end
         archive_file_worker.update_job_yaml(new_params)
-      else
+      elsif !update_only
         new_params ||= {}
         new_params = default_job_parameters.merge(new_params)
         new_params = new_params.merge(updated_at: Time.now)

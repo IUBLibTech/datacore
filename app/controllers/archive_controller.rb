@@ -5,7 +5,7 @@ class ArchiveController < ApplicationController
 
   def user_is_authorized?
     set_variables
-    recaptcha_success?
+    authenticated_user? && recaptcha_success?
   end
 
   def status
@@ -33,8 +33,8 @@ class ArchiveController < ApplicationController
         end
       end
     else
-      @archive_file.log_denied_attempt!(request_metadata)
-      redirect_back fallback_location: root_url, alert: 'Action requires successful recaptcha completion.'
+      @archive_file.log_denied_attempt!(request_metadata, update_only: true)
+      redirect_back fallback_location: root_url, alert: @failure_description
     end
   end
 
@@ -49,10 +49,17 @@ class ArchiveController < ApplicationController
       @archive_file = ArchiveFile.new(collection: @collection, object: @object)
     end
 
+    def authenticated_user?
+      return true unless Settings.archive_api.require_user_authentication
+      @failure_description = 'Action available only to signed-in users.'
+      user_signed_in?
+    end
+
     def recaptcha_success?
       return true unless Settings.recaptcha.use?
       v3_success = verify_recaptcha(action: 'sda_request', minimum_score: Settings.recaptcha.minimum_score.to_f, secret_key: Settings.recaptcha.v3.secret_key)
       v2_success = verify_recaptcha unless v3_success
+      @failure_description = 'Action requires successful recaptcha completion.'
       v3_success || v2_success
     end
   
