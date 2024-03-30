@@ -11,12 +11,12 @@ namespace :datacore do
 
   desc "Download archival files"
   task download_archival_files: :environment do
-    DataCore::DownloadArchivalFilesTask.new.run
+    Datacore::DownloadArchivalFilesTask.new.run
   end
 
 end
 
-module DataCore
+module Datacore
   class DownloadArchivalFilesTask
     include ActionView::Helpers::NumberHelper
 
