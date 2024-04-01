@@ -69,7 +69,7 @@ class ArchiveFileWorker
     when :staging_requested
       stage_file # TODO: reconsider?
     when :staged_after_request, :staged_without_request
-      file
+      download_file
     else
       process_error("unexpected file status: #{current_status}")
     end
@@ -106,7 +106,7 @@ class ArchiveFileWorker
     logger.info("Staging request submitted")
   end
 
-  def file
+  def download_file
     logger.info("Download initiated for #{yaml_path}")
     update_job_yaml({ status: :staged_after_request })
 
