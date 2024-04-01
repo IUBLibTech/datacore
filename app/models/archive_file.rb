@@ -28,23 +28,34 @@ class ArchiveFile
     end
   end
 
+  # abstract helper method
   def description_for_status(method:, lookup_status:, lookup_hash:)
-    Rails.logger.error("##{method} called with invalid key: #{lookup_status}") unless lookup_status.in?(lookup_hash.keys)
+    lookup_hash = lookup_hash.to_hash.with_indifferent_access # convert from Config
+    Rails.logger.error("##{method} called with invalid key: #{lookup_status}") unless lookup_status.in?(lookup_hash.keys.map(&:to_sym))
     lookup_hash[lookup_status]
   end
 
   # used in descriptive fields, above action button
   def display_status(current_status = status)
-    description_for_status(method: :display_status, lookup_status: current_status, lookup_hash: Settings.archive_api.status_messages.to_hash.with_indifferent_access)
+    description_for_status(method: :display_status, lookup_status: current_status, lookup_hash: Settings.archive_api.status_messages)
   end
 
   # used for button text
   def request_action(current_status = status)
-    description_for_status(method: :request_action, lookup_status: current_status, lookup_hash: Settings.archive_api.request_actions.to_hash.with_indifferent_access)
+    description_for_status(method: :request_action, lookup_status: current_status, lookup_hash: Settings.archive_api.request_actions)
+  end
+
+  # used for UI display of status codes
+  def status_in_ui(current_status = status)
+    description_for_status(method: :status_code, lookup_status: current_status, lookup_hash: Settings.archive_api.status_codes_in_ui)
   end
 
   def request_actionable?(request_status = status)
     request_status.in? [:staging_available, :staged_without_request, :local]
+  end
+
+  def request_for_staging?(request_status = status)
+    request_status.in? [:staging_available, :staged_without_request]
   end
 
   # used for :notice and :alert messages in controller flash
@@ -60,26 +71,26 @@ class ArchiveFile
     request_hash.merge!({ status: current_status })
     case current_status
     when :local
-      create_or_update_job_file!({ latest_user_download: Time.now, downloads: [request_hash] })
+      create_or_update_job_file!(new_params: { latest_user_download: Time.now })
       { status: current_status, action: nil, file_path: local_path, filename: local_filename, message: display_status(current_status) }
     when :staging_available, :staged_without_request
       stage_request!(request_hash)
     when :staging_requested, :staged_after_request
       # no action -- wait for DownloadArchivalFilesTask to stage and download
-      create_or_update_job_file!({ requests: [request_hash] })
+      create_or_update_job_file!(new_params: { requests: [request_hash] })
       { status: current_status, action: nil, message: display_status(:staging_requested) }
     when :not_found, :no_response, :unexpected
-      create_or_update_job_file!({ requests: [request_hash] })
+      create_or_update_job_file!(new_params: { requests: [request_hash] })
       { status: current_status, action: nil, message: display_status(current_status) }
     else
       Rails.logger.warn("Unexpected archive file status: #{current_status}")
-      create_or_update_job_file!({ requests: [request_hash] })
+      create_or_update_job_file!(new_params: { requests: [request_hash] })
       { status: current_status, action: nil, message: 'Unknown file status' }
     end
   end
 
-  def log_denied_attempt!(request_hash = {}, update_only: false)
-    create_or_update_job_file!({ denials: [request_hash] }, update_only: update_only)
+  def log_denied_attempt!(request_hash = {}, update_only: true) #FIXME: reconsider
+    create_or_update_job_file!(new_params: { denials: [request_hash] }, update_only: update_only)
   end
 
   # bypasses status in job file via checking directly
@@ -204,7 +215,7 @@ class ArchiveFile
         log_denied_attempt!(request_hash.merge({ reason: 'block_new_jobs' })) # FIXME: update_only false or true here?
         { status: request_hash[:status], action: :throttled, message: display_status(:too_many_requests), alert: true }
       else
-        create_or_update_job_file!({ requests: [request_hash.merge({ action: 'create_or_update_job_file!'})] })
+        create_or_update_job_file!(new_params: { requests: [request_hash.merge({ action: 'create_or_update_job_file!'})] })
         { status: request_hash[:status], action: :create_or_update_job_file!, message: display_status(:staging_requested) }
       end
     end
@@ -234,7 +245,7 @@ class ArchiveFile
       { url: archive_url, filename: local_filename, file_path: local_path, collection: collection, object: object, status: status, created_at: Time.now }
     end
 
-    def create_or_update_job_file!(new_params = nil, update_only: false)
+    def create_or_update_job_file!(new_params: {}, update_only: false)
       if job_file?
         unless new_params # only update an existing file with new, non-default job parameters
           Rails.logger.warn("Ignoring duplicate call to create default job parameters file for #{archive_url}")
@@ -242,9 +253,7 @@ class ArchiveFile
         end
         archive_file_worker.update_job_yaml(new_params)
       elsif !update_only
-        new_params ||= {}
-        new_params = default_job_parameters.merge(new_params)
-        new_params = new_params.merge(updated_at: Time.now)
+        new_params = default_job_parameters.merge(new_params).merge(updated_at: Time.now)
         File.write(job_file_path, new_params.to_yaml)
       end
     end

@@ -29,7 +29,16 @@ module Datacore
           ArchiveFile.new(collection: collection, object: object)
         end
     end
-    delegate :status, :request_action, :request_actionable?, to: :archive_file, allow_nil: true
-    alias_method :archive_status, :status
+    delegate :display_status, :request_action, :request_actionable?, :request_for_staging?, :status_in_ui, to: :archive_file, allow_nil: true
+    alias_method :archive_status_description, :display_status
+    alias_method :archive_status_code, :status_in_ui
+
+    def provide_request_email?
+      Settings.archive_api.provide_email.present?
+    end
+
+    def require_request_email?
+      Settings.archive_api.provide_email == :required
+    end
   end
 end
