@@ -126,7 +126,7 @@ class ArchiveFileWorker
     if Settings.archive_api.send_email
       from = Deepblue::EmailHelper.contact_email
       subject = "DataCORE file available for download: #{job_yaml[:filename]}"
-      body = "The file request you request, #{job_yaml[:filename]}, is now available for download."
+      body = "The file you requested, #{job_yaml[:filename]}, is now available for download."
       job_yaml[:requests].map { |request| request[:user_email] }.each do |user_email|
         if user_email.present?
           begin
