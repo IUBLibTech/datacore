@@ -34,25 +34,7 @@
       <% else %>
         <%# TODO: render 'show_descriptions' See https://github.com/samvera/hyrax/issues/1481 %>
         <%= render 'show_details' %>
-        <% if @presenter.archive_file? %>
-          <strong>Archival file status:</strong> <%= @presenter.archive_file&.display_status %>
-          <form action="<%= @presenter.archive_request_url %>" method="get">
-            <% if Settings.recaptcha.use? %>
-              <% if flash[:alert]&.match /recaptcha/ %>
-                <%= recaptcha_tags %>
-              <% else %>
-                <%= recaptcha_v3(action: 'sda_request', site_key: Settings.recaptcha.v3.site_key) %>
-              <% end %>
-            <% end %>
-            <input type="submit" name='request'
-                   value="<%= @presenter.request_action %>"
-                   <%= 'disabled' unless @presenter.request_actionable? %>
-                   class="btn <%= @presenter.request_actionable? ? 'btn-primary' : 'btn-danger' %>">
-          </form>
-          <% unless @presenter.request_actionable? %>
-            Refresh this page to update archive retrieval status and file availability for download
-          <% end %>
-        <% end %>
+        <%= render 'show_archive_file' %>
         <%= render 'hyrax/users/activity_log', events: @presenter.events %>
         <%= render '/provenance_log_entries', presenter: @presenter %>
       <% end %>

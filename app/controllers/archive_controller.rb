@@ -33,14 +33,14 @@ class ArchiveController < ApplicationController
         end
       end
     else
-      @archive_file.log_denied_attempt!(request_metadata, update_only: true)
+      @archive_file.log_denied_attempt!(update_only: true)
       redirect_back fallback_location: root_url, alert: @failure_description
     end
   end
 
   private
     def variable_params
-      params.permit(:collection, :object, :format, :request, 'g-recaptcha-response'.to_sym, 'g-recaptcha-response-data'.to_sym => [:sda_request])
+      params.permit(:collection, :object, :format, :request, :user_email, 'g-recaptcha-response'.to_sym, 'g-recaptcha-response-data'.to_sym => [:sda_request])
     end
 
     def set_variables
@@ -56,7 +56,7 @@ class ArchiveController < ApplicationController
     end
 
     def recaptcha_success?
-      return true unless Settings.recaptcha.use?
+      return true unless Settings.archive_api.use_recaptcha
       v3_success = verify_recaptcha(action: 'sda_request', minimum_score: Settings.recaptcha.minimum_score.to_f, secret_key: Settings.recaptcha.v3.secret_key)
       v2_success = verify_recaptcha unless v3_success
       @failure_description = 'Action requires successful recaptcha completion.'
@@ -64,7 +64,7 @@ class ArchiveController < ApplicationController
     end
   
     def request_metadata
-      user_metadata = { time: Time.now, user: current_user&.email }
+      user_metadata = { time: Time.now, user: current_user&.email, user_email: params[:user_email] || current_user&.email }
       user_metadata.merge!(recaptcha: recaptcha_reply || {}) if Settings.recaptcha.use?
       user_metadata
     end

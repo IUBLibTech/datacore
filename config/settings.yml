@@ -113,7 +113,10 @@ ingest:
   outbox: tmp/ingest/out
 
 archive_api:
+  use_recaptcha: false
   require_user_authentication: false
+  provide_email: false # [false, :optional, :required]
+  send_email: false # should be true when provide_email is :optional, :required
   url: archive.url.invalid/%s/%s
   username: archiveusername.invalid
   password: archivepassword.invalid
@@ -136,19 +139,19 @@ archive_api:
   # a single archive_status can map to more than one #status
   # multiple #status values map to the same end user message
   status_messages: &status_messages
-    staging_available: &available "File found in archives but not yet staged for download.  Request retreival from archives to make available for download."
-    staging_requested: &requested "File retrieval from archives has started, and the file can be downloaded once the transfer is complete.  Please allow up to 1 hour for the transfer to complete."
+    staging_available: &available "File found in archives.  You may request retrieval from archives to make available for download."
+    staging_requested: &requested "File is being retrieved from archives, and will be available for download once retrieved.  Please allow approximately 1 hour for retrieval."
     staged_after_request: *requested
     staged_without_request: *available
     local: "File is available for immediate download"
     not_found: "File not found in archives.  Unable to request file."
     no_response: "File archives server is not responding.  Unable to request file."
     unexpected: "Unexpected response from file archives server.  Unable to request file."
-    too_many_requests: "File is available in archives, but too many transfer requests are currently running.  Please try again later."
+    too_many_requests: "File is available in archives, but too many archive retrieval requests are currently running.  Please try again later."
   # used for button text
   request_actions:
-    staging_available: &available 'Initiate file retrieval from archives'
-    staging_requested: &requested 'File retrieval from archives is in process'
+    staging_available: &available 'Request file retrieval from archives'
+    staging_requested: &requested 'Retrieving requested file from archives'
     staged_after_request: *requested
     staged_without_request: *available
     local: 'Download'
@@ -158,9 +161,19 @@ archive_api:
     too_many_requests: *unavailable
   # used for :notice and :alert messages in controller flash
   flash_messages: *status_messages
+  # used for UI display of status codes
+  status_codes_in_ui:
+    staging_available: &available_in_archives "Available in archives"
+    staging_requested: &request_processing "Archive retrieval request is processing"
+    staged_after_request: *request_processing
+    staged_without_request: *available_in_archives
+    local: "Available for download"
+    not_found: "Not found in archives"
+    no_response: &archives_unavailable "Archives unavailable"
+    unexpected: *archives_unavailable
+    too_many_requests: *archives_unavailable
 
 recaptcha:
-  use?: false
   minimum_score: 0.5
   v2:
     site_key: 'your_recaptcha_v2_site_key'

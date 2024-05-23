@@ -69,7 +69,7 @@ class ArchiveFileWorker
     when :staging_requested
       stage_file # TODO: reconsider?
     when :staged_after_request, :staged_without_request
-      file
+      download_file
     else
       process_error("unexpected file status: #{current_status}")
     end
@@ -106,7 +106,7 @@ class ArchiveFileWorker
     logger.info("Staging request submitted")
   end
 
-  def file
+  def download_file
     logger.info("Download initiated for #{yaml_path}")
     update_job_yaml({ status: :staged_after_request })
 
@@ -117,8 +117,41 @@ class ArchiveFileWorker
       system(curl_command(output: true))
       FileUtils.mv(path, file_path)
       update_job_yaml({ status: :local, transfer_completed: Time.now })
+      email_requesters
       logger.info("Download completed at #{file_path}")
     end
+  end
+
+  def email_requesters
+    if Settings.archive_api.send_email
+      from = Deepblue::EmailHelper.contact_email
+      subject = "DataCORE file available for download: #{job_yaml[:filename]}"
+      body = "The file request you request, #{job_yaml[:filename]}, is now available for download."
+      job_yaml[:requests].map { |request| request[:user_email] }.each do |user_email|
+        if user_email.present?
+          begin
+            logger.info("Emailing user: #{user_email}")
+            Deepblue::EmailHelper.send_email(to: user_email, from: from, subject: subject , body: body, log: true)
+            # FIXME: store request origin when on fileset page?
+          rescue => error
+            logger.warn("Error emailing user: #{user_email}")
+          end
+        else
+          logger.warn("No email address available for request; skipping notification email")
+        end
+      end
+    end
+    purge_user_emails
+  end
+
+  def purge_user_emails
+    sanitized_yaml = job_yaml.dup
+    sanitized_yaml[:requests] = sanitized_yaml[:requests].map { |request_hash| sanitized_hash(request_hash) }
+    File.write(yaml_path, sanitized_yaml.to_yaml)
+  end
+
+  def sanitized_hash(hash)
+    hash.merge({ user: nil, user_email: nil })
   end
 
   def file_path

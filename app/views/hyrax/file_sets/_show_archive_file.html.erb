@@ -1,0 +1,40 @@
+<% if @presenter.archive_file? %>
+  <form action="<%= @presenter.archive_request_url %>" method="get">
+    <div class="form-group <%= 'required' if @presenter.require_request_email? %>">
+      <label class="control-label">Archival file status: <%= @presenter.archive_status_code %></label>
+      <p class="help-block">
+        <%= @presenter.archive_status_description %>
+      </p>
+    </div>
+    <% if Settings.archive_api.use_recaptcha %>
+      <% if flash[:alert]&.match /recaptcha/ %>
+        <%= recaptcha_tags %>
+      <% else %>
+        <%= recaptcha_v3(action: 'sda_request', site_key: Settings.recaptcha.v3.site_key) %>
+      <% end %>
+    <% end %>
+    <% if @presenter.request_for_staging? && Settings.archive_api.provide_email %>
+    <div class="form-group <%= 'required' if @presenter.require_request_email? %>">
+      <label class="control-label required">
+        Email address <%= '(optional)' unless @presenter.require_request_email? %>
+        <% if @presenter.require_request_email? %>
+          <span class="required required-tag">Required</span>
+        <% end %>
+      </label>
+      <p class="help-block">
+        When the requested file becomes available for download, you will receive a notification email at the provided address.
+      </p>
+        <input <%= 'required="required"' if Settings.archive_api.provide_email == :required %>
+               type="text" name="user_email"></input>
+      </div>
+    <% end %>
+    <input type="submit" name='request' value="<%= @presenter.request_action %>"
+           <%= 'disabled' unless @presenter.request_actionable? %>
+                                        class="btn <%= @presenter.request_actionable? ? 'btn-primary' : 'btn-danger' %> <%= 'required' if @presenter.require_request_email? %>"></input>
+    <% unless @presenter.request_actionable? %>
+    <p class="help-block">
+      Refresh this page to update file status
+    </p>
+    <% end %>
+  </form>
+<% end %>
