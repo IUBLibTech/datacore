@@ -173,6 +173,7 @@ archive_api:
     unexpected: *archives_unavailable
     too_many_requests: *archives_unavailable
 
+# keys need to be present in .env as well
 recaptcha:
   minimum_score: 0.5
   v2:
