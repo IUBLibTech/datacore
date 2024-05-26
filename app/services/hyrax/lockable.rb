@@ -4,11 +4,16 @@ module Hyrax
     extend ActiveSupport::Concern
 
     def acquire_lock_for(lock_key, &block)
-      ::Deepblue::LoggingHelper.bold_debug [ ::Deepblue::LoggingHelper.here,
-                                             ::Deepblue::LoggingHelper.called_from,
-                                             "lock_key=#{lock_key}",
-                                             "" ]
-      lock_manager.lock(lock_key, &block)
+      # optionally bypass locking failures in development
+      if Rails.env.development? && Settings.hyrax.bypass_locking
+        block.call
+      else
+        ::Deepblue::LoggingHelper.bold_debug [ ::Deepblue::LoggingHelper.here,
+                                               ::Deepblue::LoggingHelper.called_from,
+                                               "lock_key=#{lock_key}",
+                                               "" ]
+        lock_manager.lock(lock_key, &block)
+      end
     end
 
     def lock_manager

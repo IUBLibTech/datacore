@@ -289,7 +289,7 @@ class SolrDocument
 
   def oai_nested_related_items_label
     related_items = []
-    nested_related_items_label.each do |r|
+    nested_related_items_label&.each do |r|
       related_items << r["label"] + ': ' + r["uri"]
     end
     related_items
@@ -297,7 +297,7 @@ class SolrDocument
 
   def oai_academic_affiliation_label
     aa_labels = []
-    academic_affiliation_label.each do |a|
+    academic_affiliation_label&.each do |a|
       aa_labels << a["label"]
     end
     aa_labels
@@ -305,7 +305,7 @@ class SolrDocument
 
   def oai_other_affiliation_label
     oa_labels = []
-    other_affiliation_label.each do |o|
+    other_affiliation_label&.each do |o|
       oa_labels << o["label"]
     end
     oa_labels
