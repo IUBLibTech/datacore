@@ -8,9 +8,12 @@ module Datacore
       mime_type.match(/^message\/external-body\;.*access-type=URL/).present?
     end
 
+    # needs to pass through archive_file in case any / to %2F encoding happened there
     def archive_request_url
-      return '/' unless archive_file?
-      mime_type.split('"').last
+      @archive_request_url ||= begin
+                                 return '/' unless archive_file?
+                                 archive_file.send(:request_url)
+                               end
     end
 
     def archive_status_url
@@ -20,9 +23,10 @@ module Datacore
     def archive_file
       @archive_file ||=
         if archive_file?
-          # nested objects should be stored in format
-          # /sda/request/collection/subdir%2Ffilename
-          # but normalize if unencoded / slipped in
+          # nested objects may be stored in format:
+          # /sda/request/<collection>/<subdir>%2F<object>
+          # which works rails routing, but we need to force-encode the final '/' if stored as:
+          # /sda/request/<collection>/<subdir>/<object>
           collection_and_object = mime_type.split('"').last.sub('/sda/request/', '').split('/')
           collection = collection_and_object.first
           object = collection_and_object[1, collection_and_object.size].join('%2F')
