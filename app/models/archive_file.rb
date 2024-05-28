@@ -89,7 +89,7 @@ class ArchiveFile
     end
   end
 
-  def log_denied_attempt!(request_hash = {}, update_only: true) #FIXME: reconsider
+  def log_denied_attempt!(request_hash: {}, update_only: true)
     create_or_update_job_file!(new_params: { denials: [request_hash] }, update_only: update_only)
   end
 
@@ -212,7 +212,7 @@ class ArchiveFile
     def stage_request!(request_hash = {})
       Rails.logger.warn("Staging request for #{archive_url} made in status: #{status}") if staged? # log :staged_without_request cases
       if block_new_jobs?
-        log_denied_attempt!(request_hash.merge({ reason: 'block_new_jobs' })) # FIXME: update_only false or true here?
+        log_denied_attempt!(request_hash: request_hash.merge({ reason: 'block_new_jobs' }))
         { status: request_hash[:status], action: :throttled, message: display_status(:too_many_requests), alert: true }
       else
         create_or_update_job_file!(new_params: { requests: [request_hash.merge({ action: 'create_or_update_job_file!'})] })
@@ -247,7 +247,7 @@ class ArchiveFile
 
     def create_or_update_job_file!(new_params: {}, update_only: false)
       if job_file?
-        unless new_params # only update an existing file with new, non-default job parameters
+        unless new_params.any? # only update an existing file with new, non-default job parameters
           Rails.logger.warn("Ignoring duplicate call to create default job parameters file for #{archive_url}")
           return
         end

@@ -24,7 +24,7 @@ class ArchiveController < ApplicationController
       else
         unless result[:message]
           Rails.logger.error("Message missing from #{@archive_file} result: #{result}")
-          result[:message] = 'Request failed.  Please request technical support.'
+          result[:message] = 'Request failed.  Please seek technical support.'
         end
         if result[:alert]
           redirect_back fallback_location: root_url, alert: result[:message]
@@ -33,20 +33,22 @@ class ArchiveController < ApplicationController
         end
       end
     else
-      @archive_file.log_denied_attempt!(update_only: true)
+      @archive_file.log_denied_attempt!(request_hash: request_metadata)
       redirect_back fallback_location: root_url, alert: @failure_description
     end
   end
 
   private
     def variable_params
-      params.permit(:collection, :object, :format, :request, :user_email, 'g-recaptcha-response'.to_sym, 'g-recaptcha-response-data'.to_sym => [:sda_request])
+      params.permit(:collection, :object, :format, :request, :user_email, :file_set_id, 'g-recaptcha-response'.to_sym, 'g-recaptcha-response-data'.to_sym => [:sda_request])
     end
 
     def set_variables
       @collection = params[:collection]
       @object = "#{variable_params[:object]}.#{variable_params[:format]}"
       @archive_file = ArchiveFile.new(collection: @collection, object: @object)
+      @user_email = params[:user_email]
+      @file_set_id = params[:file_set_id]
     end
 
     def authenticated_user?
@@ -64,8 +66,6 @@ class ArchiveController < ApplicationController
     end
   
     def request_metadata
-      user_metadata = { time: Time.now, user: current_user&.email, user_email: params[:user_email] || current_user&.email }
-      user_metadata.merge!(recaptcha: recaptcha_reply || {}) if Settings.recaptcha.use?
-      user_metadata
+      user_metadata = { time: Time.now, user_email: @user_email, file_set_id: @file_set_id }
     end
 end
