@@ -19,7 +19,7 @@ module Datacore
     STANDARD_INGEST_DIR = Settings.ingest.standard_inbox
     LARGE_INGEST_DIR = Settings.ingest.large_inbox
     INGEST_OUTBOX = Settings.ingest.outbox
-    SIZE_LIMIT = 5 * 2**30 # 5 GB
+    SIZE_LIMIT = Settings.ingest.size_limit || (5 * (2**30)) # 5 GB
     LOG_PATH  = Rails.root.join('log', 'ingest.log')
     EMPTY_FILEPATH = 'lib/tasks/empty.txt' # TODO: refactor EMPTY_FILEPATH
 
