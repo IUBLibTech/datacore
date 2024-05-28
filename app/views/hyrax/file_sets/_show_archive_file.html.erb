@@ -28,6 +28,7 @@
                type="text" name="user_email"></input>
       </div>
     <% end %>
+    <input type="hidden" name="file_set_id" value="<%= @presenter.id %>"></input>
     <input type="submit" name='request' value="<%= @presenter.request_action %>"
            <%= 'disabled' unless @presenter.request_actionable? %>
                                         class="btn <%= @presenter.request_actionable? ? 'btn-primary' : 'btn-danger' %> <%= 'required' if @presenter.require_request_email? %>"></input>

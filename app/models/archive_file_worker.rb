@@ -109,12 +109,16 @@ class ArchiveFileWorker
   def download_file
     logger.info("Download initiated for #{yaml_path}")
     update_job_yaml({ status: :staged_after_request })
-
     if too_much_space_used?
       logger.warn("Disk quota exceeded.  Blocking file download until space is available.")
     else
       update_job_yaml({ transfer_started: Time.now })
-      system(curl_command(output: true))
+      begin
+        system(curl_command(output: true))
+      rescue => error
+        process_error("Aborting after curl error: #{error.inspect}")
+        return
+      end
       FileUtils.mv(path, file_path)
       update_job_yaml({ status: :local, transfer_completed: Time.now })
       email_requesters
@@ -125,14 +129,15 @@ class ArchiveFileWorker
   def email_requesters
     if Settings.archive_api.send_email
       from = Deepblue::EmailHelper.contact_email
-      subject = "DataCORE file available for download: #{job_yaml[:filename]}"
-      body = "The archive file you requested, #{job_yaml[:filename]}, is now available for download."
-      job_yaml[:requests].map { |request| request[:user_email] }.each do |user_email|
+      filename = job_yaml[:filename]
+      subject = "DataCORE file available for download: #{filename}"
+      job_yaml[:requests].each do |request|
+        user_email = request[:user_email]
         if user_email.present?
           begin
             logger.info("Emailing user: #{user_email}")
-            Deepblue::EmailHelper.send_email(to: user_email, from: from, subject: subject , body: body, log: true)
-            # FIXME: store request origin when on fileset page?
+            Deepblue::EmailHelper.send_email(to: user_email, from: from, subject: subject , body: email_body_for(filename, request), log: true)
+            logger.info("Email sent successfully")
           rescue => error
             logger.warn("Error emailing user: #{user_email}")
           end
@@ -142,6 +147,30 @@ class ArchiveFileWorker
       end
     end
     purge_user_emails
+  end
+
+  def email_body_for(filename, request)
+    body = "The archive file you requested, #{filename}, is now available for download"
+    file_link = file_link_for(filename, request)
+    if file_link
+      body += ":\n#{file_link}"
+    else
+      body += "."
+    end
+    body
+  end
+
+  def file_link_for(filename, request)
+    file_set_id = request[:file_set_id]    
+    file_link = nil
+    if file_set_id && FileSet.where(id: file_set_id).any?
+      begin
+        file_link = Deepblue::EmailHelper.curation_concern_url(curation_concern: FileSet.find(file_set_id))
+      rescue => error
+        process_error("Error generating download link for #{file_set_id}: #{error.inspect}")
+      end
+    end
+    file_link
   end
 
   def purge_user_emails
