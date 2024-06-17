@@ -19,7 +19,8 @@ module Datacore
     STANDARD_INGEST_DIR = Settings.ingest.standard_inbox
     LARGE_INGEST_DIR = Settings.ingest.large_inbox
     INGEST_OUTBOX = Settings.ingest.outbox
-    SIZE_LIMIT = Settings.ingest.size_limit || (5 * (2**30)) # 5 GB
+    FEDORA_SIZE_LIMIT = Settings.ingest.size_limit.fedora || (5 * (2**30)) # 5 GB
+    INGEST_SIZE_LIMIT = Settings.ingest.size_limit.ingest || (100 * (2**30)) # 100 GB
     LOG_PATH  = Rails.root.join('log', 'ingest.log')
     EMPTY_FILEPATH = 'lib/tasks/empty.txt' # TODO: refactor EMPTY_FILEPATH
 
@@ -83,10 +84,14 @@ module Datacore
           work_id = m[:work_id]
           filenamepart = m[:filenamepart]
           size = File.size(filepath)
-          logger.info("Attempting ingest of file #{filenamepart} as #{work_id} (#{number_to_human_size(size)})")
-          if bypass_fedora
+          human_size = number_to_human_size(size)
+          logger.info("Attempting ingest of file #{filenamepart} as #{work_id} (#{human_size})")
+          if size > INGEST_SIZE_LIMIT
+            logger.error("File size (#{human_size}) exceeds maximum ingest limit.  Skipping.")
+            return
+          elsif bypass_fedora
             logger.info("File ingest called bypassing fedora storage")
-          elsif size > SIZE_LIMIT
+          elsif size > FEDORA_SIZE_LIMIT
             logger.info("File ingest called for fedora storage, but triggering bypass due to excessive file size: #{number_to_human_size(size)}")
             bypass_fedora = true
           end

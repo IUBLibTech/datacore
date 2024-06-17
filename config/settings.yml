@@ -111,7 +111,9 @@ ingest:
   standard_inbox: tmp/ingest/in
   large_inbox: tmp/ingest/large
   outbox: tmp/ingest/out
-  size_limit: 5368709120 # 5.gigabytes
+  size_limit:
+    fedora: 5368709120 # 5.gigabytes
+    ingest: 107374182400 # 100.gigabytes
 
 archive_api:
   use_recaptcha: false
