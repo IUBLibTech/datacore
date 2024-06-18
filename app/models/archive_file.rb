@@ -10,7 +10,7 @@ class ArchiveFile
   # object may be either filename, or subdirs*/filename
   def initialize(collection:, object:)
     @collection = collection
-    @object = object
+    @object = object.sub(/\.$/, '') # "match" routing case can add terminal "."
   end
 
   def to_s

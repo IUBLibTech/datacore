@@ -150,7 +150,7 @@ Rails.application.routes.draw do
 
   get '/sda/request/(:collection)/(:object)', to: 'archive#download_request'
   get '/sda/status/(:collection)/(:object)', to: 'archive#status'
+  match '/sda/request/:collection/:object', to: 'archive#download_request', constraints: { object: /[^\/]+/ }, via: :get
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-
 end
