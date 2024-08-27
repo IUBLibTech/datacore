@@ -141,7 +141,7 @@ class ArchiveFileWorker
             Deepblue::EmailHelper.send_email(to: user_email, from: from, subject: subject , body: body, log: true)
             logger.info("Email sent successfully")
           rescue => error
-            logger.error("Error emailing user: #{user_email}: #{error.inspect}"
+            logger.error("Error emailing user: #{user_email}: #{error.inspect}")
           end
         else
           logger.warn("No email address available for request; skipping notification email")
