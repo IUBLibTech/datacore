@@ -20,7 +20,7 @@ class ArchiveController < ApplicationController
     if user_is_authorized?
       result = @archive_file.get!(request_metadata)
       if result[:file_path].present?
-        send_file(result[:file_path], filename: result[:filename])
+        send_file(result[:file_path], filename: download_filename(result[:filename]))
       else
         unless result[:message]
           Rails.logger.error("Message missing from #{@archive_file} result: #{result}")
@@ -49,6 +49,11 @@ class ArchiveController < ApplicationController
       @archive_file = ArchiveFile.new(collection: @collection, object: @object)
       @user_email = params[:user_email]
       @file_set_id = params[:file_set_id]
+    end
+
+    # use the user-displayed filename, without the work id prepended, if available
+    def download_filename(default_filename)
+      FileSet.search_with_conditions(id: @file_set_id).first&.dig('label_ssi') || default_filename
     end
 
     def authenticated_user?
