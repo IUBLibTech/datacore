@@ -129,17 +129,19 @@ class ArchiveFileWorker
   def email_requesters
     if Settings.archive_api.send_email
       from = Deepblue::EmailHelper.contact_email
-      filename = job_yaml[:filename]
-      subject = "DataCORE file available for download: #{filename}"
+      job_filename = job_yaml[:filename]
       job_yaml[:requests].each do |request|
         user_email = request[:user_email]
         if user_email.present?
           begin
             logger.info("Emailing user: #{user_email}")
-            Deepblue::EmailHelper.send_email(to: user_email, from: from, subject: subject , body: email_body_for(filename, request), log: true)
+            filename = filename_for(request, job_filename)
+            subject = "DataCORE file available for download: #{filename}"
+            body = email_body_for(filename, request)
+            Deepblue::EmailHelper.send_email(to: user_email, from: from, subject: subject , body: body, log: true)
             logger.info("Email sent successfully")
           rescue => error
-            logger.warn("Error emailing user: #{user_email}")
+            logger.error("Error emailing user: #{user_email}: #{error.inspect}")
           end
         else
           logger.warn("No email address available for request; skipping notification email")
@@ -151,7 +153,7 @@ class ArchiveFileWorker
 
   def email_body_for(filename, request)
     body = "The archive file you requested, #{filename}, is now available for download"
-    file_link = file_link_for(filename, request)
+    file_link = file_link_for(request)
     if file_link
       body += ":\n#{file_link}"
     else
@@ -160,7 +162,12 @@ class ArchiveFileWorker
     body
   end
 
-  def file_link_for(filename, request)
+  def filename_for(request, default_filename)
+    file_set_id = request.with_indifferent_access[:file_set_id]    
+    FileSet.search_with_conditions(id: file_set_id).first&.dig('label_ssi') || default_filename
+  end
+
+  def file_link_for(request)
     file_set_id = request[:file_set_id]    
     file_link = nil
     if file_set_id && FileSet.where(id: file_set_id).any?
