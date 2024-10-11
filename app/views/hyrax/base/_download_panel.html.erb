@@ -1,0 +1,85 @@
+  <div class="panel panel-default panel-download">
+    <div class="panel-heading">
+      <h2>Download All Files (To download individual files, select them in the “Files” panel above)</h2>
+    </div>
+    <div class="panel-body">
+      <% if Hyrax.config.download_files %>
+        <% admin_or_not_embargo = ( @presenter.current_ability.admin? || @presenter.solr_document.visibility != "embargo" ) %>
+        <% if @presenter.zip_download_enabled? && admin_or_not_embargo %>
+          <%= form_tag( main_app.zip_download_hyrax_data_set_path( @presenter.id ), method: 'post' ) do %>
+            <%= hidden_field_tag('data_set[nop]') %>
+            <% if DeepBlueDocs::Application.config.max_work_file_size_to_download < @presenter.total_file_size %>
+              <p><%= t('simple_form.hints.data_set.download_total_work_size_too_large',
+                       total_file_size: @presenter.total_file_size_human_readable ) %>
+              </p>
+            <% else %>
+              <%= submit_tag( @presenter.label_with_total_file_size( t('simple_form.actions.data_set.zip_download') ),
+                              class: 'btn btn-primary') %>
+              <% if DeepBlueDocs::Application.config.min_work_file_size_to_download_warn < @presenter.total_file_size %>
+                <p><%= t('simple_form.hints.data_set.download_total_work_size_may_be_too_large',
+                         total_file_size: @presenter.total_file_size_human_readable ) %>
+                </p> 
+              <% else %>
+                <p><%= t('simple_form.hints.data_set.download_general_message') %> </p>                 
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <% if @presenter.respond_to?( 'globus_enabled?' ) && @presenter.globus_enabled? && admin_or_not_embargo %>
+          <%= form_tag( main_app.globus_download_hyrax_data_set_path(@presenter.id), method: 'post' ) do %>
+            <%= hidden_field_tag('data_set[nop]') %>
+             <% if @presenter.globus_files_available? %>
+               <p><%= t('simple_form.hints.data_set.globus_files_are_ready') %> &nbsp;
+                <%= link_to t('simple_form.hints.data_set.globus_link'),
+                            @presenter.globus_external_url,
+                            class: 'btn btn-default',
+                            target: "_blank",
+                            title: "link to external globus files" %>
+                <br/>
+                <%= t('simple_form.hints.data_set.globus_is_for_large_datasets') %> &nbsp;
+                <a href="<%= main_app.static_path(action: 'globus-help') %>" target="_blank">
+                  <%= t('simple_form.hints.data_set.globus_help') %>
+                </a>
+              </p>
+            <% elsif !@presenter.globus_files_prepping? %>
+              <br/>
+              <%= submit_tag(t('simple_form.actions.data_set.globus_download'), class: 'btn btn-primary') %>
+              <br/>
+              <%= t('simple_form.hints.data_set.globus_is_for_large_datasets') %> &nbsp;
+              <a href="<%= main_app.static_path(action: 'globus-help') %>" target="_blank">
+                <%= t('simple_form.hints.data_set.globus_help') %>
+              </a>
+            <% end %>
+          <% end %>
+          <% if @presenter.current_ability.admin? %>
+            <% last_globus_error = @presenter.globus_last_error_msg %>
+            <% if last_globus_error %>
+              <p><%= "Last globus error: #{last_globus_error}" %></p>
+            <% end %>
+            <% if @presenter.globus_files_available? || last_globus_error %>
+              <%= form_tag( main_app.globus_clean_download_hyrax_data_set_path(@presenter.id), method: 'delete' ) do %>
+                <br/>
+                <%= hidden_field_tag('data_set[nop]') %>
+                <%= submit_tag(t('simple_form.actions.data_set.globus_clean_download'),
+                               class: 'btn btn-primary',
+                               data: {confirm: t('simple_form.confirm.data_set.delete_all_globus_download_files')}) %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <% if @presenter.globus_files_prepping? %>
+            <%= form_tag( main_app.globus_download_add_email_hyrax_data_set_path(@presenter.id), method: 'post' ) do %>
+              <br/>
+              <%= hidden_field_tag('data_set[nop]') %>
+              <%= t('simple_form.hints.data_set.globus_currently_downloading_html')
+                  submit_tag(t('simple_form.actions.data_set.globus_download_add_email'), class: 'btn btn-primary') %>
+              <br/>
+              <%= t('simple_form.hints.data_set.globus_is_for_large_datasets') %> &nbsp;
+              <a href="<%= main_app.static_path(action: 'globus-help') %>" target="_blank">
+                <%= t('simple_form.hints.data_set.globus_help') %>
+              </a>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div> <!--End Download panel-->
