@@ -160,16 +160,16 @@
               data: { behavior: 'unfeature' },
               class: @presenter.display_feature_link? ? 'btn btn-subtle collapse' : 'btn btn-subtle' %>
       <% end %>
-    <% end %><#% ends @presenter.current_ability.admin? %>
-  <%# FIXME: move inside admin block %>
-  <% if @presenter.current_ability.admin? && @presenter.tombstone_enabled? %>
-    <button class="btn btn-subtle" data-target="#tombstoneId" data-toggle="modal">
-      <%= t('simple_form.actions.data_set.tombstone') %>
-    </button>
-  <% end %>
-
+      <% if @presenter.tombstone_enabled? %>
+        <button class="btn btn-subtle" data-target="#tombstoneId" data-toggle="modal">
+          <%= t('simple_form.actions.data_set.tombstone') %>
+        </button>
+      <% end %>
     </div>
   </div> <!-- End Admin panel -->
+    <% end %><#% ends @presenter.current_ability.admin? %>
+
+
 
   <% end %><%# if not_tombstoned %>
 
