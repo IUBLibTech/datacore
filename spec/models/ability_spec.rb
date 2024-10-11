@@ -9,6 +9,7 @@ RSpec.describe Ability do
     context 'when neither an admin nor depositor' do
       it 'returns false' do
         expect(ability.admin?).to be false
+        expect(ability.depositor?).to be false
         expect(ability.can? :create, DataSet).to be false
       end
     end
@@ -20,6 +21,7 @@ RSpec.describe Ability do
       end
       it 'returns true' do
         expect(ability.admin?).to be false
+        expect(ability.depositor?).to be true
         expect(ability.can? :create, DataSet).to be true
       end
     end
@@ -27,6 +29,7 @@ RSpec.describe Ability do
       let(:user) { FactoryBot.create :admin }
       it 'returns true' do
         expect(ability.admin?).to be true
+        expect(ability.depositor?).to be false
         expect(ability.can? :create, DataSet).to be true
       end
     end
