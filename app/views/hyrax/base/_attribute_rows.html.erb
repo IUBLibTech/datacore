@@ -42,11 +42,7 @@
 </span>
 
 <%= presenter.attribute_to_html(:creator, render_as: :faceted, label: t('show.label.creator') ) %>
-
-<% presenter.depositor.gsub!('@', 'at_sign_at') %>
-<% presenter.depositor.gsub!('TOMBSTONE-', '') %>
-<%= raw (presenter.attribute_to_html(:depositor)).gsub!('at_sign_at', '@') %>
-
+<%= presenter.attribute_to_html(:depositor) %>
 <%= presenter.attribute_to_html(:authoremail, render_as: :faceted, label: t('show.label.authoremail'), work_type: "DataSet" ) %>
 <%= presenter.attribute_to_html(:contributor, render_as: :faceted) %>
 <%= presenter.attribute_to_html(:subject_discipline, render_as: :faceted, label: t('show.label.subject_discipline')) %>
