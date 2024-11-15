@@ -8,8 +8,8 @@ module Hyrax
               :curation_notes_admin,
               :curation_notes_user,
               :date_coverage,
-              :date_published, :date_published2,
-              :doi, :doi_the_correct_one,
+              :date_published, :date_published2, # FIXME; investigate
+              :doi, :doi_the_correct_one, # FIXME: investigate
               :doi_minted?,
               :doi_minting_enabled?,
               :doi_pending?,
@@ -27,6 +27,24 @@ module Hyrax
               :geo_location_place,
               :geo_location_box,
               :license_other,
+              :academic_affiliation,
+              :alt_title,
+              :bibliographic_citation,
+              :contributor_affiliationumcampus,
+              :date_attribute,
+              :date_issued,
+              :description_abstract,
+              :description_mapping,
+              :description_sponsorship,
+              :external_link,
+              :identifier_orcid,
+              :identifier_source,
+              :language_none,
+              :linked,
+              :other_affiliation,
+              :peerreviewed,
+              :relation_ispartofseries,
+              :type_none,
               to: :solr_document
 
     # def initialize( solr_document, current_ability, request = nil )
