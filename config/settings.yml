@@ -185,3 +185,14 @@ recaptcha:
   v3:
     site_key: 'your_recaptcha_v3_site_key'
     secret_key: 'your_recaptcha_v3_secret_key'
+
+# ldap_groups_lookup
+ldap:
+  enabled: false
+  host: 'ldap_host'
+  port: 000
+  user: 'ldap_user'
+  pass: 'ldap_password'
+  tree: 'ldap_tree'
+  account_ou: 'ldap_account_ou'
+  group_ou: 'ldap_group_ou'
