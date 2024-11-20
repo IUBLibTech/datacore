@@ -17,6 +17,17 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery with: :exception
 
+  around_action :global_request_logging
+
+  def global_request_logging
+    logger.info "ACCESS: #{request.remote_ip}, #{request.method} #{request.url}, #{request.headers['HTTP_USER_AGENT']}"
+    begin
+      yield
+    ensure
+      logger.info "response_status: #{response.status}"
+    end
+  end
+
   if Rails.configuration.authentication_method == "umich"
     before_action :clear_session_user
   end
