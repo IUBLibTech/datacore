@@ -28,6 +28,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def rescue_404
+    render file: Rails.public_path.join('404.html'), status: :not_found, layout: false
+  end
+
   if Rails.configuration.authentication_method == "umich"
     before_action :clear_session_user
   end
