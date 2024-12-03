@@ -26,7 +26,7 @@ class User < ApplicationRecord
 
   if Rails.configuration.authentication_method == "iu"
     devise :omniauthable, :omniauth_providers => [:cas]
-    alias_attribute :ldap_lookup_key, :username
+    alias_attribute :ldap_lookup_key, :uid
     include LDAPGroupsLookup::Behavior
   else
     devise :database_authenticatable, :registerable,
