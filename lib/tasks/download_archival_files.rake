@@ -31,6 +31,10 @@ module Datacore
     end
 
     def run
+      if Settings.archive_api.disabled
+        logger.info("Skipping archive job processing, archive API is disabled")
+        return
+      end
       logger.info("Starting archive job processing from #{ArchiveFileWorker.jobs_dir}")
       @job_files = ArchiveFileWorker.job_files
       if @job_files.any?

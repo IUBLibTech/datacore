@@ -183,29 +183,12 @@ class ArchiveFile
       end
     end
 
-    # main method for all archive interactions 
-    # formerly supported Net::HTTP::Get calls, but those are now handled by DownloadArchivalFilesTask
-    # now only supports read-only status requests
-    # @return Net::HTTPResponse
-    def archive_request(method: Net::HTTP::Head)
-      uri = URI.parse(archive_url)
-      unless method == Net::HTTP::Head
-        Rails.logger.error("archive_request called with non-whitelisted method: #{method}")
-        return
-      end
-      request = method.new(uri.request_uri)
-      request['Authorization'] = "#{Settings.archive_api.username}:#{Settings.archive_api.password}"
-      begin
-        result = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') { |http|
-          http.request(request)
-        }
-      rescue => error
-        Rails.logger.error("Error connecting to archives #{archive_url}: #{error.message}")
-        return
-      end
-      return result
+    VirtualResponse = Struct.new(:code)
+
+    def status_request
+      return VirtualResponse.new(code: '000') if Settings.archive_api.disabled
+      archive_request
     end
-    alias_method :status_request, :archive_request
  
     # if not yet staged: requests for staging (if possible)
     # @return Hash
@@ -257,4 +240,29 @@ class ArchiveFile
         File.write(job_file_path, new_params.to_yaml)
       end
     end
+
+    private
+      # main method for all archive interactions 
+      # formerly supported Net::HTTP::Get calls, but those are now handled by DownloadArchivalFilesTask
+      # now only supports read-only status requests
+      # @return Net::HTTPResponse
+      def archive_request(method: Net::HTTP::Head)
+        uri = URI.parse(archive_url)
+        unless method == Net::HTTP::Head
+          Rails.logger.error("archive_request called with non-whitelisted method: #{method}")
+          return
+        end
+        request = method.new(uri.request_uri)
+        request['Authorization'] = "#{Settings.archive_api.username}:#{Settings.archive_api.password}"
+        begin
+          result = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') { |http|
+            http.request(request)
+          }
+        rescue => error
+          Rails.logger.error("Error connecting to archives #{archive_url}: #{error.message}")
+          return
+        end
+        return result
+      end
+  
 end
