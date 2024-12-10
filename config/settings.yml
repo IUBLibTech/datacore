@@ -116,6 +116,7 @@ ingest:
     ingest: 107374182400 # 100.gigabytes
 
 archive_api:
+  disabled: false # used to force-disable archive server interactions, when the server is known down
   use_recaptcha: false
   require_user_authentication: false
   provide_email: false # [false, :optional, :required]

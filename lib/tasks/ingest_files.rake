@@ -33,6 +33,10 @@ module Datacore
     end
 
     def run
+      if Settings.archive_api.disabled
+        logger.info("Skipping ingest job processing, archive API is disabled")
+        return
+      end
       logger.info("Starting ingest.")
       user = User.find_by_user_key(USER_KEY)
       if user
