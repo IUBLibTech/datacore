@@ -79,7 +79,7 @@ module Hyrax
         Deepblue::ProvenanceLogService.entries( id, refresh: true )
         # continue on to normal display
         #redirect_to [main_app, curation_concern]
-        redirect_to :back
+       redirect_back fallback_location: root_url
       end
 
       def display_provenance_log_enabled?
