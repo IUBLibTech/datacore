@@ -6,3 +6,6 @@ Hyrax::DownloadsController.prepend Extensions::Hyrax::DownloadsController::Varia
 # update obsolete URI escaping methods
 Hydra::AccessControls::Permission.prepend Extensions::Hydra::AccessControls::Permission::EscapingObsoletions
 ActiveFedora::File.prepend Extensions::ActiveFedora::File::EscapingObsoletions
+
+# Collections search
+Qa::Authorities::Collections.prepend Extensions::Qa::Authorities::Collections::CollectionsSearch
