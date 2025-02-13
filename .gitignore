@@ -77,3 +77,4 @@ config/settings/*.local.yml
 vendor/*
 import/*
 *.swp
+coverage/
