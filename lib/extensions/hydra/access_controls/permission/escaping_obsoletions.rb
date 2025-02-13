@@ -3,13 +3,14 @@ module Extensions
     module AccessControls
       module Permission
         module EscapingObsoletions
-          # unmodified from hydra-access-controls
+          # modified to use CGI method instead of obsolete URI method
           def agent_name
-            ::URI.decode(parsed_agent.last)
+            ::CGI.unescape(parsed_agent.last)
           end
-          # unmodified from hydra-access-controls
+
+          # modified to use CGI method instead of obsolete URI method
           def build_agent_resource(prefix, name)
-            [::Hydra::AccessControls::Agent.new(::RDF::URI.new("#{prefix}##{::URI.encode(name)}"))]
+            [::Hydra::AccessControls::Agent.new(::RDF::URI.new("#{prefix}##{::CGI.escape(name)}"))]
           end
         end
       end
