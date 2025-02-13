@@ -1,18 +1,18 @@
-hostname: 'test.deepblue.lib.umich.edu'
+hostname: 'test.datacaore.iu.edu'
 
 hyrax:
-  redis_namespace: 'deepbluedata-test'
+  redis_namespace: 'datacore-test'
 
 fedora:
   url: http://127.0.0.1:<%= ENV['FCREPO_TEST_PORT'] || 8986 %>/rest
-  base_path: /deepbluedata-test
+  base_path: /datacore-test
 
 # We specify an explicitly named test core. Make sure that config/solr_wrapper_test.yml
 # matches this if you change it and depend on the `ci` rake task. You can run Fedora and
 # Solr on any ports and namespaces manually and use .local.yml files for tests run by
 # hand, but the rake task uses what's in the file exclusively.
 solr:
-  url: http://127.0.0.1:<%= ENV['SOLR_TEST_PORT'] || 8985 %>/solr/deepbluedata-test
+  url: http://127.0.0.1:<%= ENV['SOLR_TEST_PORT'] || 8985 %>/solr/hydra-test
 
 ezid:
   timeout: 10

@@ -6,4 +6,4 @@ instance_dir: tmp/solr-test
 collection:
     persist: false
     dir: solr/config
-    name: deepbluedata-test
+    name: hydra-test
