@@ -1,5 +1,15 @@
+require 'simplecov'
+SimpleCov.start 'rails' do
+  add_group('Actors', 'app/actors')
+  add_group('Forms', 'app/forms')
+  add_group('Indexers', 'app/indexers')
+  add_group('Presenters', 'app/presenters')
+  add_group('Services', 'app/services')
+end
+
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
+
 require 'rspec/rails'
 require 'factory_bot'
 require 'rspec/its'
