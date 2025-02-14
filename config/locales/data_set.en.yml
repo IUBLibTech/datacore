@@ -198,7 +198,7 @@ en:
           Please provide information about your data set (referred to as a "work") in the following fields, keeping in
           mind that your responses will enable people to discover, identify, and understand your data. If you are
           uncertain of how to complete any of these fields, we recommend that you read or refer to the
-          <a href="/data/metadata-guidance">Guide to Metadata</a> in DataCORE’s Help pages.
+          <a href="/metadata-guidance">Guide to Metadata</a> in DataCORE’s Help pages.
         description: >
           Provide a general description of the research that produced this data. If specific software or scripts
           are required to access your data, this is a good place to document that as well.
