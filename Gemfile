@@ -3,6 +3,10 @@
 
 source 'https://rubygems.org'
 
+# workarounds for gems failing to build
+gem 'libxml-ruby', '3.1.0', path: 'vendor/bundle/ruby/2.7.0/gems/libxml-ruby-3.1.0'
+gem "posix-spawn", github: "https://github.com/rtomayko/posix-spawn/pull/93"
+
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
   "https://github.com/#{repo_name}.git"
@@ -135,7 +139,7 @@ group :development, :test do
   gem 'solr_wrapper', '~> 2.1.0'
 end
 
-gem 'willow_sword', github: 'notch8/willow_sword'
+gem 'willow_sword', github: 'notch8/willow_sword', ref: '0a669d7'
 
 gem 'dotenv-rails'
 gem 'recaptcha'

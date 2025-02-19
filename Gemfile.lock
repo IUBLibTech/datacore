@@ -1,11 +1,19 @@
 GIT
   remote: https://github.com/notch8/willow_sword.git
-  revision: 74f7684ff9ca96251f341e50a3afc34b5bd312cc
+  revision: 0a669d78617c6003e4aa1a46a10447be92be27d5
+  ref: 0a669d7
   specs:
     willow_sword (0.2.0)
       bagit (~> 0.4.1)
       rails (>= 5.1.6)
       rubyzip (>= 1.0.0)
+
+GIT
+  remote: https://github.com/rtomayko/posix-spawn.git
+  revision: 0fce38ed5458b638eda5f3bb711903424a4366db
+  ref: refs/pull/93/head
+  specs:
+    posix-spawn (0.3.15)
 
 GIT
   remote: https://github.com/samvera-labs/bulkrax.git
@@ -25,6 +33,11 @@ GIT
       rails (>= 5.1.6)
       rdf (>= 2.0.2, < 4.0)
       simple_form
+
+PATH
+  remote: vendor/bundle/ruby/2.7.0/gems/libxml-ruby-3.1.0
+  specs:
+    libxml-ruby (3.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -556,7 +569,6 @@ GEM
       actionpack (>= 4)
       less (~> 2.6.0)
       sprockets (>= 2)
-    libxml-ruby (3.1.0)
     link_header (0.0.8)
     linkeddata (3.1.1)
       equivalent-xml (~> 0.6)
@@ -672,7 +684,6 @@ GEM
       ast (~> 2.4.1)
       racc
     parslet (2.0.0)
-    posix-spawn (0.3.15)
     power_converter (0.1.2)
     pry (0.14.2)
       coderay (~> 1.1)
@@ -1071,6 +1082,7 @@ DEPENDENCIES
   jira-ruby (~> 1.1)
   jquery-rails
   ldap_groups_lookup (~> 0.11.0)
+  libxml-ruby (= 3.1.0)!
   listen (~> 3.0.5)
   loofah (~> 2.19.1)
   mysql2
@@ -1078,6 +1090,7 @@ DEPENDENCIES
   okcomputer (~> 1.17)
   omniauth
   omniauth-cas
+  posix-spawn!
   pry
   pry-byebug
   pry-rails
