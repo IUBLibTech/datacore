@@ -7,7 +7,7 @@ module Extensions
         # Otherwise renders the file.
         def show
           case file
-          when ActiveFedora::File
+          when ::ActiveFedora::File
             case file.mime_type
             when /access-type=URL/
               # for original files that bypass fedora, manage archival file interactions on FileSet show page
@@ -16,11 +16,11 @@ module Extensions
               # For original files that are stored in fedora
               super
             end
-          when String
+          when ::String
             # For derivatives stored on the local file system
             send_local_content
           else
-            raise ActiveFedora::ObjectNotFoundError
+            raise ::ActiveFedora::ObjectNotFoundError
           end
         end
       end
