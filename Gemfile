@@ -4,7 +4,12 @@
 source 'https://rubygems.org'
 
 # workarounds for gems failing to build
-gem 'libxml-ruby', '3.1.0', path: 'vendor/bundle/ruby/2.7.0/gems/libxml-ruby-3.1.0'
+require 'pathname'
+if Pathname.new('vendor/bundle/ruby/2.7.0/gems/libxml-ruby-3.1.0').exist?
+  gem 'libxml-ruby', '3.1.0', path: 'vendor/bundle/ruby/2.7.0/gems/libxml-ruby-3.1.0'
+else
+  gem 'libxml-ruby', '3.1.0'
+end
 gem "posix-spawn", github: "https://github.com/rtomayko/posix-spawn/pull/93"
 
 git_source(:github) do |repo_name|

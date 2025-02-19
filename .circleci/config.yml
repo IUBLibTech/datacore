@@ -83,8 +83,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            gem update --system
-            gem update bundler
+            # skip below lines complaining about old ruby version holding back gem upgrades
+            # gem update --system
+            # gem update bundler
             bundle config path $CIRCLE_WORKING_DIRECTORY/vendor/bundle
             bundle install
             bundle pristine chromedriver-helper
