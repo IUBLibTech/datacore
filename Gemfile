@@ -143,3 +143,4 @@ gem 'willow_sword', github: 'notch8/willow_sword', ref: '0a669d7'
 
 gem 'dotenv-rails'
 gem 'recaptcha'
+gem 'redlock', '~> 1.2' # redis locking fails on newer
