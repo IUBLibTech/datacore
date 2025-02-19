@@ -9,3 +9,7 @@ ActiveFedora::File.prepend Extensions::ActiveFedora::File::EscapingObsoletions
 
 # Collections search
 Qa::Authorities::Collections.prepend Extensions::Qa::Authorities::Collections::CollectionsSearch
+
+# return false for render_bookmarks_control? in CollectionsController
+Hyrax::CollectionsController.prepend Extensions::Hyrax::CollectionsController::RenderBookmarksControl
+Hyrax::My::CollectionsController.prepend Extensions::Hyrax::CollectionsController::RenderBookmarksControl

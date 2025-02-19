@@ -464,12 +464,12 @@ module Hyrax
 
       def flash_and_go_back( msg )
         Deepblue::LoggingHelper.debug msg
-        redirect_to :back, notice: msg
+        redirect_back fallback_location: root_url, notice: msg
       end
 
       def flash_error_and_go_back( msg )
         Deepblue::LoggingHelper.debug msg
-        redirect_to :back, error: msg
+        redirect_back fallback_location: root_url, alert: msg
       end
 
       def flash_and_redirect_to_main_cc( msg )
