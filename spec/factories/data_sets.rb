@@ -2,6 +2,14 @@
 
 FactoryBot.define do
   factory :data_set, aliases: [:data_set_work], class: ::DataSet do
+    title { ["Test title"] }
+    visibility { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
+    authoremail { "test@iu.edu" }
+    description { ["This is the description."] }
+    methodology { "The Methodology" }
+    creator { ['creator1'] }
+    rights_license { "http://creativecommons.org/publicdomain/zero/1.0/" }
+    rights_statement { ["http://rightsstatements.org/vocab/NKC/1.0/"] }
 
     transient do
       user { create(:user) }
@@ -24,13 +32,6 @@ FactoryBot.define do
     after(:create) do |work, _evaluator|
       work.save! if work.member_of_collections.present?
     end
-
-    title { ["Test title"] }
-    visibility { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
-
-    authoremail { "test@umich.edu" }
-    description { ["This is the description."] }
-    methodology { "The Methodology" }
 
     after(:build) do |work, evaluator|
       work.apply_depositor_metadata(evaluator.user.user_key)
