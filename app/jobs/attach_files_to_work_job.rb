@@ -212,17 +212,27 @@ class AttachFilesToWorkJob < ::Hyrax::ApplicationJob
                                   work_id: work.id,
                                   work_file_set_count: work.file_set_ids.count,
                                   asynchronous: ATTACH_FILES_TO_WORK_UPLOAD_FILES_ASYNCHRONOUSLY)
-      actor = Hyrax::Actors::FileSetActor.new( FileSet.create, user )
-      actor.file_set.permissions_attributes = work_permissions
-      actor.create_metadata( metadata )
-      # when actor.create content is here, and the processing is synchronous, then it fails to add size to the file_set
-      # actor.create_content( uploaded_file, continue_job_chain_later: ATTACH_FILES_TO_WORK_UPLOAD_FILES_ASYNCHRONOUSLY )
-      actor.attach_to_work( work, uploaded_file_id: Deepblue::UploadHelper.uploaded_file_id( uploaded_file ) )
-      uploaded_file.update( file_set_uri: actor.file_set.uri )
-      actor.create_content( uploaded_file,
-                            continue_job_chain_later: ATTACH_FILES_TO_WORK_UPLOAD_FILES_ASYNCHRONOUSLY,
-                            uploaded_file_ids: uploaded_file_ids,
-                            bypass_fedora: bypass_fedora)
+      case file_size_category(uploaded_file)
+      when :standard
+        copy_to_outbox!(uploaded_file, work) # for SDA archiving, as in final step of dropbox ingest
+        actor = Hyrax::Actors::FileSetActor.new( FileSet.create, user )
+        actor.file_set.permissions_attributes = work_permissions
+        actor.create_metadata( metadata )
+        # when actor.create content is here, and the processing is synchronous, then it fails to add size to the file_set
+        # actor.create_content( uploaded_file, continue_job_chain_later: ATTACH_FILES_TO_WORK_UPLOAD_FILES_ASYNCHRONOUSLY )
+        actor.attach_to_work( work, uploaded_file_id: Deepblue::UploadHelper.uploaded_file_id( uploaded_file ) )
+        uploaded_file.update( file_set_uri: actor.file_set.uri )
+        actor.create_content( uploaded_file,
+                             continue_job_chain_later: ATTACH_FILES_TO_WORK_UPLOAD_FILES_ASYNCHRONOUSLY,
+                             uploaded_file_ids: uploaded_file_ids,
+                             bypass_fedora: bypass_fedora)
+      when :large
+        move_to_inbox!(uploaded_file, work) # for large workflow dropbox ingest, FileSet creation bypassing Fedora storage
+      when :excessive
+        move_to_inbox!(uploaded_file, work) # @todo handle very-large case
+      when :error
+        raise StandardError, 'Error sizing uploaded file'
+      end
       @processed << uploaded_file
     rescue Exception => e # rubocop:disable Lint/RescueException
       Rails.logger.error "#{e.class} work.id=#{work.id} -- #{e.message} at #{e.backtrace[0]}"
@@ -257,4 +267,38 @@ class AttachFilesToWorkJob < ::Hyrax::ApplicationJob
       end
     end
 
+    def file_size_category(uploaded_file)
+      size = begin 
+               Rails.application.load_tasks unless defined?(Datacore::IngestFilesFromDirectoryTask)
+               File.size(uploaded_file.uploader.path)
+             rescue => e
+               Rails.logger.error("Error reading file size from #{uploaded_file.inspect} at #{uploaded_file.uploader.path}: #{e.inspect}")
+               -1
+             end
+      if size < 0
+        :error
+      elsif size <= Datacore::IngestFilesFromDirectoryTask::FEDORA_SIZE_LIMIT
+        :standard
+      elsif size <= Datacore::IngestFilesFromDirectoryTask::INGEST_SIZE_LIMIT
+        :large
+      else
+        :excessive
+      end
+    end
+
+    def copy_to_outbox!(uploaded_file, work)
+      dropbox_action!(uploaded_file, work, Settings.ingest.outbox, :cp)
+    end
+
+    def move_to_inbox!(uploaded_file, work)
+      dropbox_action!(uploaded_file, work, Settings.ingest.large_inbox, :mv)
+    end
+
+    def dropbox_action!(uploaded_file, work, destination_dir, action)
+      origin_path = uploaded_file.uploader.path 
+      origin_file = Pathname.new(origin_path).basename
+      destination_file = "#{work.id}_#{origin_file}"
+      destination_path = Pathname.new(destination_dir).join(destination_file)
+      FileUtils.send(action, origin_path, destination_path)
+    end
 end
