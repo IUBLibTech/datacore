@@ -20,7 +20,7 @@ module Extensions
             # For derivatives stored on the local file system
             send_local_content
           else
-            raise ::ActiveFedora::ObjectNotFoundError
+            render_404
           end
         end
       end

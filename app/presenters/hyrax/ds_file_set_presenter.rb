@@ -58,7 +58,7 @@ module Hyrax
     end
 
     def first_title
-      title.first
+      title.first || 'File'
     end
 
     # To handle large files.
