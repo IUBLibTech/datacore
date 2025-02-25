@@ -110,14 +110,24 @@ class AttachFilesToWorkJob < ::Hyrax::ApplicationJob
     end
 
     def file_stats( uploaded_file )
-      file_set_id = ActiveFedora::Base.uri_to_id uploaded_file.file_set_uri
-      file_set = FileSet.find file_set_id
-      return file_set.original_name_value, file_set.file_size_value
-    rescue Exception => e # rubocop:disable Lint/RescueException
-      Rails.logger.error "#{e.class} #{e.message} at #{e.backtrace[0]}"
-      return e.to_s, ''
+      begin
+        if uploaded_file.file_set_uri
+          file_set_id = ActiveFedora::Base.uri_to_id uploaded_file.file_set_uri
+          file_set = FileSet.find(file_set_id)
+          file_name = file_set.original_name_value
+          file_size = file_set.file_size_value
+        else
+          file_path = uploaded_file.uploader.path
+          file_name = "#{Pathname.new(file_path).basename} (large file still processing)"
+          file_size = File.exist?(file_path) ? File.size(file_path) : '(size TBD)'
+        end
+        return file_name, file_size
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        Rails.logger.error "#{e.class} #{e.message} at #{e.backtrace[0]}"
+        return e.to_s, ''
+      end
     end
-
+  
     def notify_attach_files_to_work_job_complete( failed_to_upload:, uploaded_files:, user:, work: )
       notify_user = DeepBlueDocs::Application.config.notify_user_file_upload_and_ingest_are_complete
       notify_managers = DeepBlueDocs::Application.config.notify_managers_file_upload_and_ingest_are_complete
