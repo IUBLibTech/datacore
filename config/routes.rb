@@ -8,7 +8,9 @@ resque_web_constraint = lambda do |request|
 end
 
 Rails.application.routes.draw do
-  mount Bulkrax::Engine, at: '/'
+  if defined?(Bulkrax)
+    mount Bulkrax::Engine, at: '/'
+  end
   mount BrowseEverything::Engine => '/browse'
 
   # block Blacklight bookmark routes
