@@ -1,6 +1,18 @@
+<% if Hyrax.config.download_files && (@presenter.zip_download_enabled? || @presenter.try(:globus_enabled?)) %>
   <div class="panel panel-default panel-download">
     <div class="panel-heading">
-      <h2>Download All Files (To download individual files, select them in the “Files” panel above)</h2>
+      <h2>Download All Files</h2>
+      <% if @presenter.member_presenters.all?(&:archive_file?) %>
+        <h3>All associated files for this dataset file must be individually downloaded.  This zip download will include dataset metadata, only.</h3>
+      <% elsif @presenter.member_presenters.any?(&:archive_file?) %>
+        <h3>Some files associated to this dataset must be individually downloaded, and will not be included in the zip download:</h3>
+        <ul>
+        <% @presenter.member_presenters.select(&:archive_file?).each do |archive_file| %>
+          <li><%= link_to archive_file.title&.first, hyrax.download_path(archive_file) %></li>
+        <% end %>
+        </ul>
+      <% end %>
+      <h3>To download individual files, select them in the “Files” panel above</h3>
     </div>
     <div class="panel-body">
       <% if Hyrax.config.download_files %>
@@ -83,3 +95,4 @@
       <% end %>
     </div>
   </div> <!--End Download panel-->
+<% end %>

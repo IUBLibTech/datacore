@@ -43,6 +43,8 @@ module Deepblue
         file = file_set.files_to_file
         if file.nil?
           Rails.logger.warn "#{log_prefix} file_set.id #{file_set.id} files[0] is nil"
+        elsif file_set.archive_file?
+          # exclude from .zip
         else
           target_file_name = file_set.label
           # fix possible issues with target file name
