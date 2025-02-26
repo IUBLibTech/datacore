@@ -95,7 +95,7 @@ class ArchiveFile
 
   # bypasses status in job file via checking directly
   def downloaded?
-    File.exist?(local_path)
+    File.exist?(local_path.to_s)
   end
 
   def staged?
