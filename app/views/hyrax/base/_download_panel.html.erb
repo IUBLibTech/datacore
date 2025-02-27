@@ -3,16 +3,19 @@
     <div class="panel-heading">
       <h2>Download All Files</h2>
       <% if @presenter.member_presenters.all?(&:archive_file?) %>
-        <h3>All associated files for this dataset file must be individually downloaded.  This zip download will include dataset metadata, only.</h3>
+
+        <h3>All files in this dataset must be individually downloaded.  This zip download will include the dataset metadata export, only.</h3>
       <% elsif @presenter.member_presenters.any?(&:archive_file?) %>
-        <h3>Some files associated to this dataset must be individually downloaded, and will not be included in the zip download:</h3>
+        <h3>Some files in this dataset must be individually downloaded, and will not be included in the zip download:</h3>
         <ul>
         <% @presenter.member_presenters.select(&:archive_file?).each do |archive_file| %>
           <li><%= link_to archive_file.title&.first, hyrax.download_path(archive_file) %></li>
         <% end %>
         </ul>
+      <% else %>
+        <h3>All files in this dataset will be included in the zip download.</h3>
       <% end %>
-      <h3>To download individual files, select them in the “Files” panel above</h3>
+      <h3>Files can be downloaded invididually in the "Files" panel above.</h3>
     </div>
     <div class="panel-body">
       <% if Hyrax.config.download_files %>
