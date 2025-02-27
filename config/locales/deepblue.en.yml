@@ -18,7 +18,7 @@ en:
 
   header:
     dashboard_link: 'Dashboard'
-    mlib_home_path: 'http://www.lib.umich.edu'
+    mlib_home_path: 'http://www.iu.edu'
 
   hyrax:
     embargoes:
@@ -36,9 +36,8 @@ en:
 
   homepage:
     marketing_blurb: >
-      IU DataCORE is a repository offered by Indiana University Libraries
-      that provides access and preservation services for digital research data
-      that were developed or used in the support of research activities at IU.
+      IU DataCORE is an open-access institutional data repository designed to support the sharing, long-term preservation, and discovery of research data collected by researchers at Indiana University. 
+      For our repository of publications please visit IU ScholarWorks: https://scholarworks.iu.edu/dspace/home.
   contact:
     by_email:        "by email"
     by_contact_form: "use the DataCORE contact page"
@@ -70,7 +69,7 @@ en:
     globus_files_when_available_email:
       "%{user_email} will be sent an email when the files are available for download via Globus."
     globus_success:
-      'Your dowload all files to Globus was successful!'
+      'Your download all files to Globus was successful!'
     tombstone_notice:
       "Tombstoned: \"%{title}\" for this reason: %{reason}"
     tombstoned: >
