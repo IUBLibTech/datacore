@@ -106,12 +106,12 @@ module Datacore
               #TODO: set a metadata field on the datacore fileset that points to the SDA rest api
               f = File.open(EMPTY_FILEPATH,'r')
               uf = Hyrax::UploadedFile.new(file: f, user: user)
-              AttachFilesToWorkJob.perform_now( w, [uf], user.user_key, work_attributes(w).merge(bypass_fedora: bypass_url(w, filename)) )
+              AttachFilesToWorkJob.perform_now( w, [uf], w.depositor || user.user_key, work_attributes(w).merge(bypass_fedora: bypass_url(w, filename)) )
               f.close()
             else
               f = File.open(filepath,'r')
               uf = Hyrax::UploadedFile.new(file: f, user: user)
-              AttachFilesToWorkJob.perform_now( w, [uf], user.user_key, work_attributes(w) )
+              AttachFilesToWorkJob.perform_now( w, [uf], w.depositor || user.user_key, work_attributes(w) )
               f.close()
             end
             if INGEST_OUTBOX.present?

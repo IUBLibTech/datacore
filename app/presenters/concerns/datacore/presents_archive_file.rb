@@ -5,7 +5,7 @@ module Datacore
 
     # archive files bypass fedora storage
     def archive_file?
-      mime_type.match(/^message\/external-body\;.*access-type=URL/).present?
+      mime_type.to_s.match(/^message\/external-body\;.*access-type=URL/).present?
     end
 
     # needs to pass through archive_file in case any / to %2F encoding happened there
