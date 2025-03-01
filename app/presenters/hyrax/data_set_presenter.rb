@@ -216,14 +216,8 @@ module Hyrax
       human_readable( total_file_size )
     end
 
-    # begin zip download
-
     def zip_download_enabled?
-      true
+      Settings.zip_download_enabled
     end
-
-    # end zip download
-
   end
-
 end

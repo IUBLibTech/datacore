@@ -412,7 +412,7 @@ module Hyrax
     end
 
     def zip_download_enabled?
-      true
+      Settings.zip_download_enabled
     end
 
     # end zip download operations

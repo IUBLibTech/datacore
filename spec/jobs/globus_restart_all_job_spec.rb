@@ -10,7 +10,7 @@ end
 describe GlobusRestartAllJob, "GlobusJob globus_enabled: :true", globus_enabled: :true do # rubocop:disable RSpec/DescribeMethod
 
   let( :globus_dir ) { Pathname "/tmp/deepbluedata-globus" }
-  let( :target_name ) { "DeepBlueData_Restart_All" }
+  let( :target_name ) { "DataCORE_Restart_All" }
   # let( :target_name_prep_dir ) { "#{GlobusJob.server_prefix(str:'_')}#{target_name}" }
   let( :globus_prep_dir ) { globus_dir.join 'prep' }
   let( :job_complete_file ) { globus_prep_dir.join ".test.restarted.#{target_name}" }
@@ -29,7 +29,7 @@ describe GlobusRestartAllJob, "GlobusJob globus_enabled: :true", globus_enabled:
       end
       let( :log_prefix ) { "Globus: globus_restart_all_job " }
       let( :globus_era_file ) { GlobusJob.era_token }
-      let( :target ) { "DeepBlueData_" }
+      let( :target ) { "DataCORE_" }
       let( :id00 ) { "id000" }
       let( :file00 ) { "#{globus_prep_dir}/.development.lock.#{target}#{id00}" }
       let( :dir00 ) { "#{globus_prep_dir}/development_#{target}#{id00}" }

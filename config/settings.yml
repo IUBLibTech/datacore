@@ -197,3 +197,5 @@ ldap:
   tree: 'ldap_tree'
   account_ou: 'ldap_account_ou'
   group_ou: 'ldap_group_ou'
+
+zip_download_enabled: true
