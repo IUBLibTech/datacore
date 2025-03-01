@@ -141,3 +141,8 @@ en:
         text: Restricted
       open:
         text: Open Access
+    homepage:
+      featured_links:
+        no_works: No links have been featured
+        tab_label: Documentation
+        title: Documentation
