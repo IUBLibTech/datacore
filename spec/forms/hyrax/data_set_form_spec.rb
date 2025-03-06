@@ -56,6 +56,12 @@ RSpec.describe Hyrax::DataSetForm do
     geo_location_box
   ] }
 
+  describe '#data_set?' do
+    it 'returns true' do
+      expect(form.data_set?).to eq true
+    end
+  end
+
   describe "#required_fields" do
     subject { form.required_fields }
 
