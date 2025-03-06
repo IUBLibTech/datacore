@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
   end
 
   def new
-    raise unless Rails.configuration.authentication_method == "umich"
+    raise unless Rails.configuration.authentication_method != "iu"
     if user_signed_in?
       Rails.logger.debug "[AUTHN] sessions#new, redirecting"
       # redirect to where user came from (see Devise::Controllers::StoreLocation#stored_location_for)

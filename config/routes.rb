@@ -51,10 +51,7 @@ Rails.application.routes.draw do
     concerns :searchable
   end
 
-
-  if Rails.configuration.authentication_method == "umich"
-    devise_for :users, path: '', path_names: {sign_in: 'login', sign_out: 'logout'}, controllers: {sessions: 'sessions'}
-  elsif Rails.configuration.authentication_method == "iu"
+  if Rails.configuration.authentication_method == "iu"
     devise_for :users, controllers: { sessions: 'users/sessions', omniauth_callbacks: "users/omniauth_callbacks" }, skip: [:passwords, :registration]
     devise_scope :user do
       get('global_sign_out',
