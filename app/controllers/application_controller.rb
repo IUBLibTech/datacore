@@ -28,10 +28,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  if Rails.configuration.authentication_method == "umich"
-    before_action :clear_session_user
-  end
-
   # From PSU's ScholarSphere
   # Clears any user session and authorization information by:
   #   * forcing the session to be restarted on every request
