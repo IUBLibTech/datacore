@@ -28,10 +28,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  if Rails.configuration.authentication_method == "umich"
-    before_action :clear_session_user
-  end
-
   # From PSU's ScholarSphere
   # Clears any user session and authorization information by:
   #   * forcing the session to be restarted on every request
@@ -81,30 +77,6 @@ class ApplicationController < ActionController::Base
     #                                        "params=#{params}",
     #                                        "params.keys=#{params.keys}",
     #                                        "" ]
-  end
-  
-  def user_logged_in?
-    user_signed_in? && ( valid_user?(request.headers) || Rails.env.test?)
-  end
-
-  def sso_logout
-    ::Deepblue::LoggingHelper.bold_debug [ ::Deepblue::LoggingHelper.here,
-                                           ::Deepblue::LoggingHelper.called_from,
-                                           "[AUTHN] sso_logout: #{current_user.try(:email) || '(no user)'}",
-                                           "" ]
-    redirect_to Hyrax::Engine.config.logout_prefix + logout_now_url
-  end
-
-  def sso_auto_logout
-    Rails.logger.debug "[AUTHN] sso_auto_logout: #{current_user.try(:email) || '(no user)'}"
-    # ::Deepblue::LoggingHelper.bold_debug [ ::Deepblue::LoggingHelper.here,
-    #                                        ::Deepblue::LoggingHelper.called_from,
-    #                                        "[AUTHN] sso_auto_logout: #{current_user.try(:email) || '(no user)'}",
-    #                                        "" ]
-    sign_out(:user)
-    cookies.delete("cosign-" + Hyrax::Engine.config.hostname, path: '/')
-    session.destroy
-    flash.clear
   end
 
   Warden::Manager.after_authentication do |user, auth, opts|
