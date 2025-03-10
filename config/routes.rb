@@ -64,8 +64,6 @@ Rails.application.routes.draw do
     devise_for :users
   end
 
-  get '/logout_now', to: 'sessions#logout_now'
-
   mount Qa::Engine => '/authorities'
   mount Hyrax::Engine, at: '/'
   resources :welcome, only: 'index'
