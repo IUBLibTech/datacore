@@ -115,6 +115,7 @@ gem 'okcomputer', '~> 1.17'
 gem 'omniauth'
 gem 'omniauth-cas'
 gem 'ldap_groups_lookup', '~> 0.11.0'
+gem 'hydra-role-management'
 gem 'riiif', '~> 1.1'
 gem 'rsolr', '>= 1.0'
 group :development, :test do

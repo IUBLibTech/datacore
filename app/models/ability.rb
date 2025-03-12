@@ -44,6 +44,9 @@ class Ability
       cannot [:create, :edit, :update, :destroy], DataSet
       cannot [:create, :edit, :update, :destroy], FileSet
     end
+    if admin?
+      # can [:create, :show, :add_user, :remove_user, :index, :edit, :update, :destroy], Role  # uncomment to expose Role management in UI
+    end 
   end
 
   def can_deposit?
