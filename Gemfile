@@ -75,12 +75,6 @@ gem 'redis', '~> 4.0'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-# Pinning Rack commit that resolves the large file upload issue
-# When 2.0.4 is out this might not be needed anymore
-# See: https://tools.lib.umich.edu/jira/browse/DBD-920
-#      https://tools.lib.umich.edu/jira/browse/HELIO-1450
-# gem 'rack', git: 'https://github.com/rack/rack.git', ref: 'ee01748'
-
 # Begin security vulnerability mitigation
 # bundle update --source gem-name
 gem 'bootstrap-sass', '~> 3.4.1'
@@ -95,7 +89,6 @@ gem 'sprockets', '~> 3.7.2'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
-  # gem 'rubocop'
   gem 'rubocop'
   gem 'rubocop-rspec'
 end
