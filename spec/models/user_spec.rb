@@ -9,30 +9,23 @@ RSpec.describe User, type: :model do
     describe ':user' do
       let(:user) { build(:user) }
 
-      it 'will, by default, have no groups' do
+      it 'will, by default, have only registered group' do
         expect(user.groups).to eq([])
         user.save!
         # Ensuring that we can refind it and have the correct groups
-        expect(user.class.find(user.id).groups).to eq([])
-      end
-      it 'will allow for override of groups' do
-        user = build(:user, groups: 'chicken')
-        expect(user.groups).to eq(['chicken'])
-        user.save!
-        # Ensuring that we can refind it and have the correct groups
-        expect(user.class.find(user.id).groups).to eq(['chicken'])
+        expect(user.class.find(user.id).groups).to eq(['registered'])
       end
     end
     describe ':admin' do
       let(:admin_user) { create(:admin) }
 
-      it 'will have an "admin" group' do
-        expect(admin_user.groups).to eq(['admin'])
+      it 'will be an "admin"' do
+        expect(admin_user.admin?).to be true
       end
       context 'when found from the database' do
-        it 'will have the expected "admin" group' do
+        it 'will be an "admin"' do
           refound_admin_user = described_class.find(admin_user.id)
-          expect(refound_admin_user.groups).to eq(['admin'])
+          expect(refound_admin_user.admin?).to be true
         end
       end
     end

@@ -90,6 +90,7 @@ jobs:
             bundle install
             bundle pristine chromedriver-helper
             bundle clean
+            bundle exec rake db:migrate RAILS_ENV=test
 
       - save_cache:
           paths:

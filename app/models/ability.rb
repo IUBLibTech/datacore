@@ -53,6 +53,10 @@ class Ability
     admin? || depositor?
   end
 
+  def admin?
+    current_user.admin? || super
+  end
+
   def depositor?
     depositing_role = Sipity::Role.find_by(name: Hyrax::RoleRegistry::DEPOSITING)
     return false unless depositing_role
