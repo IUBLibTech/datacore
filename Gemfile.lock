@@ -176,6 +176,9 @@ GEM
     bootstrap-sass (3.4.1)
       autoprefixer-rails (>= 5.2.1)
       sassc (>= 2.0.0)
+    bootstrap_form (5.1.0)
+      actionpack (>= 5.2)
+      activemodel (>= 5.2)
     breadcrumbs_on_rails (3.0.1)
     browse-everything (1.4.0)
       addressable (~> 2.5)
@@ -423,6 +426,13 @@ GEM
       active-fedora (>= 10)
       mime-types (>= 1)
       rdf-vocab
+    hydra-role-management (1.2.0)
+      blacklight (< 8)
+      bootstrap_form
+      bundler (>= 1.5)
+      cancancan
+      json (>= 1.8)
+      psych (~> 3.0)
     hydra-works (1.2.0)
       activesupport (>= 4.2.10, < 6.0)
       hydra-derivatives (~> 3.0)
@@ -693,6 +703,7 @@ GEM
       pry (>= 0.13, < 0.15)
     pry-rails (0.3.11)
       pry (>= 0.13.0)
+    psych (3.3.4)
     public_suffix (5.1.1)
     pul_uv_rails (2.0.1)
     puma (6.5.0)
@@ -1075,6 +1086,7 @@ DEPENDENCIES
   factory_bot
   fcrepo_wrapper
   font-awesome-sass (~> 5.0)
+  hydra-role-management
   hyrax (~> 2.9)
   jbuilder (~> 2.5)
   jira-ruby (~> 1.1)

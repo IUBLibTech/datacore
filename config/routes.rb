@@ -51,7 +51,6 @@ Rails.application.routes.draw do
     concerns :searchable
   end
 
-
   if Rails.configuration.authentication_method == "umich"
     devise_for :users, path: '', path_names: {sign_in: 'login', sign_out: 'logout'}, controllers: {sessions: 'sessions'}
   elsif Rails.configuration.authentication_method == "iu"
@@ -71,6 +70,7 @@ Rails.application.routes.draw do
 
   mount Qa::Engine => '/authorities'
   mount Hyrax::Engine, at: '/'
+  # mount Hydra::RoleManagement::Engine => '/' # uncomment to expose Role management in UI
   resources :welcome, only: 'index'
   root 'hyrax/homepage#index'
   curation_concerns_basic_routes

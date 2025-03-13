@@ -24,7 +24,7 @@ FactoryBot.define do
     end
 
     factory :admin do
-      groups { ['admin'] }
+      roles { [Role.where(name: 'admin').first_or_create] }
     end
 
     factory :user_with_mail do
