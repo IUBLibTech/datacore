@@ -1,12 +1,13 @@
-<% if request.path.include?('about') %>
-    <ul class="rvt-footer__aux-links">
-      <li class="rvt-footer__aux-item">
-          <%= link_to(t('hyrax.product_name'), 'https://github.com/IUBLibTech/datacore') %>
-          <%= link_to(ENV['SOURCE_COMMIT'].to_s.truncate(9), "https://github.com/IUBLibTech/datacore/tree/#{ENV['SOURCE_COMMIT']}") if ENV['SOURCE_COMMIT'] %>
-      </li>
-    </ul>
-<% end %>
-<footer id="footer" role="contentinfo" itemscope="itemscope" itemtype="http://schema.org/CollegeOrUniversity">
+<footer id="footerGitHub">
+  <div>
+    <% if request.path.include?('about') %>
+      <%= link_to(t('hyrax.product_name'), 'https://github.com/IUBLibTech/datacore') %>
+      <%= link_to(ENV['SOURCE_COMMIT'].to_s.truncate(9).squish, "https://github.com/IUBLibTech/datacore/tree/#{ENV['SOURCE_COMMIT']}") if ENV['SOURCE_COMMIT'] %>
+    <% end %>
+  </div>
+</footer>
+
+  <footer id="footer" role="contentinfo" itemscope="itemscope" itemtype="http://schema.org/CollegeOrUniversity">
     <div class="row pad">
         <p class="signature">
             <a href="https://www.iu.edu/index.html" class="signature-link signature-img"><img src="//assets.iu.edu/brand/3.3.x/iu-sig-formal.svg" alt="Indiana University"/></a>
