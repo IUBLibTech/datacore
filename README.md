@@ -1,16 +1,23 @@
-# DeepBlue
+# IU DataCORE
 
-University of Michigan Research Data Repository
-
-![deepblue](https://s3.amazonaws.com/ArchiveImages/LJ/2016/10/161014_DeepBlueData.jpg)
+IU DataCORE is an open-access institutional data repository designed to
+support the sharing, long-term preservation, and discovery of research data
+collected by researchers at Indiana University. IU DataCORE is a component
+of a suite of services provided by the Indiana University Libraries designed to
+broadly disseminate the intellectual contributions in research, teaching, and
+creativity made by the Indiana University community and to ensure its
+longevity.
 
 
 ## History
 
-This application is being developed as a part of the University of Michgan Research Data Services offerings.  
-Its goal is to improving the ability of researchers at the University of Michigan to make their data sets widely accessible and their research easily reproducible.
+This repository is based on “Deep Blue Data” an open-source application that
+is part of the University of Michigan’s Research Data Services offerings.
+
 
 ## Credits
+
+Indiana University Libraries.
 
 Samvera Project Community.
 
@@ -20,9 +27,8 @@ University of Michigan Library.
 
 ## License
 
-Regents of the University of Michigan... likely some rights reserved.
+some rights reserved.
 
 ## Wiki
 
-https://github.com/mlibrary/deepblue/wiki
-
+https://github.com/IUBLibTech/datacore/wiki
