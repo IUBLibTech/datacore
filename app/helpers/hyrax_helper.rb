@@ -3,6 +3,14 @@ module HyraxHelper
   include Hyrax::BlacklightOverride
   include Hyrax::HyraxHelperBehavior
 
+  # override hyrax method
+  # Which translations are available for the user to select
+  # @return [Hash{String => String}] locale abbreviations as keys and flags as values
+  def available_translations
+    {
+      'en' => 'English'
+    }
+  end
 
   # @param [Hash] options from blacklight invocation of helper_method
   # @see #index_field_link params
@@ -60,5 +68,4 @@ module HyraxHelper
     end
     I18n.t(key, scope: new_scope)
   end
-
 end

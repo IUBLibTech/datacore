@@ -121,4 +121,17 @@ class ApplicationController < ActionController::Base
   def rescue_404
     render file: Rails.public_path.join('404.html'), status: :not_found, layout: false
   end
+
+  before_action :set_locale
+
+  def set_locale
+    if params[:locale].present?
+      I18n.locale = constrained_locale || I18n.default_locale
+      params[:locale] = I18n.locale.to_s
+    end
+  end
+
+  def constrained_locale
+    return params[:locale] if params[:locale].in?(Object.new.extend(HyraxHelper).available_translations)
+  end
 end
