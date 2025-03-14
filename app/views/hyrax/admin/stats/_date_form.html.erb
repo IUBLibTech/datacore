@@ -5,4 +5,22 @@
   <%= f.label "end [defaults to now]" %>
   <input type="date" name="stats_filters[end_date]" value="<%= @presenter.stats_filters[:end_date] %>" placeholder="yyyy-mm-dd"></input>
   <%= f.submit "Load Stats" %>
+
+  <% if @presenter.stats_filters[:start_date].blank? and @presenter.stats_filters[:end_date].blank? == false  %>
+    <label class="warning-message">Please select a Start Date.</label>
+  <% end %>
+  <% if @presenter.valid_dates == false %>
+    <label class="warning-message">Please select an End Date later than the Start Date.</label>
+  <% end %>
 <%- end %>
+
+<script type="application/javascript">
+    $('a[href^="/admin/stats"]').parent().addClass("active");
+
+    $(".breadcrumb li").each((id, elem) => {
+        if (elem.innerText === "Reports") {
+            elem.children[0].remove();
+            elem.innerText = "Reports";
+        }
+    });
+</script>
