@@ -284,7 +284,7 @@ module Hyrax
       Deepblue::LoggingHelper.bold_debug [ "DataSetsController", "display_provenance_log", file_path ]
       Deepblue::ProvenanceLogService.entries( curation_concern.id, refresh: true )
       # continue on to normal display
-      redirect_to [main_app, curation_concern]
+      redirect_to polymorphic_url([main_app, curation_concern], anchor: "prov_log")
     end
 
     def display_provenance_log_enabled?
