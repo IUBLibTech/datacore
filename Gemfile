@@ -83,7 +83,7 @@ gem 'rack', '~> 2.2.6'
 gem 'rubyzip', '~> 2.3.0'
 gem 'sassc', '>= 2.0.0'
 gem 'sinatra', '~> 3.0.6'
-gem 'sprockets', '~> 3.7.2'
+gem 'sprockets', '3.7.2' # javascript errors with newer
 # End security vulnerability mitigation
 
 group :development, :test do
