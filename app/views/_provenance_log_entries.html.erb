@@ -1,5 +1,5 @@
 <% if current_ability.admin? && @presenter.present? && @presenter.display_provenance_log_enabled? %>
-  <div class="panel panel-default panel-items panel-provenance-log-entries">
+  <div id="prov_log" class="panel panel-default panel-items panel-provenance-log-entries">
     <% if @presenter.provenance_log_entries? %>
       <% provenance_log_entries = Deepblue::ProvenanceLogService.entries( @presenter.id ) %>
       <% if provenance_log_entries.present? %>
@@ -46,4 +46,24 @@
       <% end %>
     <% end %>
   </div>
+
+  <script type="text/javascript" defer>
+      document.addEventListener('turbolinks:load', function() {
+          let anchor = getAnchor();
+          if ( anchor != null) {
+              scrollToAnchor(anchor);
+          }
+     });
+
+     function getAnchor() {
+         let anchor = document.URL.split('#');
+         return anchor.length > 1 ? anchor[1] : null;
+     }
+
+     function scrollToAnchor(hash) {
+         let element = $('#' + hash);
+         element[0].scrollIntoView();
+     }
+  </script>
+
 <% end %>
