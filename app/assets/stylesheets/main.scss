@@ -860,6 +860,20 @@ div.facets h3 {
 
 /** Footer **/
 
+#footerGitHub {
+  background-color: $u-m-blue;
+  text-align: center;
+}
+
+#footerGitHub a {
+  color: #fff;
+  text-decoration: none;
+}
+
+#footerGitHub  a:hover {
+  color: #990000;
+}
+
 .footer {
   max-width: 100%;
   margin-top: 3em;
