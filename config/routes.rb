@@ -152,5 +152,9 @@ Rails.application.routes.draw do
   get '/sda/status/(:collection)/(:object)', to: 'archive#status'
   match '/sda/request/:collection/:object', to: 'archive#download_request', constraints: { object: /[^\/]+/ }, via: :get
 
+  # Send ActionController::RoutingError to 404 page
+  # Must be the last route defined
+  match '*unmatched', to: 'application#rescue_404', via: :all
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
