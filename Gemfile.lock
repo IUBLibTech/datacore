@@ -348,9 +348,8 @@ GEM
     fcrepo_wrapper (0.9.0)
       ruby-progressbar
     ffi (1.17.0)
-    flipflop (2.8.0)
+    flipflop (2.6.0)
       activesupport (>= 4.0)
-      terminal-table (>= 1.8)
     flot-rails (0.0.7)
       jquery-rails
     font-awesome-rails (4.7.0.9)
@@ -1012,8 +1011,6 @@ GEM
       matrix (~> 0.4)
       rdf (~> 3.2)
     temple (0.10.3)
-    terminal-table (3.0.2)
-      unicode-display_width (>= 1.1.1, < 3)
     thor (1.3.2)
     thread_safe (0.3.6)
     tilt (2.4.0)
@@ -1085,6 +1082,7 @@ DEPENDENCIES
   ezid-client
   factory_bot
   fcrepo_wrapper
+  flipflop (= 2.6.0)
   font-awesome-sass (~> 5.0)
   hydra-role-management
   hyrax (~> 2.9)
