@@ -25,6 +25,9 @@
           <%= menu.nav_link(hyrax.admin_features_path) do %>
             <span class="fa fa-wrench" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.technical') %></span>
           <% end %>
+          <%= menu.nav_link(main_app.edit_robots_path) do %>
+            <span class="fa fa-sitemap" aria-hidden="true"></span> <span class="sidebar-action-text">robots.txt</span>
+          <% end %>
         <% end %>
       <% end %>
     </li>
