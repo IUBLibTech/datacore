@@ -152,6 +152,9 @@ Rails.application.routes.draw do
   get '/sda/status/(:collection)/(:object)', to: 'archive#status'
   match '/sda/request/:collection/:object', to: 'archive#download_request', constraints: { object: /[^\/]+/ }, via: :get
 
+  # robots.txt config form
+  resource :robots, only: [:show, :edit, :update]
+
   # Send ActionController::RoutingError to 404 page
   # Must be the last route defined
   match '*unmatched', to: 'application#rescue_404', via: :all

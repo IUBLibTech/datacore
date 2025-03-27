@@ -1,0 +1,23 @@
+<div class="panel panel-default tabs">
+  <div class="tab-content">
+    <div id="about" class="tab-pane active">
+      <div class="panel panel-default labels">
+        <%= simple_form_for @robots_txt, url: robots_path do |f| %>
+          <div class="panel-body">
+            <div class="field form-group">
+                <%= f.label :value, 'robots.txt' %><br />
+              <code>
+                <%= f.text_area :value, value: f.object.value, class: 'form-control', rows: 20, cols: 120 %>
+              </code>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <%= f.button :button, 'Reset', type: :reset %>
+            <%= link_to t(:'hyrax.pages.cancel'), hyrax.dashboard_path, class: 'btn btn-default pull-right' %>
+            <%= f.button :submit, class: 'btn btn-primary pull-right' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
