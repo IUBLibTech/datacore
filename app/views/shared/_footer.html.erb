@@ -2,7 +2,8 @@
   <div>
     <% if request.path.include?('about') %>
       <%= link_to(t('hyrax.product_name'), 'https://github.com/IUBLibTech/datacore') %>
-      <%= link_to(ENV['SOURCE_COMMIT'].to_s.truncate(9).squish, "https://github.com/IUBLibTech/datacore/tree/#{ENV['SOURCE_COMMIT']}") if ENV['SOURCE_COMMIT'] %>
+      <%= link_to(ENV['SOURCE_VERSION'], "https://github.com/IUBLibTech/datacore/releases/tag/#{ENV['SOURCE_VERSION']}") if ENV['SOURCE_VERSION'] %>
+      <!-- commit: <%= ENV['SOURCE_COMMIT'] %> -->
     <% end %>
   </div>
 </footer>
