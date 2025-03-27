@@ -719,6 +719,8 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (2.2.10)
+    rack-attack (6.7.0)
+      rack (>= 1.0, < 4)
     rack-protection (3.0.6)
       rack
     rack-test (2.1.0)
@@ -1103,6 +1105,7 @@ DEPENDENCIES
   pry-rails
   puma
   rack (~> 2.2.6)
+  rack-attack (~> 6.7)
   rails (~> 5.2.8)
   rails-controller-testing
   recaptcha
