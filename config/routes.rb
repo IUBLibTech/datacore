@@ -152,8 +152,9 @@ Rails.application.routes.draw do
   get '/sda/status/(:collection)/(:object)', to: 'archive#status'
   match '/sda/request/:collection/:object', to: 'archive#download_request', constraints: { object: /[^\/]+/ }, via: :get
 
-  # robots.txt config form
+  # robots.txt and rack attack config forms
   resource :robots, only: [:show, :edit, :update]
+  resource :rack_attack, only: [:edit, :update]
 
   # Send ActionController::RoutingError to 404 page
   # Must be the last route defined
