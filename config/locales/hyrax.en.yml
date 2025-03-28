@@ -11,6 +11,8 @@ en:
           language_sim: Language
           publisher_sim: Publisher
           subject_sim: Subject
+          visibility_ssi: Visibility
+          collection_type_gid_ssim: "Collection Type"
         index:
           based_near_tesim: Location
           contributor_tesim: Contributor
