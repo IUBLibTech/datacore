@@ -496,12 +496,20 @@ div.branding-banner-row {
     font-size: 0.5em;
   }
 
+  span.label.label-warning,
+  span.label.label-danger,
+  span.label.label-info,
   span.label.label-success,
   span.label.label-primary {
     position: relative;
     top: -0.4rem;
   }
 }
+
+div.list-filters fieldset.btn-group {
+  vertical-align: top;
+}
+
 .work-show.data_set {
   background-color: #f2f2f2;
 }
@@ -594,6 +602,11 @@ a#stats {
   margin-bottom: 1em;
 }
 
+.warning-message {
+  color: red;
+  margin-left: 1em;
+}
+
 /** Show Actions **/
 
 .show-actions {
@@ -610,6 +623,10 @@ a#stats {
     padding: .5em;
     background-color: #FAFAFA;
     border-radius: 4px;
+}
+
+#per_page-dropdown.btn-group {
+  vertical-align: top;
 }
 
 /** Facets **/
