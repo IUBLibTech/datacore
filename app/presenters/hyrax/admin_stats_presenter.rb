@@ -54,11 +54,30 @@ module Hyrax
       @end_date ||= extract_date_from_stats_filters(key: :end_date, as_of: :end_of_day)
     end
 
+    def valid_dates
+      return true if date_validation
+      false
+    end
+
     private
 
     def extract_date_from_stats_filters(key:, as_of:)
       return if stats_filters[key].blank?
       Time.zone.parse(stats_filters[key]).public_send(as_of)
+    end
+
+    def date_validation
+      return true if start_date.nil?
+
+      second_date = end_date
+      second_date = Date.current if second_date.nil?
+      if start_date > second_date
+        stats_filters[:start_date] = nil
+        stats_filters[:end_date] = nil
+        return false
+      end
+
+      true
     end
 
     public
