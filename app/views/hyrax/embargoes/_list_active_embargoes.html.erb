@@ -14,7 +14,7 @@
     <tr>
       <td class="human-readable-type"><%= hrt %></td>
       <% if current_ability.admin? %>
-      <td class="depositor"><%= curation_concern.embargo_depostor %></td>
+      <td class="depositor"><%= curation_concern.embargo_depositor %></td>
       <% end %>
       <td class="title"><%= link_to curation_concern, edit_embargo_path(curation_concern) %></td>
       <td class="current-visibility"><%= visibility_badge(curation_concern.visibility) %></td>
