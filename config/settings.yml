@@ -199,3 +199,10 @@ ldap:
   group_ou: 'ldap_group_ou'
 
 zip_download_enabled: true
+
+rack_attack:
+  enabled: true
+  config_key: rack_attack_config-v1
+  config_ttl: 60
+  throttle_limit: 50
+  throttle_period: 120
