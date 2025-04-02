@@ -4,22 +4,19 @@ module Extensions
       module AdminStatsPresenterBehavior
 
         def valid_dates
-          return true if date_validation
-          false
+          clear_invalid_dates!
+          start_date.nil? || start_date <= second_date
         end
 
-        def date_validation
-          return true if start_date.nil?
+        def second_date
+          end_date || Date.current
+        end
 
-          second_date = end_date
-          second_date = Date.current if second_date.nil?
-          if start_date > second_date
+        def clear_invalid_dates!
+          if start_date && start_date > second_date
             stats_filters[:start_date] = nil
             stats_filters[:end_date] = nil
-            return false
           end
-
-          true
         end
       end
     end
