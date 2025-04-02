@@ -9,5 +9,11 @@ RSpec.describe ApplicationController do
     end
   end
 
+  describe '#show_site_actions?' do
+    it 'returns true' do
 
+      expect( subject.show_site_actions? ).to eq true
+
+    end
+  end
 end
