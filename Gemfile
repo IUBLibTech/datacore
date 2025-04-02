@@ -91,6 +91,8 @@ group :development, :test do
   gem 'byebug', platform: :mri
   gem 'rubocop'
   gem 'rubocop-rspec'
+  gem 'vcr'
+  gem 'webmock'
 end
 
 gem 'clamav-client'
