@@ -193,4 +193,6 @@ RSpec.describe Hyrax::DataSetForm do
     end
   end
 
+  pending "#merge_date_coverage_attributes!"
+
 end

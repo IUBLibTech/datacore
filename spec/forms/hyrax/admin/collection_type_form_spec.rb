@@ -4,80 +4,94 @@ describe Hyrax::Forms::Admin::CollectionTypeForm do
 
   let(:collection_type) { instance_double(Hyrax::CollectionType) }
 
-  it "delegates" do
-
-    is_expected.to delegate_method(:title).to(:collection_type)
-    is_expected.to delegate_method(:description).to(:collection_type)
-    is_expected.to delegate_method(:brandable).to(:collection_type)
-    is_expected.to delegate_method(:discoverable).to(:collection_type)
-    is_expected.to delegate_method(:nestable).to(:collection_type)
-    is_expected.to delegate_method(:sharable).to(:collection_type)
-    is_expected.to delegate_method(:share_applies_to_new_works).to(:collection_type)
-    is_expected.to delegate_method(:require_membership).to(:collection_type)
-    is_expected.to delegate_method(:allow_multiple_membership).to(:collection_type)
-    is_expected.to delegate_method(:assigns_workflow).to(:collection_type)
-    is_expected.to delegate_method(:assigns_visibility).to(:collection_type)
-    is_expected.to delegate_method(:id).to(:collection_type)
-    is_expected.to delegate_method(:collection_type_participants).to(:collection_type)
-    is_expected.to delegate_method(:persisted?).to(:collection_type)
-    is_expected.to delegate_method(:collections?).to(:collection_type)
-    is_expected.to delegate_method(:admin_set?).to(:collection_type)
-    is_expected.to delegate_method(:user_collection?).to(:collection_type)
-    is_expected.to delegate_method(:badge_color).to(:collection_type)
+  describe "delegates methods to collection_type" do
+    [:title, :description, :brandable, :discoverable, :nestable, :sharable, :share_applies_to_new_works,
+     :require_membership, :allow_multiple_membership, :assigns_workflow, :assigns_visibility, :id,
+     :collection_type_participants, :persisted?, :collections?, :admin_set?, :user_collection?, :badge_color].each do
+    |method|
+      it "#{method}" do
+        expect(subject).to delegate_method(method).to(:collection_type)
+      end
+    end
   end
 
   describe "#all_settings_disabled?" do
 
-    it "returns true when collections is true" do
-      allow(subject).to receive(:collections?) { true }
-      allow(subject).to receive(:admin_set?) { false }
-      allow(subject).to receive(:user_collection?) { false }
-
-      expect(subject.all_settings_disabled?).to eq true
+    context "when collections is true" do
+      before {
+        allow(subject).to receive(:collections?) { true }
+        allow(subject).to receive(:admin_set?) { false }
+        allow(subject).to receive(:user_collection?) { false }
+      }
+      it "returns true" do
+        expect(subject.all_settings_disabled?).to eq true
+      end
     end
 
-    it "returns true when admin_set is true" do
-      allow(subject).to receive(:collections?) { false }
-      allow(subject).to receive(:admin_set?) { true }
-      allow(subject).to receive(:user_collection?) { false }
-
-      expect(subject.all_settings_disabled?).to eq true
+    context "when admin_set is true" do
+      before {
+        allow(subject).to receive(:collections?) { false }
+        allow(subject).to receive(:admin_set?) { true }
+        allow(subject).to receive(:user_collection?) { false }
+      }
+      it "returns true" do
+        expect(subject.all_settings_disabled?).to eq true
+      end
     end
 
-    it "returns true when user_collections is true" do
-      allow(subject).to receive(:collections?) { false }
-      allow(subject).to receive(:admin_set?) { false }
-      allow(subject).to receive(:user_collection?) { true }
-
-      expect(subject.all_settings_disabled?).to eq true
+    context "when user_collections is true" do
+      before {
+        allow(subject).to receive(:collections?) { false }
+        allow(subject).to receive(:admin_set?) { false }
+        allow(subject).to receive(:user_collection?) { true }
+      }
+      it "returns true" do
+        expect(subject.all_settings_disabled?).to eq true
+      end
     end
 
-    it "returns false when collections, admin_set and user_collections are false" do
-      allow(subject).to receive(:collections?) { false }
-      allow(subject).to receive(:admin_set?) { false }
-      allow(subject).to receive(:user_collection?) { false }
-
-      expect(subject.all_settings_disabled?).to eq false
+    context "when collections, admin_set and user_collections are false" do
+      before {
+        allow(subject).to receive(:collections?) { false }
+        allow(subject).to receive(:admin_set?) { false }
+        allow(subject).to receive(:user_collection?) { false }
+      }
+      it "returns false" do
+        expect(subject.all_settings_disabled?).to eq false
+      end
     end
-
   end
 
   describe "#share_options_disabled?" do
 
-    it "returns true when all_settings_disabled?" do
-      allow(subject).to receive(:all_settings_disabled?) { true }
-      allow(subject).to receive(:sharable) { true }
+    context "when all_settings_disabled?" do
+      before {
+        allow(subject).to receive(:all_settings_disabled?) { true }
+        allow(subject).to receive(:sharable) { true }
+      }
+      it "returns true" do
+        expect(subject.share_options_disabled?).to eq true
+      end
     end
 
-    it "returns true when not sharable" do
-      allow(subject).to receive(:all_settings_disabled?) { false }
-      allow(subject).to receive(:sharable) { false }
+    context "when not sharable" do
+      before {
+        allow(subject).to receive(:all_settings_disabled?) { false }
+        allow(subject).to receive(:sharable) { false }
+      }
+      it "returns true" do
+        expect(subject.share_options_disabled?).to eq true
+      end
     end
 
-    it "returns false when all_settings_disabled? is false and sharable" do
-      allow(subject).to receive(:all_settings_disabled?) { false }
-      allow(subject).to receive(:sharable) { true }
+    context "when sharable and not all_settings_disabled?" do
+      before {
+        allow(subject).to receive(:all_settings_disabled?) { false }
+        allow(subject).to receive(:sharable) { true }
+      }
+      it "returns false " do
+        expect(subject.share_options_disabled?).to eq false
+      end
     end
-
   end
 end

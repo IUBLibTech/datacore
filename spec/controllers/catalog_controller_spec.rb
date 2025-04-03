@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe CatalogController do
+
+  pending "#self.uploaded_field"
+
+  pending "#self.modified_field"
+
+  pending "#configure_blackligh?"
+
+
   describe "#facet" do
     it "renders a response" do
       get :facet, params: { id: 'resource_type_sim', q: '', search_fields: 'all_fields' }

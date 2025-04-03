@@ -11,19 +11,27 @@ describe Hyrax::Forms::CollectionForm do
   let(:repository) { Blacklight::Solr::Repository.new(:config) }
   let(:subject) { described_class.new(model, ability, repository) }
 
-  it "delegates" do
-    is_expected.to delegate_method(:id).to(:model)
-    is_expected.to delegate_method(:depositor).to(:model)
-    is_expected.to delegate_method(:permissions).to(:model)
-    is_expected.to delegate_method(:human_readable_type).to(:model)
-    is_expected.to delegate_method(:member_ids).to(:model)
-    is_expected.to delegate_method(:nestable?).to(:model)
+
+  describe "delegates methods to model:" do
+    [:id, :depositor, :permissions, :human_readable_type, :member_ids, :nestable?].each do
+    |method|
+      it "#{method}" do
+        expect(subject).to delegate_method(method).to(:model)
+      end
+    end
+  end
+
+  describe "delegates method to Hyrax::CollectionsController" do
+    it "#blacklight_config" do
+      skip "Add test here"
+    end
   end
 
   describe "#terms" do
     subject { described_class.terms }
 
-    it { is_expected.to eq %i[
+    it "equals array" do
+      is_expected.to eq %i[
       authoremail
       based_near
       collection_type_gid
@@ -50,7 +58,60 @@ describe Hyrax::Forms::CollectionForm do
       thumbnail_id
       title
       visibility
-    ] }
+    ]
+    end
   end
 
+  describe "#required_fields" do
+    subject { described_class.required_fields }
+
+    it "equals array" do
+      skip "Add test here"
+    end
+  end
+
+  pending "#permission_template"
+
+  pending "#select_files"
+
+  describe "#primary_terms" do
+    it "returns array" do
+      skip "Add test here"
+    end
+  end
+
+  describe "#secondary_terms" do
+    it "returns array" do
+      skip "Add test here"
+    end
+  end
+
+  pending "#banner_info"
+
+  pending "#logo_info"
+
+  pending "#display_additional_fields?"
+
+  describe "#thumbnail_title" do
+    context "when model.thumbnail is nil" do
+      before {
+        allow(subject.model).to receive(:thumbnail).and_return( nil )
+      }
+      it "returns nil" do
+        expect(subject.thumbnail_title).to be_nil
+      end
+    end
+
+    context "when model.thumbnail is not nil" do
+      it "returns model.thumbnail.title.first" do
+        skip "Add test here"
+      end
+    end
+  end
+
+  pending "#list_parent_collections"
+
+  pending "#list_child_collections"
+
+  pending "#available_parent_collections"
 end
