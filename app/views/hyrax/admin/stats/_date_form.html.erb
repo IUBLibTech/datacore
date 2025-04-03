@@ -1,3 +1,4 @@
+<% @presenter.clear_invalid_dates! %>
 <%= form_for "stats_filters", url: hyrax.admin_stats_path, method: "GET" do |f| %>
   <input type='hidden' name='locale' value="<%= params[:locale] %>" />
   <%= f.label "Start *" %>
@@ -6,10 +7,10 @@
   <input type="date" name="stats_filters[end_date]" value="<%= @presenter.stats_filters[:end_date] %>" placeholder="yyyy-mm-dd"></input>
   <%= f.submit "Load Stats" %>
 
-  <% if @presenter.stats_filters[:start_date].blank? and @presenter.stats_filters[:end_date].blank? == false  %>
+  <% if @presenter.stats_filters[:start_date].blank? and @presenter.stats_filters[:end_date].present? %>
     <label class="warning-message">Please select a Start Date.</label>
   <% end %>
-  <% if @presenter.valid_dates == false %>
+  <% if !@presenter.valid_dates %>
     <label class="warning-message">Please select an End Date later than the Start Date.</label>
   <% end %>
 <%- end %>

@@ -4,7 +4,6 @@ module Extensions
       module AdminStatsPresenterBehavior
 
         def valid_dates
-          clear_invalid_dates!
           start_date.nil? || start_date <= second_date
         end
 

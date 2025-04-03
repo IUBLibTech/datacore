@@ -47,13 +47,31 @@ RSpec.describe Hyrax::AdminStatsPresenter do
         it "returns false" do
           expect(instance.valid_dates).to be false
         end
-        it "clears the date values" do
-          expect(stats_filters[:start_date]).to be_present
-          expect(stats_filters[:end_date]).to be_present
-          instance.valid_dates
-          expect(stats_filters[:start_date]).to be_nil
-          expect(stats_filters[:end_date]).to be_nil
-        end
+      end
+    end
+  end
+
+  describe "#clear_invalid_dates!" do
+    context "with valid dates" do
+      let(:start_date) { "2010-10-10" }
+      let(:end_date) { "2011-11-11" }
+      it "does not clear filters" do
+        expect(stats_filters[:start_date]).to be_present
+        expect(stats_filters[:end_date]).to be_present
+        instance.clear_invalid_dates!
+        expect(stats_filters[:start_date]).to be_present
+        expect(stats_filters[:end_date]).to be_present
+      end
+    end
+    context "with invalid dates" do
+      let(:start_date) { "2012-12-12" }
+      let(:end_date) { "2011-11-11" }
+      it "clears the date values" do
+        expect(stats_filters[:start_date]).to be_present
+        expect(stats_filters[:end_date]).to be_present
+        instance.clear_invalid_dates!
+        expect(stats_filters[:start_date]).to be_nil
+        expect(stats_filters[:end_date]).to be_nil
       end
     end
   end
