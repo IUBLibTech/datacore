@@ -13,3 +13,6 @@ Qa::Authorities::Collections.prepend Extensions::Qa::Authorities::Collections::C
 # return false for render_bookmarks_control? in CollectionsController
 Hyrax::CollectionsController.prepend Extensions::Hyrax::CollectionsController::RenderBookmarksControl
 Hyrax::My::CollectionsController.prepend Extensions::Hyrax::CollectionsController::RenderBookmarksControl
+
+# Statistics By Date Report page
+Hyrax::AdminStatsPresenter.prepend Extensions::Hyrax::AdminStatsPresenter::AdminStatsPresenterBehavior
