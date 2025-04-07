@@ -148,7 +148,7 @@ RSpec.describe Collection do
   end
 
   describe "#total_file_size_human_readable" do
-    context "has bytes value" do
+    context "has total_file_size value" do
       before {
         allow(subject).to receive(:total_file_size).and_return(1234)
       }

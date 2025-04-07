@@ -62,7 +62,7 @@ RSpec.describe Dataset::DateCoverageService do
     end
   end
 
-  
+
   describe '#interval_to_params' do
 
     it "returns date params of interval" do

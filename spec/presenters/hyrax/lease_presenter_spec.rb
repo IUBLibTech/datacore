@@ -52,4 +52,4 @@ RSpec.describe Hyrax::LeasePresenter do
     end
   end
 
-  end
+end

@@ -68,4 +68,6 @@ RSpec.describe Hyrax::SelectCollectionTypeListPresenter do
     end
   end
 
+  pending "#each"
+
 end
