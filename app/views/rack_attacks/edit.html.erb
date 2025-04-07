@@ -5,11 +5,11 @@
 <div class="row">
   <div class="col-md-12">
     <p><a href="https://github.com/rack/rack-attack">Rack Attack</a> allows the site to reject or throttle
-      clients based on the criteria set in the YAML formatted file below.</p>
+      clients based on the criteria set in the <a href="https://yaml.org/">YAML</a> formatted file below.</p>
     <p>IPs defined below can be either singular or ranges (e.g. 10.1.0.0/16).
       See Ruby's <a href="https://ruby-doc.org/2.7.8/stdlibs/ipaddr/IPAddr.html#method-i-include-3F">IPAddr#include?</a></p>
-    <p>User agents below are <a href="https://ruby-doc.org/2.7.8/regexp_rdoc.html">regular expressions</a>,
-      but specifying only a string (e.g. GoogleBot) will still search for substrings in the client's user agent.</p>
+    <p>User agents and paths below are <a href="https://ruby-doc.org/2.7.8/regexp_rdoc.html">regular expressions</a>.
+      Specifying only a string (e.g. GoogleBot) will still search for substrings in the client's user agent.</p>
     <%= render 'form' %>
   </div>
 </div>
