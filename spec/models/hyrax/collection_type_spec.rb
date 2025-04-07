@@ -9,59 +9,90 @@ RSpec.describe Hyrax::CollectionType do
     end
   end
 
+  pending "#title="
+  pending "#self.find_by_gid"
+  pending "#self.find_by_gid!"
+  pending "#gid"
+
   describe "#collections" do
+    context "when gid returns no value" do
+      before {
+        allow(subject).to receive(:gid).and_return( nil )
+      }
+      it "returns empty array " do
+        expect(subject.collections).to be_empty
+      end
+    end
 
-    # TODO: test positive case
-    it "returns empty array when gid has no value" do
-
-      allow(subject).to receive(:gid).and_return( nil )
-      expect(subject.collections).to eq []
+    context "when gid returns a value" do
+      it "returns hyrax gid value" do
+        skip "Add test here"
+      end
     end
   end
 
   describe "#collections?" do
-
-    it "returns true when collections has at least one item" do
-
-      allow(subject).to receive(:collections).and_return( %w[this that] )
-      expect(subject.collections?).to eq true
+    context "when collections has at least one item" do
+      before {
+        allow(subject).to receive(:collections).and_return( %w[this that] )
+      }
+      it "returns true " do
+        expect(subject.collections?).to eq true
+      end
     end
 
-    it "returns false when collections is empty" do
-
-      allow(subject).to receive(:collections).and_return( [] )
-      expect(subject.collections?).to eq false
+    context "when collections is empty" do
+      before {
+        allow(subject).to receive(:collections).and_return( [] )
+      }
+      it "returns false " do
+        expect(subject.collections?).to eq false
+      end
     end
   end
 
   describe '#admin_set?' do
-
-    it 'returns true when machine_id is ADMIN_SET_MACHINE_ID' do
-      subject.machine_id = Hyrax::CollectionType::ADMIN_SET_MACHINE_ID
-
-      expect( subject.admin_set? ).to eq true
+    context "when machine_id is ADMIN_SET_MACHINE_ID" do
+      before {
+        allow(subject).to receive(:machine_id).and_return( Hyrax::CollectionType::ADMIN_SET_MACHINE_ID )
+      }
+      it 'returns true' do
+        expect( subject.admin_set? ).to eq true
+      end
     end
 
-    it 'returns false when machine_id is USER_COLLECTION_MACHINE_ID' do
-      subject.machine_id = Hyrax::CollectionType::USER_COLLECTION_MACHINE_ID
-
-      expect( subject.admin_set? ).to eq false
-    end
-  end
-
-  describe '#user_collection?'
-
-    it 'returns false when machine_id is ADMIN_SET_MACHINE_ID' do
-      subject.machine_id = Hyrax::CollectionType::ADMIN_SET_MACHINE_ID
-
-      expect( subject.user_collection? ).to eq false
-    end
-
-    it 'returns true when machine_id is USER_COLLECTION_MACHINE_ID' do
-      subject.machine_id = Hyrax::CollectionType::USER_COLLECTION_MACHINE_ID
-
-      expect( subject.user_collection? ).to eq true
+    context "when machine_id is USER_COLLECTION_MACHINE_ID" do
+      before {
+        allow(subject).to receive(:machine_id).and_return( Hyrax::CollectionType::USER_COLLECTION_MACHINE_ID )
+      }
+      it 'returns false' do
+        expect( subject.admin_set? ).to eq false
+      end
     end
   end
 
+  describe '#user_collection?' do
+    context "when machine_id is ADMIN_SET_MACHINE_ID" do
+      before {
+        allow(subject).to receive(:machine_id).and_return( Hyrax::CollectionType::ADMIN_SET_MACHINE_ID )
+      }
+      it 'returns false' do
+        expect( subject.user_collection? ).to eq false
+      end
+    end
 
+    context "when machine_id is USER_COLLECTION_MACHINE_ID" do
+      before {
+        allow(subject).to receive(:machine_id).and_return( Hyrax::CollectionType::USER_COLLECTION_MACHINE_ID )
+      }
+      it 'returns true' do
+        expect( subject.user_collection? ).to eq true
+      end
+    end
+  end
+
+  pending "#self.any_nestable?"
+  pending "#self.find_or_create_default_collection_type"
+  pending "#self.find_or_create_admin_set_type"
+
+end

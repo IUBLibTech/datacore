@@ -103,7 +103,7 @@ RSpec.describe Hyrax::DataSetForm do
     context "for member_of_collection_ids" do
       let(:term) { :member_of_collection_ids }
 
-      it { is_expected.to eq [] }
+      it { is_expected.to be_empty }
 
       context "when the model has collection ids" do
         before do

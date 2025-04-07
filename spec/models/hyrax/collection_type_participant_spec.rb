@@ -11,55 +11,84 @@ RSpec.describe Hyrax::CollectionTypeParticipant do
     end
   end
 
-  before do
-    subject.agent_id = "Agent ID"
-  end
 
   describe '#manager?' do
 
-    it "returns true when access is MANAGE_ACCESS" do
-
-      subject.access = Hyrax::CollectionTypeParticipant::MANAGE_ACCESS
-      expect(subject.manager?).to eq true
+    context "when access is MANAGE_ACCESS" do
+      before {
+        allow(subject).to receive(:access).and_return Hyrax::CollectionTypeParticipant::MANAGE_ACCESS
+      }
+      it "returns true" do
+        expect(subject.manager?).to eq true
+      end
     end
 
-    it "returns false when access is not MANAGE_ACCESS" do
-
-      subject.access = Hyrax::CollectionTypeParticipant::CREATE_ACCESS
-      expect(subject.manager?).to eq false
+    context "when access is not MANAGE_ACCESS" do
+      before {
+        allow(subject).to receive(:access).and_return Hyrax::CollectionTypeParticipant::CREATE_ACCESS
+      }
+      it "returns false" do
+        expect(subject.manager?).to eq false
+      end
     end
   end
 
   describe '#creator?' do
 
-    it "returns true when access is CREATE_ACCESS" do
-
-      subject.access = Hyrax::CollectionTypeParticipant::CREATE_ACCESS
-      expect(subject.creator?).to eq true
+    context "when access is CREATE_ACCESS" do
+      before {
+        allow(subject).to receive(:access).and_return Hyrax::CollectionTypeParticipant::CREATE_ACCESS
+      }
+      it "returns true" do
+        expect(subject.creator?).to eq true
+      end
     end
 
-    it "returns false when access is not CREATE_ACCESS" do
-
-      subject.access = Hyrax::CollectionTypeParticipant::MANAGE_ACCESS
-      expect(subject.creator?).to eq false
+    context "when access is not CREATE_ACCESS" do
+      before {
+        allow(subject).to receive(:access).and_return Hyrax::CollectionTypeParticipant::MANAGE_ACCESS
+      }
+      it "returns false" do
+        expect(subject.creator?).to eq false
+      end
     end
   end
+
 
   describe '#label' do
-
-    it "returns agent_id when agent_type is not GROUP_TYPE" do
-
-      subject.agent_type = Hyrax::CollectionTypeParticipant::USER_TYPE
-      expect(subject.label).to eq "Agent ID"
+    before do
+      subject.agent_id = "Agent ID"
     end
 
-    it "returns agent_id when agent_type is GROUP_TYPE and agent_id not group name" do
-
-      subject.agent_type = Hyrax::CollectionTypeParticipant::GROUP_TYPE
-      expect(subject.label).to eq "Agent ID"
+    context "when agent_type is not GROUP_TYPE" do
+      before {
+        allow(subject).to receive(:agent_type).and_return Hyrax::CollectionTypeParticipant::USER_TYPE
+      }
+      it "returns agent_id" do
+        expect(subject.label).to eq "Agent ID"
+      end
     end
 
-    # TODO:  test other cases for agent_id
+    context "when agent_type is GROUP_TYPE and agent_id not group name" do
+      before {
+        allow(subject).to receive(:agent_type).and_return Hyrax::CollectionTypeParticipant::GROUP_TYPE
+      }
+      it "returns agent_id" do
+        expect(subject.label).to eq "Agent ID"
+      end
+    end
+
+    context "when agent_type is GROUP_TYPE and agent_id is Ability.registered_group_name" do
+      it "returns hyrax registered_users" do
+        skip "Add test here"
+      end
+    end
+
+    context "when agent_type is GROUP_TYPE and agent_id is Ability.admin_group_name" do
+      it "returns hyrax admin_users" do
+        skip "Add test here"
+      end
+    end
   end
 
-  end
+end

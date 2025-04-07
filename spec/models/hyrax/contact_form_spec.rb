@@ -2,19 +2,29 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::ContactForm do
 
-describe '#spam?' do
+  describe '#spam?' do
+    context "when contact_method present" do
+      before {
+        allow(subject).to receive(:contact_method).and_return "exists"
+      }
+      it 'returns true' do
+        expect( subject.spam? ).to eq true
+      end
+    end
 
-  it 'returns true when contact_method present' do
-    subject.contact_method = "exists"
-
-    expect( subject.spam? ).to eq true
+    context "when contact_method not present" do
+      before {
+        allow(subject).to receive(:contact_method).and_return nil
+      }
+      it 'returns false' do
+        expect( subject.spam? ).to eq false
+      end
+    end
   end
 
-  it 'returns false when contact_method not present' do
-    subject.contact_method = nil
 
-    expect( subject.spam? ).to eq false
-  end
+  pending "#headers"
 
-end
+  pending "#self.issue_types_for_locale"
+
 end

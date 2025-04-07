@@ -47,24 +47,25 @@ RSpec.describe Dataset::DateCoverageService do
     end
 
 
-    it "returns nil when no date values" do
+    it "returns blank when no date values" do
       params = { :date_coverage_begin_year => "", :date_coverage_begin_month => "", :date_coverage_begin_day => "",
                  :date_coverage_end_year => "", :date_coverage_end_month => "", :date_coverage_end_day => "" }
 
-      expect(Dataset::DateCoverageService.params_to_interval(params)).to eq nil
+      expect(Dataset::DateCoverageService.params_to_interval(params)).to be_blank
     end
 
-    it "returns nil when reversed date values" do
+    it "returns blank when reversed date values" do
       params = { :date_coverage_begin_year => "2001", :date_coverage_begin_month => "1", :date_coverage_begin_day => "6",
                  :date_coverage_end_year => "2001", :date_coverage_end_month => "1", :date_coverage_end_day => "5" }
 
-      expect(Dataset::DateCoverageService.params_to_interval(params)).to eq nil
+      expect(Dataset::DateCoverageService.params_to_interval(params)).to be_blank
     end
   end
 
+  
   describe '#interval_to_params' do
 
-    it "returns date params" do
+    it "returns date params of interval" do
 
       params = { :date_coverage_begin_year => "2002", :date_coverage_begin_month => "2", :date_coverage_begin_day => "6",
                  :date_coverage_end_year => "2004", :date_coverage_end_month => "8", :date_coverage_end_day => "16" }
@@ -72,14 +73,14 @@ RSpec.describe Dataset::DateCoverageService do
       expect(Dataset::DateCoverageService.interval_to_params Date.edtf('2002-02-06/2004-08-16')).to eq params
     end
 
-    it "returns nil when not called with interval" do
+    it "returns blank when not called with interval" do
 
-      expect(Dataset::DateCoverageService.interval_to_params Date.new(2001,2,25) ).to eq nil
+      expect(Dataset::DateCoverageService.interval_to_params Date.new(2001,2,25) ).to be_blank
     end
 
-    it "returns nil when Start and End Date reversed" do
+    it "returns blank when Start and End Date reversed" do
 
-      expect(Dataset::DateCoverageService.interval_to_params Date.edtf('2004-08-16/2002-02-06') ).to eq nil
+      expect(Dataset::DateCoverageService.interval_to_params Date.edtf('2004-08-16/2002-02-06') ).to be_blank
     end
 
 

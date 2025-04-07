@@ -9,10 +9,13 @@ RSpec.describe Hyrax::InspectWorkPresenter do
   subject { described_class.new(solr_document, current_ability) }
 
   describe '#solr' do
-
-    it 'returns string' do
-      allow(subject.solr_document).to receive(:inspect).and_return("Solr document: inspected")
-      expect(subject.solr).to eq 'Solr document: inspected'
+    context "when solr_document.inspect" do
+      before {
+        allow(subject.solr_document).to receive(:inspect).and_return("Solr document: inspected")
+      }
+      it 'returns value' do
+        expect(subject.solr).to eq 'Solr document: inspected'
+      end
     end
   end
 end

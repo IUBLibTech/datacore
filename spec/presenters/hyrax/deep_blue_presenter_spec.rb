@@ -20,6 +20,12 @@ RSpec.describe Hyrax::DeepbluePresenter do
     end
   end
 
+  describe '#doi_minting_enabled?' do
+    it 'returns false' do
+      expect(subject.doi_minting_enabled?).to eq false
+    end
+  end
+
   describe '#globus_download_enabled?' do
     it 'returns false' do
       expect(subject.globus_download_enabled?).to eq false

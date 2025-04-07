@@ -4,11 +4,13 @@ RSpec.describe Hyrax::StatsUsagePresenter do
 
   describe "#created" do
 
-    it 'returns date_for_analytics' do
-      analytical_date = DateTime.new(2001,12,31)
-      allow(subject).to receive(:date_for_analytics).and_return(analytical_date)
-
-      expect(subject.created).to be analytical_date
+    context "date_for_analytics defined" do
+      before {
+        allow(subject).to receive(:date_for_analytics).and_return( DateTime.new(2001,12,31) )
+      }
+      it 'returns date_for_analytics' do
+        expect(subject.created).to eq DateTime.new(2001,12,31)
+      end
     end
   end
 

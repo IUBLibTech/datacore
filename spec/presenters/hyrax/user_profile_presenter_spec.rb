@@ -6,24 +6,31 @@ RSpec.describe Hyrax::UserProfilePresenter do
   let(:second_user) { FactoryBot.create :user }
   let(:ability) { instance_double(Ability, current_user: first_user ) }
 
-    describe "user is current user" do
+  describe "delegates method to user:" do
     subject{ described_class.new(first_user, ability) }
 
     it { is_expected.to delegate_method(:name).to(:user) }
-
-    it "#current_user?" do
-      expect(subject.current_user?).to eq true
-    end
-
   end
 
-  describe "user is not current user" do
-    subject{ described_class.new(second_user, ability) }
 
-    it "#current_user?" do
-      expect(subject.current_user?).to eq false
+  describe "#current_user?" do
+    context "when user is current_user" do
+      subject{ described_class.new(first_user, ability) }
+      it "returns true" do
+        expect(subject.current_user?).to eq true
+      end
     end
 
+    context "when user is not current_user" do
+      subject{ described_class.new(second_user, ability) }
+      it "returns false" do
+        expect(subject.current_user?).to eq false
+      end
+    end
   end
+
+
+  pending "#events"
+  pending "#trophies"
 
 end

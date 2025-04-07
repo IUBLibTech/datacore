@@ -11,21 +11,23 @@ class VersionMock
   end
 end
 
+
 RSpec.describe Hyrax::VersionPresenter do
 
   let(:version) { VersionMock.new(DateTime.new(2020, 2, 20) )}
 
   subject{ described_class.new(version) }
 
-  it { is_expected.to delegate_method(:label).to(:version) }
-  it { is_expected.to delegate_method(:uri).to(:version) }
+  describe "delegates methods to version:" do
+    it { is_expected.to delegate_method(:label).to(:version) }
+    it { is_expected.to delegate_method(:uri).to(:version) }
+  end
 
   describe "#current!" do
 
-    it "#current_user?" do
+    it "returns true" do
       expect(subject.current!).to eq true
     end
-
   end
 
   describe "#created" do
@@ -35,5 +37,7 @@ RSpec.describe Hyrax::VersionPresenter do
     end
 
   end
+
+  pending "#committer"
 
 end

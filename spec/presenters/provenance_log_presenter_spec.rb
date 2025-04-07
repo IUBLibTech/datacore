@@ -6,16 +6,16 @@ RSpec.describe ProvenanceLogPresenter do
 
   subject { described_class.new(controller: controller) }
 
-  it { is_expected.to delegate_method(:id).to(:controller) }
-  it { is_expected.to delegate_method(:id_msg).to(:controller) }
-  it { is_expected.to delegate_method(:id_invalid).to(:controller) }
-  it { is_expected.to delegate_method(:id_deleted).to(:controller) }
-  it { is_expected.to delegate_method(:id_valid?).to(:controller) }
-  it { is_expected.to delegate_method(:deleted_ids).to(:controller) }
-  it { is_expected.to delegate_method(:deleted_id_to_key_values_map).to(:controller) }
+  describe "delegates methods to controller:" do
+    [:id, :id_msg, :id_invalid, :id_deleted, :id_valid?, :deleted_ids, :deleted_id_to_key_values_map].each do
+    |method|
+      it "#{method}" do
+        expect(subject).to delegate_method(method).to(:controller)
+      end
+    end
+  end
 
   describe "#display_title" do
-
     it "returns empty string when empty array" do
       expect(subject.display_title []).to eq ""
     end
@@ -26,16 +26,35 @@ RSpec.describe ProvenanceLogPresenter do
   end
 
 
-  describe '#provenance_log_display_enabled??' do
+  describe "#provenance_log_entries?" do
+    context "if id is blank" do
+      before {
+         allow(controller).to receive(:id).and_return(nil)
+      }
+      it "returns false" do
+        expect(subject.provenance_log_entries?).to eq false
+      end
+    end
 
+    context "if id is not blank" do
+      it "sets file path" do
+        skip "Add a test"
+      end
+    end
+  end
+
+
+  describe '#provenance_log_display_enabled?' do
     it 'returns true' do
       expect(subject.provenance_log_display_enabled?).to eq true
     end
   end
 
 
-  describe "#url_for_deleted" do
+  pending "#url_for"
 
+
+  describe "#url_for_deleted" do
     it 'calls url_for' do
       expect(subject).to receive(:url_for).with(action: "show", id: 101, only_path: true)
       subject.url_for_deleted(id: 101)
