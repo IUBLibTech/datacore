@@ -19,6 +19,12 @@ class ApplicationController < ActionController::Base
 
   around_action :global_request_logging
 
+  before_action do
+    if defined?(Rack::MiniProfiler) && current_user&.admin? # FIXME: check enabled?
+      Rack::MiniProfiler.authorize_request
+    end
+  end
+
   def global_request_logging
     logger.info "ACCESS: #{request.remote_ip}, #{request.method} #{request.url}, #{request.headers['HTTP_USER_AGENT']}"
     begin
