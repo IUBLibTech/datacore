@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+if defined?(Bulkrax)
 Bulkrax.setup do |config|
   # Add local parsers
   # config.parsers += [
@@ -94,4 +95,5 @@ Bulkrax.setup do |config|
 
   # Properties that should not be used in imports/exports. They are reserved for use by Hyrax.
   # config.reserved_properties += ['my_field']
+end
 end
