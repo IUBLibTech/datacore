@@ -28,8 +28,8 @@ module Deepblue
                 :parsed_id,
                 :parsed_raw_key_values
 
+    # filter_predicate: ->( _timestamp, _event, _event_note, _class_name, _id, _key_values ) { true },
     def initialize( filter: nil,
-                    # filter_predicate: ->( _timestamp, _event, _event_note, _class_name, _id, _key_values ) { true },
                     input:,
                     options: {} )
 
@@ -44,7 +44,7 @@ module Deepblue
 
     def initialize_filter( filter, options: {} )
       return AllLogFilter.new if filter.blank?
-      return AndLogFilter( filters: filter, options: options ) if filter.is_a? Array
+      return AndLogFilter.new( filters: filter, options: options ) if filter.is_a? Array
       filter
     end
 
@@ -67,20 +67,24 @@ module Deepblue
     def filter_and( new_filters:, append: true, options: {} )
       return if new_filters.blank?
       current_filter = @filter
-      @filter = if current_filter.all_log_filter?
-                  if new_filters.is_a? Array
-                    AndLogFilter.new( filters: new_filters, options: options )
-                  else
-                    new_filters
-                  end
-                elsif append
-                  current_filter.and( new_filters: new_filters )
-                else
-                  new_filters = Array( new_filters )
-                  new_filters.concat current_filter
-                  AndLogFilter.new( filters: new_filters, options: options )
-                end
+      @filter = filter_refresh current_filter: current_filter, new_filters: new_filters, append: append, options: options
       puts "filter_and @filter=#{@filter}" if verbose # rubocop:disable Rails/Output
+    end
+
+    def filter_refresh( current_filter:, new_filters:, append: true, options: {} )
+      if current_filter.all_log_filter?
+        if new_filters.is_a? Array
+          AndLogFilter.new( filters: new_filters, options: options )
+        else
+          new_filters
+        end
+      elsif append
+        current_filter.and( new_filters: new_filters )
+      else
+        new_filters = Array( new_filters )
+        new_filters.concat current_filter
+        AndLogFilter.new( filters: new_filters, options: options )
+      end
     end
 
     def filter_or( new_filters:, append: true, options: {} )
