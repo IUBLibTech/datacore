@@ -15,3 +15,8 @@ Rack::Attack.throttle('Throttled',
                       period: Settings.dig(:rack_attack, :throttle_period) || 2.minutes) do |req|
   Datacore::RackAttackConfig.throttle_req?(req)
 end
+
+ActiveSupport::Notifications.subscribe('throttle.rack_attack') do  |name, start, finish, instrumenter_id, payload|
+  req = payload[:request]
+  Hyrax.logger.info { "#{name} #{req.try(:remote_ip) || req.ip} #{req.user_agent} #{req.url} #{req.env['rack.attack.throttle_data'].inspect}" }
+end
