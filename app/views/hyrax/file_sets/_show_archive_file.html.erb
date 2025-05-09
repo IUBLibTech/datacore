@@ -15,7 +15,7 @@
     <% end %>
     <% if @presenter.request_for_staging? && Settings.archive_api.provide_email %>
     <div class="form-group <%= 'required' if @presenter.require_request_email? %>">
-      <label class="control-label required">
+      <label class="control-label required" for="user_email">
         Email address <%= '(optional)' unless @presenter.require_request_email? %>
         <% if @presenter.require_request_email? %>
           <span class="required required-tag">Required</span>
@@ -25,7 +25,7 @@
         When the requested file becomes available for download, you will receive a notification email at the provided address.
       </p>
         <input <%= 'required="required"' if Settings.archive_api.provide_email == :required %>
-               type="text" name="user_email"></input>
+               type="text" name="user_email" id="user_email"></input>
       </div>
     <% end %>
     <input type="hidden" name="file_set_id" value="<%= @presenter.id %>"></input>
