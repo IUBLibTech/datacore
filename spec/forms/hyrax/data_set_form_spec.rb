@@ -56,6 +56,12 @@ RSpec.describe Hyrax::DataSetForm do
     geo_location_box
   ] }
 
+  describe '#data_set?' do
+    it 'returns true' do
+      expect(form.data_set?).to eq true
+    end
+  end
+
   describe "#required_fields" do
     subject { form.required_fields }
 
@@ -97,7 +103,7 @@ RSpec.describe Hyrax::DataSetForm do
     context "for member_of_collection_ids" do
       let(:term) { :member_of_collection_ids }
 
-      it { is_expected.to eq [] }
+      it { is_expected.to be_empty }
 
       context "when the model has collection ids" do
         before do
@@ -186,5 +192,7 @@ RSpec.describe Hyrax::DataSetForm do
       expect(form.agreement_accepted).to eq(true)
     end
   end
+
+  pending "#merge_date_coverage_attributes!"
 
 end
