@@ -8,10 +8,14 @@ RSpec.describe Hyrax::InspectWorkPresenter do
 
   subject { described_class.new(solr_document, current_ability) }
 
+  pending "#initialize"
+
+  pending "#workflow"
+
   describe '#solr' do
-    context "when solr_document.inspect" do
+    context "calls @solr_document.inspect" do
       before {
-        allow(subject.solr_document).to receive(:inspect).and_return("Solr document: inspected")
+        subject.instance_variable_set(:@solr_document, OpenStruct.new(inspect: "Solr document: inspected"))
       }
       it 'returns value' do
         expect(subject.solr).to eq 'Solr document: inspected'

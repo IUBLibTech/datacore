@@ -9,10 +9,9 @@ RSpec.describe Hyrax::ModelProxy do
   let(:attributes) do {} end
   let(:solr_document) { SolrDocument.new(attributes) }
 
-  subject{ ModelMock.new() }
+  subject { ModelMock.new() }
 
   pending "delegates methods to solr_document:"
-
 
   describe "delegates methods to _delegated_to:" do
     [:model_name, :valid_child_concerns].each do
@@ -23,11 +22,12 @@ RSpec.describe Hyrax::ModelProxy do
     end
   end
 
+  pending "#to_partial_path"
+
   describe "#persisted?" do
     it 'returns true' do
       expect(subject.persisted?).to eq true
     end
-
   end
 
   pending "#to_model"

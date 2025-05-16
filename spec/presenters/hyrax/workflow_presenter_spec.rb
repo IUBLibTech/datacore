@@ -8,8 +8,8 @@ RSpec.describe Hyrax::WorkflowPresenter do
 
   subject { described_class.new(solr_document, current_ability) }
 
+  pending "#initialize"
   pending "#state"
-
 
   describe "#state_label" do
     context "state is nil" do

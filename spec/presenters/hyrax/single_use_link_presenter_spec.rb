@@ -11,6 +11,8 @@ RSpec.describe Hyrax::SingleUseLinkPresenter do
     it { is_expected.to delegate_method(:to_param).to(:link) }
   end
 
+  pending "#initialize"
+
   pending "#human_readable_expiration"
 
   describe "#short_key" do

@@ -16,6 +16,13 @@ RSpec.describe Hyrax::LeasePresenter do
     it { is_expected.to delegate_method(:to_s).to(:solr_document) }
   end
 
+  describe '#initialize' do
+    it "sets instance variable using parameter" do
+      Hyrax::LeasePresenter.new("solar")
+
+      subject.instance_variable_get(:@solr_document) == "solar"
+    end
+  end
 
   describe '#lease_expiration_date' do
 

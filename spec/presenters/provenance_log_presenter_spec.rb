@@ -15,6 +15,16 @@ RSpec.describe ProvenanceLogPresenter do
     end
   end
 
+
+  describe "#initialize" do
+    it "sets instance variable to arguments" do
+     ProvenanceLogPresenter.new controller: "controller"
+
+      subject.instance_variable_get(:@controller) == "controller"
+    end
+  end
+
+
   describe "#display_title" do
     it "returns empty string when empty array" do
       expect(subject.display_title []).to eq ""
@@ -37,8 +47,26 @@ RSpec.describe ProvenanceLogPresenter do
     end
 
     context "if id is not blank" do
-      it "sets file path" do
-        skip "Add a test"
+      before {
+        allow(controller).to receive(:id).and_return(3001)
+        allow(::Deepblue::ProvenancePath).to receive(:path_for_reference).with(3001).and_return "file path"
+      }
+      context "when file exists" do
+        before {
+          allow(File).to receive(:exist?).and_return true
+        }
+        it "returns true" do
+          expect(subject.provenance_log_entries?).to eq true
+        end
+      end
+
+      context "when file does not exist" do
+        before {
+          allow(File).to receive(:exist?).and_return false
+        }
+        it "returns false" do
+          expect(subject.provenance_log_entries?).to eq false
+        end
       end
     end
   end
@@ -51,7 +79,12 @@ RSpec.describe ProvenanceLogPresenter do
   end
 
 
-  pending "#url_for"
+  describe "#url_for" do
+    # Could not stub Rails.application.routes.url_helpers.url_for
+    it "" do
+      expect(subject.url_for(action: "show", id: 50, only_path: true)).to eq "/provenance_log/50"
+    end
+  end
 
 
   describe "#url_for_deleted" do

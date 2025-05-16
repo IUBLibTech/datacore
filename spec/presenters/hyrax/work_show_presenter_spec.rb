@@ -34,6 +34,8 @@ RSpec.describe Hyrax::WorkShowPresenter do
     end
   end
 
+  pending '#initialize'
+
   before do
     allow(subject).to receive(:id).and_return("XYZ")
     allow(subject).to receive(:title).and_return(["Fantastic Title", "Descriptive Title"])
@@ -62,7 +64,7 @@ RSpec.describe Hyrax::WorkShowPresenter do
   pending "#workflow"
   pending "#inspect_work"
   pending "#download_url"
-  pending "#iiif_viewer"
+  pending "#iiif_viewer?"
   pending "#representative_presenter"
   pending "#member_of_collection_presenters"
   pending "#date_modified"
@@ -72,7 +74,7 @@ RSpec.describe Hyrax::WorkShowPresenter do
   pending "#export_as_jsonld"
   pending "#date_uploaded"
   pending "#export_as_ttl"
-  pending "#editor"
+  pending "#editor?"
   pending "#tweeter"
   pending "#presenter_types"
   pending "#grouped_presenters"

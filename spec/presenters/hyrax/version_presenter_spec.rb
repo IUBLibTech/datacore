@@ -16,7 +16,9 @@ RSpec.describe Hyrax::VersionPresenter do
 
   let(:version) { VersionMock.new(DateTime.new(2020, 2, 20) )}
 
-  subject{ described_class.new(version) }
+  subject { described_class.new(version) }
+
+  pending "#initialize"
 
   describe "delegates methods to version:" do
     it { is_expected.to delegate_method(:label).to(:version) }

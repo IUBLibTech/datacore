@@ -9,6 +9,8 @@ RSpec.describe AdminSet do
      end
   end
 
+  pending "describe constant DEFAULT_WORKFLOW_NAME"
+
   describe "#default_set?" do
     context "when id equals the default id constant" do
       before {

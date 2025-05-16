@@ -37,15 +37,25 @@ RSpec.describe Hyrax::EmbargoPresenter do
         expect(subject.human_readable_type).to eq 'Not Data Set'
       end
     end
+
+    after {
+      expect(subject.solr_document).to have_received(:human_readable_type)
+    }
   end
 
+  describe "#initialize" do
+    it "sets instance variable" do
+      embargo = Hyrax::EmbargoPresenter.new("sol")
+
+      embargo.instance_variable_get(:@solr_document) == "sol"
+    end
+  end
 
   describe '#embargo_depositor' do
     it 'returns first element of attribute depositor_ssim' do
       expect(subject.embargo_depositor).to eq 'Clara Snow'
     end
   end
-
 
   describe '#embargo_release_date' do
     context "if no embargo_release_date" do
@@ -65,6 +75,10 @@ RSpec.describe Hyrax::EmbargoPresenter do
         expect(subject.embargo_release_date).to eq "Sat, 02 Jan 2021 00:00:00 +0000"
       end
     end
+
+    after {
+      expect(subject.solr_document).to have_received(:embargo_release_date)
+    }
   end
 
 

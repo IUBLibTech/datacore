@@ -22,8 +22,19 @@ RSpec.describe Hyrax::ContactForm do
     end
   end
 
-
-  pending "#headers"
+  describe "#headers" do
+    before {
+      allow(Hyrax.config).to receive(:subject_prefix).and_return "prefix"
+      allow(subject).to receive(:subject).and_return "subject"
+      allow(Hyrax.config).to receive(:contact_email).and_return "contact email"
+      allow(subject).to receive(:email).and_return "email"
+    }
+    it "returns hash" do
+      expect(subject.headers[:subject]).to eq "prefix subject"
+      expect(subject.headers[:to]).to eq "contact email"
+      expect(subject.headers[:from]).to eq "email"
+    end
+  end
 
   pending "#self.issue_types_for_locale"
 

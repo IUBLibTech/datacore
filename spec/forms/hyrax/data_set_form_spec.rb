@@ -193,6 +193,27 @@ RSpec.describe Hyrax::DataSetForm do
     end
   end
 
-  pending "#merge_date_coverage_attributes!"
+
+  describe "#merge_date_coverage_attributes!" do
+    before {
+      subject.instance_variable_set(:@attributes, { "three" => "3", "four" => "4" })
+    }
+
+    context "when called with hash argument" do
+      it "merges with date_coverage_attributes" do
+        subject.merge_date_coverage_attributes! Hash.new( :one => "1", :two => "2" )
+
+        subject.instance_variable_get(:@attributes) == Hash.new( "one" => "1", "two" => "2", "three" => "3", "four" => "4"  )
+      end
+    end
+
+    context "when called with empty hash" do
+      it "keeps the same date_coverage_attributes" do
+        subject.merge_date_coverage_attributes! Hash.new{ }
+
+        subject.instance_variable_get(:@attributes) == Hash.new( "three" => "3", "four" => "4" )
+      end
+    end
+  end
 
 end

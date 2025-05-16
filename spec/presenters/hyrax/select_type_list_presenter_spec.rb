@@ -6,6 +6,8 @@ RSpec.describe Hyrax::SelectTypeListPresenter do
 
   subject { described_class.new(user) }
 
+  pending "#initialize"
+
   describe "#many?" do
     context "when multiple authorized_models" do
       before {

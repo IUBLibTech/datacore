@@ -6,12 +6,14 @@ RSpec.describe Hyrax::UserProfilePresenter do
   let(:second_user) { FactoryBot.create :user }
   let(:ability) { instance_double(Ability, current_user: first_user ) }
 
+
+  pending "#initialize"
+
   describe "delegates method to user:" do
     subject{ described_class.new(first_user, ability) }
 
     it { is_expected.to delegate_method(:name).to(:user) }
   end
-
 
   describe "#current_user?" do
     context "when user is current_user" do

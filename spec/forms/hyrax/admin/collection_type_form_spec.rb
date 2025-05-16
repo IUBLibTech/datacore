@@ -20,8 +20,6 @@ describe Hyrax::Forms::Admin::CollectionTypeForm do
     context "when collections is true" do
       before {
         allow(subject).to receive(:collections?) { true }
-        allow(subject).to receive(:admin_set?) { false }
-        allow(subject).to receive(:user_collection?) { false }
       }
       it "returns true" do
         expect(subject.all_settings_disabled?).to eq true
@@ -32,7 +30,6 @@ describe Hyrax::Forms::Admin::CollectionTypeForm do
       before {
         allow(subject).to receive(:collections?) { false }
         allow(subject).to receive(:admin_set?) { true }
-        allow(subject).to receive(:user_collection?) { false }
       }
       it "returns true" do
         expect(subject.all_settings_disabled?).to eq true
@@ -67,7 +64,6 @@ describe Hyrax::Forms::Admin::CollectionTypeForm do
     context "when all_settings_disabled?" do
       before {
         allow(subject).to receive(:all_settings_disabled?) { true }
-        allow(subject).to receive(:sharable) { true }
       }
       it "returns true" do
         expect(subject.share_options_disabled?).to eq true
@@ -89,7 +85,7 @@ describe Hyrax::Forms::Admin::CollectionTypeForm do
         allow(subject).to receive(:all_settings_disabled?) { false }
         allow(subject).to receive(:sharable) { true }
       }
-      it "returns false " do
+      it "returns false" do
         expect(subject.share_options_disabled?).to eq false
       end
     end

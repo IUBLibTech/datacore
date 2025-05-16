@@ -7,6 +7,8 @@ RSpec.describe Hyrax::CollectionType do
       expect( ::Hyrax::CollectionType::USER_COLLECTION_MACHINE_ID ).to eq 'user_collection'
       expect( ::Hyrax::CollectionType::ADMIN_SET_MACHINE_ID ).to eq 'admin_set'
     end
+
+    skip "Add a test for I18n constants"
   end
 
   pending "#title="
@@ -25,7 +27,7 @@ RSpec.describe Hyrax::CollectionType do
     end
 
     context "when gid returns a value" do
-      it "returns hyrax gid value" do
+      it "calls ActiveFedora::Base.where" do
         skip "Add test here"
       end
     end

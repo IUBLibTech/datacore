@@ -4,6 +4,8 @@ RSpec.describe Hyrax::SelectCollectionTypeListPresenter do
   let(:user) { FactoryBot.create :user }
   subject { described_class.new(user) }
 
+  pending "#initialize"
+
   describe "#many?" do
     context "when multiple authorized_collection_types" do
       before {

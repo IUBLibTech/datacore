@@ -7,7 +7,9 @@ describe Hyrax::Forms::Dashboard::NestCollectionForm do
   let(:config) { Blacklight::Solr::Configuration.new }
   let(:repository) { Blacklight::Solr::Repository.new(:config) }
 
-  subject{ described_class.new(parent: parent, child: child, context: repository) }
+  subject { described_class.new(parent: parent, child: child, context: repository) }
+
+  pending "#initialize"
 
   describe "#save" do
 
