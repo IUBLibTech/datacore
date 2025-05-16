@@ -20,7 +20,7 @@ module Hyrax
       @solr_document = solr_document
     end
 
-    def embargo_depostor
+    def embargo_depositor
       solr_document.fetch('depositor_ssim', []).first
     end
 
