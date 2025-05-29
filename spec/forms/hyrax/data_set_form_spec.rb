@@ -56,6 +56,12 @@ RSpec.describe Hyrax::DataSetForm do
     geo_location_box
   ] }
 
+  describe '#data_set?' do
+    it 'returns true' do
+      expect(form.data_set?).to eq true
+    end
+  end
+
   describe "#required_fields" do
     subject { form.required_fields }
 
@@ -97,7 +103,7 @@ RSpec.describe Hyrax::DataSetForm do
     context "for member_of_collection_ids" do
       let(:term) { :member_of_collection_ids }
 
-      it { is_expected.to eq [] }
+      it { is_expected.to be_empty }
 
       context "when the model has collection ids" do
         before do
@@ -184,6 +190,29 @@ RSpec.describe Hyrax::DataSetForm do
     before { allow(work).to receive(:new_record?).and_return(false) }
     it "defaults deposit agreement to true" do
       expect(form.agreement_accepted).to eq(true)
+    end
+  end
+
+
+  describe "#merge_date_coverage_attributes!" do
+    before {
+      subject.instance_variable_set(:@attributes, { "three" => "3", "four" => "4" })
+    }
+
+    context "when called with hash argument" do
+      it "merges with @attributes" do
+        subject.merge_date_coverage_attributes! Hash.new( :one => "1", :two => "2" )
+
+        subject.instance_variable_get(:@attributes) == Hash.new( "one" => "1", "two" => "2", "three" => "3", "four" => "4"  )
+      end
+    end
+
+    context "when called with empty hash" do
+      it "keeps the same @attributes" do
+        subject.merge_date_coverage_attributes! Hash.new{ }
+
+        subject.instance_variable_get(:@attributes) == Hash.new( "three" => "3", "four" => "4" )
+      end
     end
   end
 
