@@ -2,7 +2,7 @@
   <h1><span class="fa fa-id-card" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.profile") %></h1>
   <% if can? :edit, current_user %>
     <div class="pull-right">
-      <%= link_to hyrax.edit_dashboard_profile_path(@user), class: "btn btn-primary" do %>
+      <%= link_to hyrax.edit_dashboard_profile_path(@user), class: "btn btn-primary", 'aria-label' => "Edit Profile button" do %>
         <%= t("hyrax.edit_profile") %>
       <% end %>
     </div>

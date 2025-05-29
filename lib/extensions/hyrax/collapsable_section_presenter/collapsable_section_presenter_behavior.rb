@@ -1,4 +1,4 @@
-# unmodified from hyrax 2.9.6
+# modified from hyrax 2.9.6: added aria-label attribute
 module Extensions
   module Hyrax
     module CollapsableSectionPresenter
@@ -10,6 +10,7 @@ module Extensions
                       class: "#{button_class}collapse-toggle",
                       data: { toggle: 'collapse' },
                       href: "##{id}",
+                      'aria-label' => "Expand / Collapse #{text}",
                       'aria-expanded' => open,
                       'aria-controls' => id) do
                         safe_join([content_tag(:span, '', class: icon_class, 'aria-hidden' => true),
