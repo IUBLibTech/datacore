@@ -49,6 +49,14 @@ RSpec.describe User, type: :model do
     expect(user).to respond_to(:orcid)
   end
 
+  describe "#to_s" do
+    it "stringifies to email address" do
+      expect(user.to_s).to eq user.email
+    end
+  end
+
+  pending "#self.find_for_iu_cas"
+
   # describe 'Arkivo and Zotero integration' do
   #   it 'sets an Arkivo token after_initialize if API is enabled' do
   #     expect(described_class.new).to respond_to(:arkivo_token)
