@@ -110,6 +110,7 @@ ingest:
   user_key: username@iu.edu
   standard_inbox: tmp/ingest/in
   large_inbox: tmp/ingest/large
+  very_large_inbox: tmp/ingest/very-large
   outbox: tmp/ingest/out
   size_limit:
     fedora: 5368709120 # 5.gigabytes
