@@ -16,3 +16,6 @@ Hyrax::My::CollectionsController.prepend Extensions::Hyrax::CollectionsControlle
 
 # Statistics By Date Report page
 Hyrax::AdminStatsPresenter.prepend Extensions::Hyrax::AdminStatsPresenter::AdminStatsPresenterBehavior
+
+# accessibility improvements
+Hyrax::CollapsableSectionPresenter.prepend Extensions::Hyrax::CollapsableSectionPresenter::CollapsableSectionPresenterBehavior
