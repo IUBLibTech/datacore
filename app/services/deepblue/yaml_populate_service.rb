@@ -54,6 +54,14 @@ module Deepblue
       end
     end
 
+    def yaml_file_size( file_set )
+      if file_set.file_size.blank?
+        file_set.original_file.nil? ? 0 : file_set.original_file.size
+      else
+        file_set.file_size[0]
+      end
+    end
+
     def yaml_body_files( out, indent_base:, indent:, curation_concern:, target_dirname: )
       indent_first_line = indent
       yaml_line( out, indent_first_line, ':file_set_ids:' )
@@ -78,11 +86,7 @@ module Deepblue
         yaml_item( out, indent, ":checksum_algorithm:", checksum.present? ? checksum.algorithm : '', escape: true )
         yaml_item( out, indent, ":checksum_value:", checksum.present? ? checksum.value : '', escape: true )
         yaml_item( out, indent, ":edit_users:", file_set.edit_users, escape: true )
-        file_size = if file_set.file_size.blank?
-                      file_set.original_file.nil? ? 0 : file_set.original_file.size
-                    else
-                      file_set.file_size[0]
-                    end
+        file_size = yaml_file_size(file_set)
         # puts "\nfile_size=#{file_size} file_size.class=#{file_size.class.name}\n" unless file_size.is_a? Integer
         @total_file_sets_size_exported += file_size.to_i
         yaml_item( out, indent, ":file_size:", file_size )
