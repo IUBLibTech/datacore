@@ -24,8 +24,8 @@ Rails.application.routes.draw do
   get ':action' => 'hyrax/static#:action', constraints: { action: %r{
                                                                       about|
                                                                       agreement|
-                                                                      dbd-documentation-guide|
-                                                                      dbd-glossary|
+                                                                      datacore-documentation-guide|
+                                                                      datacore-glossary|
                                                                       file-format-preservation|
                                                                       globus-help|
                                                                       help|
