@@ -135,6 +135,8 @@ group :development, :test do
   gem 'rspec_junit_formatter'
   gem 'selenium-webdriver', '~> 4.2.0'
   gem 'shoulda-matchers', '~> 3.1'
+  gem 'simplecov'
+  gem 'coveralls_reborn'
   gem 'solr_wrapper', '~> 2.1.0'
 end
 
