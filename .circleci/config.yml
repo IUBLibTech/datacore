@@ -7,6 +7,7 @@ version: 2.1
 orbs:
   browser-tools: circleci/browser-tools@1.4.1
   ruby: circleci/ruby@1.8.0
+  coveralls: coveralls/coveralls@2.2.5
 
 default_environment: &default_environment
   RAILS_ENV: test
@@ -119,6 +120,8 @@ jobs:
           command: |
             mkdir /tmp/test-results
             bundle exec rspec
+      - coveralls/upload:
+          coverage_format: simplecov
 
       # collect reports
       - store_test_results:
@@ -126,3 +129,5 @@ jobs:
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+      - store_artifacts:
+          path: coverage
