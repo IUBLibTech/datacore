@@ -5,11 +5,20 @@
 <div class="row">
   <div class="col-md-12">
     <p><a href="https://github.com/rack/rack-attack">Rack Attack</a> allows the site to reject or throttle
-      clients based on the criteria set in the YAML formatted file below.</p>
-    <p>IPs defined below can be either singular or ranges (e.g. 10.1.0.0/16).
+      clients based on the criteria set in the <a href="https://yaml.org/">YAML</a> formatted file below.
+      Changes may take up to the Config TTL to become active.
+      Listed safe paths/ips/agents are not subject to blocking or throttling. Each entry in the throttle section defines
+      a discriminator that can thought of as a bucket that matching requests fill up. The throttle limit/period
+      (e.g. <code>10reqs/60s</code>) determines how big the buckets are and how often they are emptied.</p>
+
+    <p>IPs defined below can be either singular or ranges (e.g. <code>10.1.0.0/16</code>).
       See Ruby's <a href="https://ruby-doc.org/2.7.8/stdlibs/ipaddr/IPAddr.html#method-i-include-3F">IPAddr#include?</a></p>
-    <p>User agents below are <a href="https://ruby-doc.org/2.7.8/regexp_rdoc.html">regular expressions</a>,
-      but specifying only a string (e.g. GoogleBot) will still search for substrings in the client's user agent.</p>
+
+    <p>User agents and paths below are case-insensitive  <a href="https://ruby-doc.org/2.7.8/regexp_rdoc.html">regular expressions</a>.
+      Specifying only a string (e.g. <code>"GoogleBot"</code>) will search for substrings in the client's user agent.
+      Multiple agents can be combined into one discriminator (e.g. <code>"bot|spider|crawler"</code>)
+      and a blank or missing agent can be matched using <code>"^$"</code>.</p>
+
     <%= render 'form' %>
   </div>
 </div>

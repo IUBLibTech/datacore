@@ -6,6 +6,9 @@
           <div class="panel-body">
             <div class="field form-group">
                 <%= f.label :value, 'Rack Attack Config' %><br />
+              <p>Rack Attack is <b><%= Rack::Attack.enabled ? "Enabled" : "Disabled" %></b> |
+                Config TTL: <%= Settings.dig(:rack_attack, :config_ttl) %>s |
+                Throttle: <%= Settings.dig(:rack_attack, :throttle_limit) %>reqs/<%= Settings.dig(:rack_attack, :throttle_period) %>s</p>
               <code>
                 <%= f.text_area :value, value: f.object.value, class: 'form-control', rows: 20, cols: 80,
                                 placeholder: Datacore::RackAttackConfig.default_config.to_yaml %>
