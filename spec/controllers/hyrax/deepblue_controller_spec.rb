@@ -15,8 +15,8 @@ RSpec.describe Hyrax::DeepblueController do
   end
 
   describe "#doi_minting_enabled?" do
-    it "returns service value (#{Deepblue::DoiMintingService.enabled?}" do
-      expect(subject.doi_minting_enabled?).to eq Deepblue::DoiMintingService.enabled?
+    it "returns service value (#{Datacore::DoiMintingService.enabled?}" do
+      expect(subject.doi_minting_enabled?).to eq Datacore::DoiMintingService.enabled?
     end
   end
 
