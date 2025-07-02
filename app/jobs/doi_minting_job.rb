@@ -12,7 +12,7 @@ class DoiMintingJob < ::Hyrax::ApplicationJob
       return
     end
     current_user = work.depositor if current_user.blank?
-    if Deepblue::DoiMintingService.mint_doi_for(work: work, current_user: current_user)
+    if Datacore::DoiMintingService.mint_doi_for(work: work, current_user: current_user)
       Rails.logger.debug "DoiMintingJob work id #{id} #{current_user} succeeded."
       # do success callback
       if Hyrax.config.callback.set?(:after_doi_success)
