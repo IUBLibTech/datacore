@@ -33,7 +33,7 @@ RSpec.shared_examples "DeepBlue::DoiBehavior" do |object_factory|
   describe "#doi_minting_enabled?" do
     let(:work) { unminted_work }
     it "returns server setting" do
-      expect(work.doi_minting_enabled?).to eq Deepblue::DoiMintingService.enabled?
+      expect(work.doi_minting_enabled?).to eq Datacore::DoiMintingService.enabled?
     end
   end
 
