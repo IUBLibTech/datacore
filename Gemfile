@@ -138,6 +138,8 @@ group :development, :test do
   gem 'simplecov'
   gem 'coveralls_reborn'
   gem 'solr_wrapper', '~> 2.1.0'
+  gem 'vcr'
+  gem 'webmock'
 end
 
 gem 'willow_sword', github: 'notch8/willow_sword', ref: '0a669d7'
