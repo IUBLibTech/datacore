@@ -63,17 +63,13 @@ redis:
   port: 6379
   thread_safe: true
 
-# EZID Client configuration; see initializer/ezid.rb
-# The doi:10.5072/FK2 shoulder is a defined temporary/testing namespace.
+# Datacite client configuration
 # Set real values in settings.local.yml or local environment file.
-ezid:
-  enabled: false
-  host: ez.test.datacite.org
-  user: eziduser.invalid
-  password: ezidpassword.invalid
-  shoulder: doi:10.5072/FK2
-  port: 443
-  timeout: 300
+datacite:
+  host: api.test.datacite.org
+  username: datacite.test.user
+  password: datacite.test.password
+  prefix: '10.5072' # force string interpretation
 
 jira:
   username: jirausername.invalid

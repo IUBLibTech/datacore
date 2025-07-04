@@ -11,7 +11,7 @@ module Deepblue
 
     # @return Boolean
     def self.enabled?
-      Settings.ezid.enabled
+      Settings.datacite.enabled
     end
 
     def self.mint_doi_for( work:, current_user: )
