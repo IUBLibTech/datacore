@@ -19,11 +19,13 @@ solr:
 redis:
   url: redis://redis/
 
-# The shoulder is made invalid here to avoid unintentionally creating
-# identifiers in a test namespace and appearing to work if left unconfigured.
+# Datacite client configuration
+# Set real values in settings.production.local.yml or local environment file.
 ezid:
-  host: ez.datacite.org
-  shoulder: invalid:invalid
+  host: api.datacite.org
+  username: datacite.production.user
+  password: datacite.production.password
+  prefix: invalid
 
 jira:
   username: jirausername.invalid

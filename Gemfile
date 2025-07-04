@@ -58,8 +58,8 @@ gem 'net-ldap'
 # temporarily hold back bulkrax version to 0.1.0
 gem 'bulkrax', git: 'https://github.com/samvera-labs/bulkrax.git', ref: '5299b81' # branch: 'main'
 
-# EZID client from Duke
-gem 'ezid-client'
+# custom datacite client
+gem 'datacite', git: 'https://github.com/IUBLibTech/datacite-ruby', branch: 'datacore'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
