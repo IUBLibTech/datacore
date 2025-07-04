@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
+# FIXME: confirm line below needed
 require File.join(Gem::Specification.find_by_name("hyrax").full_gem_path, "app/presenters/hyrax/work_show_presenter.rb")
 
 # monkey patch Hyrax::WorkShowPresenter
 module Hyrax
 
   class WorkShowPresenter
+    # FIXME: check whether fileset presenter should be using this class for parent?
+    delegate :doi,
+             :doi_minted?,
+             :doi_pending?, to: :solr_document
 
     def relative_url_root
       rv = ::DeepBlueDocs::Application.config.relative_url_root

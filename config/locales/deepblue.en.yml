@@ -48,12 +48,6 @@ en:
     deepblue:        "deepblue@umich.edu"
 
   generic_work:
-    doi_already_exists:
-      "A DOI already exists or is being minted."
-    doi_job_started:
-      "DOI process kicked off for work id: %{id}"
-    doi_requires_work_with_files:
-      "DOI cannot be minted for a work without files."
     globus_clean:
       "Files are being delete from %{dirs}"
     globus_clean_join_html:

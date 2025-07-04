@@ -98,12 +98,7 @@
 <%= presenter.attribute_to_html(:geo_location_box, label: t('show.label.geo_location_box')) %>
 <%= presenter.attribute_to_html(:related_url, render_as: :external_link) %>
 <%= presenter.attribute_to_html(:source) %>
-<span itemprop="identifier" itemscope itemtype="http://schema.org/Identifier">
-  <% unless presenter.doi_the_correct_one.nil? %>
-    <% presenter.doi_the_correct_one[0].sub! 'doi:', 'https://doi.org/' %>
-  <% end %>
-  <%= presenter.attribute_to_html(:doi_the_correct_one, label: t('show.label.doi'), work_type: "DataSet") %>
-</span>
+<%= presenter.attribute_to_html(:doi, render_as: :doi) %>
 <span itemprop="license">
   <span class="hide"><%= presenter.rights_license[0] %></span>
 </span>

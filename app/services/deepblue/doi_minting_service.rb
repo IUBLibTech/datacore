@@ -9,6 +9,11 @@ module Deepblue
 
     attr :current_user, :work, :metadata
 
+    # @return Boolean
+    def self.enabled?
+      Settings.ezid.enabled
+    end
+
     def self.mint_doi_for( work:, current_user: )
       Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
                                            Deepblue::LoggingHelper.called_from,

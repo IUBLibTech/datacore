@@ -36,43 +36,15 @@ module Umrdr
     ## begin DOI methods
 
     def doi
-      rv = doi_the_correct_one
-      # rv = Array( self[ Solrizer.solr_name( 'doi', :symbol ) ] ).first
-      # rv = self[ Solrizer.solr_name( 'doi', :symbol ) ]
-      # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
-      #                                        Deepblue::LoggingHelper.called_from,
-      #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
-      #                                        "doi = #{doi}",
-      #                                        "" ]
-      return rv
-    end
-
-    def doi_the_correct_one
-      # rv = Array( self[Solrizer.solr_name('doi')] ).first
-      rv = self[ Solrizer.solr_name( 'doi', :symbol ) ]
-      # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
-      #                                        Deepblue::LoggingHelper.called_from,
-      #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
-      #                                        "doi = #{doi}",
-      #                                        "" ]
-      return rv
+      fetch('doi_ssi', nil)     
     end
 
     def doi_minted?
-      # the first time this is called, doi will not be in solr.
-      # @solr_document[ Solrizer.solr_name( 'doi', :symbol ) ].first
-      doi_the_correct_one.present?
-    rescue
-      nil
-    end
-
-    def doi_minting_enabled?
-      ::Deepblue::DoiBehavior::DOI_MINTING_ENABLED
+      doi.present? && !doi_pending?
     end
 
     def doi_pending?
-      #@solr_document[ Solrizer.solr_name( 'doi', :symbol ) ].first == ::Deepblue::DoiBehavior::DOI_PENDING
-      doi_the_correct_one == ::Deepblue::DoiBehavior::DOI_PENDING
+      doi == ::Deepblue::DoiBehavior::DOI_PENDING
     end
 
     ## end DOI methods
