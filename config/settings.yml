@@ -67,6 +67,7 @@ redis:
 # The doi:10.5072/FK2 shoulder is a defined temporary/testing namespace.
 # Set real values in settings.local.yml or local environment file.
 ezid:
+  enabled: false
   host: ez.test.datacite.org
   user: eziduser.invalid
   password: ezidpassword.invalid

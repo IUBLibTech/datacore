@@ -9,6 +9,7 @@ module Hyrax
 
     PARAMS_KEY = 'file_set'
     self.show_presenter = Hyrax::DsFileSetPresenter
+    delegate :show_presenter, to: :class
 
     alias_method :monkey_attempt_update, :attempt_update
     # alias_method :monkey_update_metadata, :update_metadata
@@ -101,10 +102,6 @@ module Hyrax
           curation_concern = search_result_document( params )
           show_presenter.new( curation_concern, current_ability, request )
         end
-      end
-
-      def show_presenter
-        Hyrax::DsFileSetPresenter
       end
 
       def search_result_document( search_params )

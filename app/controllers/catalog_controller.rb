@@ -223,6 +223,7 @@ class CatalogController < ApplicationController
       }
     end
 
+    # FIXME: review DOI searching
     config.add_search_field('doi') do |field|
       field.label = "Doi"
       solr_name = solr_name("doi_label", :stored_searchable)

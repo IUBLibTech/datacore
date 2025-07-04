@@ -13,7 +13,7 @@ module Hyrax
     end
 
     def doi_minting_enabled?
-      false
+      ::Deepblue::DoiMintingService.enabled?
     end
 
     def globus_download_enabled?
@@ -24,10 +24,6 @@ module Hyrax
       "Work"
     end
 
-    # def mint_doi_enabled?
-    #   false
-    # end
-
     # def tombstone_enabled?
     #   false
     # end
@@ -35,7 +31,5 @@ module Hyrax
     def zip_download_enabled?
       false
     end
-
   end
-
 end

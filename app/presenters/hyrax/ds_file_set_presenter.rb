@@ -4,11 +4,7 @@ module Hyrax
   class DsFileSetPresenter < Hyrax::FileSetPresenter
     include ::Datacore::PresentsArchiveFile
 
-    delegate :doi, :doi_the_correct_one,
-             :doi_minted?,
-             :doi_minting_enabled?,
-             :doi_pending?,
-             :file_size,
+    delegate :file_size,
              :file_size_human_readable,
              :original_checksum,
              :mime_type,
@@ -17,26 +13,10 @@ module Hyrax
              :virus_scan_status,
              :virus_scan_status_date, to: :solr_document
 
-    # def doi_minted?
-    #   # the first time this is called, doi will not be in solr.
-    #   @solr_document[ Solrizer.solr_name( 'doi', :symbol ) ].first
-    # rescue
-    #   nil
-    # end
-    #
-    # def doi_pending?
-    #   @solr_document[ Solrizer.solr_name( 'doi', :symbol ) ].first == ::Deepblue::DoiBehavior::DOI_PENDING
-    # end
-
     def relative_url_root
       rv = ::DeepBlueDocs::Application.config.relative_url_root
       return rv if rv
       ''
-    end
-
-    def parent_doi_minted?
-      g = DataSet.find parent.id
-      g.doi_minted?
     end
 
     # begin display_provenance_log
