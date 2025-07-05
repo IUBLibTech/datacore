@@ -6,7 +6,7 @@ describe Datacore::DoiMintingService do
   let(:current_user) { 'user@example.com' }
   # define work per context
   let(:service) { Datacore::DoiMintingService.new(current_user: current_user, work: work) }
-  let(:doi) { '10.82028/18sn-h641' }
+  let(:doi) { 'doi:10.82028/18sn-h641' }
   before do
     allow(Datacore::DoiMintingService).to receive(:enabled?).and_return(true)
   end
