@@ -37,6 +37,11 @@ module Datacore
       @doi = work.doi
     end
 
+    # @return [String] id portion of doi without "doi:" namespace; used by API calls
+    def id
+      doi.to_s.sub(/^doi:/, '')
+    end
+
     # @return [String, nil] DOI on successful minting, nil on failure or error 
     def run
       return unless enabled?
@@ -97,7 +102,12 @@ module Datacore
           else
             result = client.autogenerate_doi(prefix: prefix, metadata: metadata)
           end
-          result.success? ? "doi:#{result.value!.doi}" : nil
+          if result.success?
+            "doi:#{result.value!.doi}"
+          else
+            Rails.logger.error("API failure in DoiMintingService#mint_doi!: #{result.inspect}")
+            nil
+          end
         rescue => e
           Rails.logger.error("Error in DoiMintingService#mint_doi!: #{e.inspect}")
           nil
@@ -110,8 +120,13 @@ module Datacore
       def doi_exists?
         return unless work.doi_minted?
         begin
-          result = client.exists?(id: work.doi)
-          result.success? ? result.value! : nil
+          result = client.exists?(id: id)
+          if result.success?
+            result.value!
+          else
+            Rails.logger.error("API failure in DoiMintingService#doi_exists?: #{result.inspect}")
+            nil
+          end
         rescue => e
           Rails.logger.error("Error in DoiMintingService#doi_exists?: #{e.inspect}")
           nil
@@ -122,8 +137,13 @@ module Datacore
       def doi_metadata
         return nil unless doi_exists?
         begin
-          result = client.metadata(id: work.doi)
-          result.success? ? result.value! : nil
+          result = client.metadata(id: id)
+          if result.success?
+            result.value!
+          else
+            Rails.logger.error("API failure in DoiMintingService#doi_metadata: #{result.inspect}")
+            nil
+          end
         rescue => e
           Rails.logger.error("Error in DoiMintingService#doi_metadata: #{e.inspect}")
           nil
@@ -144,8 +164,13 @@ module Datacore
       def update_metadata!
         return nil unless doi_exists?
         begin
-          result = client.update(id: doi, metadata: metadata)
-          result.success? ? "doi:#{result.value!.doi}" : nil
+          result = client.update(id: id, attributes: metadata)
+          if result.success?
+            "doi:#{result.value!.doi}"
+          else
+            Rails.logger.error("API failure in DoiMintingService#update_metadata!: #{result.inspect}")
+            nil
+          end
         rescue => e
           Rails.logger.error("Error in DoiMintingService#update_metadata!: #{e.inspect}")
           nil
