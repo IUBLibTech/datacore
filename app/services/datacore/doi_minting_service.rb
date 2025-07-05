@@ -97,7 +97,7 @@ module Datacore
           else
             result = client.autogenerate_doi(prefix: prefix, metadata: metadata)
           end
-          result.success? ? result.value!.doi : nil
+          result.success? ? "doi:#{result.value!.doi}" : nil
         rescue => e
           Rails.logger.error("Error in DoiMintingService#mint_doi!: #{e.inspect}")
           nil
@@ -145,7 +145,7 @@ module Datacore
         return nil unless doi_exists?
         begin
           result = client.update(id: doi, metadata: metadata)
-          result.success? ? result.value!.doi : nil
+          result.success? ? "doi:#{result.value!.doi}" : nil
         rescue => e
           Rails.logger.error("Error in DoiMintingService#update_metadata!: #{e.inspect}")
           nil
