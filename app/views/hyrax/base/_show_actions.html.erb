@@ -1,7 +1,9 @@
 <div class="show-actions">
   <% if @presenter.tombstone.blank? %>
 
-    <%= render 'download_panel' %>
+    <% if @presenter.total_file_count > 0 %>
+      <%= render 'download_panel' %>
+    <% end %>
 
     <% if ((@presenter.editor? && @presenter.workflow.state != "deposited" ) ||
          @presenter.current_ability.admin? ) %>
