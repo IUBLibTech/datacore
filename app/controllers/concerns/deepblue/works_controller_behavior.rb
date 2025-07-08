@@ -4,10 +4,15 @@ module Deepblue
 
   module WorksControllerBehavior
     extend ActiveSupport::Concern
-    #in umrdr
-    #include Hyrax::Controller
+
     include Hyrax::WorksControllerBehavior
     include Deepblue::ControllerWorkflowEventBehavior
+    include Deepblue::BoxControllerBehavior
+    include Deepblue::ProvenanceLogControllerBehavior
+    include Deepblue::GlobusControllerBehavior
+    include Deepblue::TombstoneControllerBehavior
+    include Deepblue::VisibilityChangeControllerBehavior
+    include Deepblue::ZipDownloadControllerBehavior
 
     def after_update_response
       if curation_concern.file_sets.present?
