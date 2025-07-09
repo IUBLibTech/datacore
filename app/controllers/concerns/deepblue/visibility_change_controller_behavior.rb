@@ -5,11 +5,11 @@ module Deepblue
     extend ActiveSupport::Concern
 
     included do
-      before_action :visiblity_changed,            only: [:update]
+      before_action :visibility_changed,            only: [:update]
       after_action :visibility_changed_update,     only: [:update]
     end
 
-    def visiblity_changed
+    def visibility_changed
       # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
       #                                        Deepblue::LoggingHelper.called_from,
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),

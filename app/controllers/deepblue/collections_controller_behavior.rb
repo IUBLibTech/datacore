@@ -35,7 +35,7 @@ module Deepblue
 
     ## visibility / publish
 
-    def visiblity_changed
+    def visibility_changed
       # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
       #                                        Deepblue::LoggingHelper.called_from,
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
