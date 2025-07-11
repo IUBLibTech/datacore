@@ -15,7 +15,7 @@ module Hyrax
 
     before_action :workflow_destroy,             only: [:destroy]
     before_action :provenance_log_update_before, only: [:update]
-    before_action :visiblity_changed,            only: [:update]
+    before_action :visibility_changed,            only: [:update]
 
     after_action :workflow_create,               only: [:create]
     after_action :provenance_log_update_after,   only: [:update]
@@ -94,7 +94,7 @@ module Hyrax
 
     ## visibility / publish
 
-    def visiblity_changed
+    def visibility_changed
       # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
       #                                        Deepblue::LoggingHelper.called_from,
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),

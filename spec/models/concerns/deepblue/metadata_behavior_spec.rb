@@ -22,7 +22,7 @@ class CurationConcernMock
     ['The Title', 'Part 2']
   end
 
-  def visiblity
+  def visibility
     Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
   end
 
