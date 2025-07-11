@@ -71,6 +71,7 @@ class SolrDocument
     self['degree_grantors_label_ssim']
   end
 
+  # FIXME: drop?
   def doi_label
     self['doi_label_ssim']
   end
@@ -201,7 +202,7 @@ class SolrDocument
     'description_thesisdegreegrantor',
     'description_thesisdegreename',
     'digitization_spec',
-    'doi',
+    # 'doi',
     'dspace_collection',
     'dspace_community',
     'duration',

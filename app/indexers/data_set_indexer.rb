@@ -28,7 +28,7 @@ class DataSetIndexer < Hyrax::WorkIndexer
       # solr_doc['member_of_collection_ids_ssim'] = object.member_of_collections.map(&:id)
 
       solr_doc[Solrizer.solr_name('creator_ordered', :stored_searchable)] = object.creator_ordered
-      solr_doc[Solrizer.solr_name('doi', :symbol)] = object.doi
+      solr_doc['doi_ssi'] = object.doi # FIXME: fix tesim version getting created
 
       value = Array( object.referenced_by ).join( " " )
       solr_doc[Solrizer.solr_name('referenced_by', :stored_searchable)] = value

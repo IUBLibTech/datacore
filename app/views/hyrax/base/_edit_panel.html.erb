@@ -16,11 +16,16 @@
         <% end %>
         <% if @presenter.doi_minting_enabled? && !@presenter.doi_minted? %>
           <br/><br/>
-          <button class="btn btn-primary" data-target="#mintDoiId" data-toggle="modal">
-            <%= t('simple_form.actions.data_set.mint_doi') %>
-          </button>
-          <!-- %= link_to t('simple_form.actions.data_set.mint_doi'),
-                          main_app.doi_hyrax_data_set_path(@presenter.id), class: 'btn btn-primary' % -->
+          <% if @presenter.doi_pending? %>
+            <button class="btn btn-primary disabled" title="DOI minting processing">
+              <%= t('simple_form.actions.data_set.mint_doi') %>
+            </button>
+            <p>DOI minting is currently processing.</p>
+          <% else %>
+            <button class="btn btn-primary" data-target="#mintDoiId" data-toggle="modal">
+              <%= t('simple_form.actions.data_set.mint_doi') %>
+            </button>
+          <% end %>
           <p><%= raw (t('simple_form.actions.data_set.mint_help', contact_path: hyrax.contact_path)) %></p>
         <% end %>
       </div>

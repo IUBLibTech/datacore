@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe DataSet do
-
   let( :authoremail ) { 'authoremail@umich.edu' }
   let( :creator ) { 'Creator, A' }
   let( :current_user ) { 'user@umich.edu' }
@@ -662,4 +661,5 @@ RSpec.describe DataSet do
     expect( rv_key_values.size ).to eq size
   end
 
+  include_examples "DeepBlue::DoiBehavior", :data_set
 end

@@ -62,6 +62,6 @@ Rails.application.configure do
 
   # Use a real queuing backend for Active Job (needed for testing resque-scheduler)
   # this will force the jobs to be asynchronous (and does not work in dev due to a bug)
-  # config.active_job.queue_adapter = :resque
+  config.active_job.queue_adapter = :inline
 
 end
