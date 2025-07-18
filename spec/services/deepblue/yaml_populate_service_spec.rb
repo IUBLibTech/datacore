@@ -6,7 +6,7 @@ class MockOutput
   end
 end
 
-class MockFileSet
+class MockMetaData
   def original_name
     "original name"
   end
@@ -369,7 +369,7 @@ RSpec.describe Deepblue::YamlPopulateService do
 
     context "when file is not nil" do
       before {
-        allow(Deepblue::MetadataHelper).to receive(:file_from_file_set).with(fileset_arg).and_return MockFileSet.new
+        allow(Deepblue::MetadataHelper).to receive(:file_from_file_set).with(fileset_arg).and_return MockMetaData.new
       }
       it "returns filename appropriate string" do
         expect(subject.yaml_export_file_name file_set: fileset_arg).to eq "_file_"
