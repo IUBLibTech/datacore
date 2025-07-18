@@ -116,6 +116,7 @@ archive_api:
   disabled: false # used to force-disable archive server interactions, when the server is known down
   use_recaptcha: false
   require_user_authentication: false
+  require_user_authorization: false
   provide_email: false # [false, :optional, :required]
   send_email: false # should be true when provide_email is :optional, :required
   url: archive.url.invalid/%s/%s

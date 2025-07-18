@@ -5,7 +5,7 @@ class ArchiveController < ApplicationController
 
   def user_is_authorized?
     set_variables
-    authenticated_user? && recaptcha_success?
+    authenticated_user? && authorized_user? && recaptcha_success?
   end
 
   def status
@@ -51,15 +51,26 @@ class ArchiveController < ApplicationController
       @file_set_id = params[:file_set_id]
     end
 
+    def file_set
+      @file_set ||= FileSet.search_with_conditions(id: @file_set_id).first if @file_set_id
+    end
+
     # use the user-displayed filename, without the work id prepended, if available
     def download_filename(default_filename)
-      FileSet.search_with_conditions(id: @file_set_id).first&.dig('label_ssi') || default_filename
+      file_set&.dig('label_ssi') || default_filename
     end
+
 
     def authenticated_user?
       return true unless Settings.archive_api.require_user_authentication
       @failure_description = 'Action available only to signed-in users.'
       user_signed_in?
+    end
+
+    def authorized_user?
+      return true unless Settings.archive_api.require_user_authorization
+      @failure_description = 'Action available only to authorized users.'
+      current_user.can? :edit, file_set_id
     end
 
     def recaptcha_success?
