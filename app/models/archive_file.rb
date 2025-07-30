@@ -247,7 +247,17 @@ class ArchiveFile
       # now only supports read-only status requests
       # @return Net::HTTPResponse
       def archive_request(method: Net::HTTP::Head)
-        uri = URI.parse(archive_url)
+        # handle any inadvertently included spaces, or catch other missed encodings
+        begin
+          if archive_url.match / /
+            uri = URI.parse(archive_url.gsub(' ', '%20'))
+          else
+            uri = URI.parse(archive_url)
+          end
+        rescue => error
+          Rails.logger.error("Error parsing archive_url value (#{archive_url}): #{error.message}")
+          return
+        end
         unless method == Net::HTTP::Head
           Rails.logger.error("archive_request called with non-whitelisted method: #{method}")
           return
