@@ -83,7 +83,10 @@ module Datacore
       # Look for files with names matching the pattern "<workid>_<filename>"
       #   (a work_id is a string of 9 alphanumberic characters)
       filename = filepath.split('/').last
-      if filename.match(/^(?<work_id>([a-z]|\d){9})_(?<filenamepart>.*)$/)
+      if filename != URI.encode(filename)
+        logger.error("Filename \"#{filename}\" requires URL encoding (to \"#{URI.encode(filename)}\"), skipping ingest.")
+        return
+      elsif filename.match(/^(?<work_id>([a-z]|\d){9})_(?<filenamepart>.*)$/)
         filename.match(/^(?<work_id>([a-z]|\d){9})_(?<filenamepart>.*)$/) do |m|
           work_id = m[:work_id]
           filenamepart = m[:filenamepart]
