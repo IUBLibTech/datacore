@@ -4,23 +4,13 @@ RSpec.describe Deepblue::LogReporter do
   subject { described_class.new(filter: "filter", input: "input", options: {"blue" => "gold"} ) }
 
   describe "#initialize" do
-    it "initializes instance variables" do
-      # called by initialize in parent class
-      subject.instance_variable_get(:@filter) == "filter"
-      subject.instance_variable_get(:@input) == "input"
-      subject.instance_variable_get(:@options) == {"blue" => "gold"}
-      subject.instance_variable_get(:@verbose) == false
-      subject.instance_variable_get(:@verbose_filter) == false
+    it "calls super and instantiates variables" do
+      expect(Deepblue::LogReader).to receive(:new).with(filter: "", input: "stuff", options: {})
+      log_reporter = Deepblue::LogReporter.new(filter: "", input: "stuff", options: {})
 
-      subject.instance_variable_get(:@output_close) == false
-      subject.instance_variable_get(:@output_mode) == 'w'
-      subject.instance_variable_get(:@output_pathname).nil? == true
-    end
-
-    it "super calls add_date_range_filter" do
-      allow(Deepblue::LogReader).to receive(:new)
-      Deepblue::LogReporter.new(filter: nil, input:"input", options: {})
-      expect(Deepblue::LogReader).to have_received(:new)
+      log_reporter.instance_variable_get(:@output_close) == false
+      log_reporter.instance_variable_get(:@output_mode) == "w"
+      log_reporter.instance_variable_get(:@output_pathname).blank?
     end
   end
 
@@ -65,4 +55,14 @@ RSpec.describe Deepblue::LogReporter do
     end
   end
 
+
+  # protected methods
+
+  describe "class_event_keys" do
+    it "returns text" do
+      expect(subject.send(:class_event_key, class_name: "Classy", event: "Eventually")).to eq "Classy_Eventually"
+    end
+  end
+
+  # initialize_report_values and line_read tested in deleted_works_log_reporter_spec.rb and ingest_fixity_log_reporter_spec.rb
 end

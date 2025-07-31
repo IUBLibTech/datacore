@@ -22,6 +22,40 @@ class MockLogFilter
   end
 end
 
+class MockInputFile
+
+  def initialize()
+    @eof = true
+  end
+  def eof?
+    @eof = !@eof
+  end
+
+  def readline
+    "Read this line here!?"
+  end
+
+  def close
+  end
+end
+
+
+class MockInputFilter
+
+  def initialize(next_line)
+    @next_line = next_line
+  end
+
+  def filter_in(parsed_timestamp,
+                parsed_event,
+                parsed_event_note,
+                parsed_class_name,
+                parsed_id,
+                parsed_raw_key_values)
+    @next_line
+  end
+end
+
 
 RSpec.describe Deepblue::LogReader do
   let( :initial_filter ) { MockLogFilter.new all_log_filter: true}
@@ -54,12 +88,12 @@ RSpec.describe Deepblue::LogReader do
   describe "#initialize_filter" do
     context "when filter is blank" do
       before {
-        allow(Deepblue::AllLogFilter).to receive(:new)
+        allow(Deepblue::AllLogFilter).to receive(:new).and_return "all log filter"
       }
       it "calls AllLogFilter.new" do
         expect(Deepblue::AllLogFilter).to receive(:new)
 
-        expect(subject.initialize_filter nil).to be_blank
+        expect(subject.initialize_filter nil).to eq "all log filter"
       end
     end
 
@@ -75,7 +109,7 @@ RSpec.describe Deepblue::LogReader do
     end
 
     context "when filter is not an array and not blank" do
-      it "returns filter" do
+      it "returns filter argument" do
         expect(subject.initialize_filter "condensation").to eq "condensation"
       end
     end
@@ -239,16 +273,31 @@ RSpec.describe Deepblue::LogReader do
     end
   end
 
-  describe "#input_mode" do
-    before {
-      allow(subject).to receive(:option).with(key: 'input_mode', default_value: 'r').and_return ("trail mix")
-    }
-    it "calls option function" do
-      expect(subject).to receive(:option).with(key: 'input_mode', default_value: 'r')
 
-      expect(subject.input_mode).to eq "trail mix"
+  describe "#input mode" do
+    before {
+      allow(subject).to receive(:option).with(key: 'input_mode', default_value: "r").and_return "substantial"
+    }
+    context "when instance variable has a value" do
+      before {
+        subject.instance_variable_set(:@input_mode, "optionally")
+      }
+      it "returns instance variable" do
+        expect(subject).not_to receive(:option)
+        expect(subject.input_mode).to eq "optionally"
+        subject.instance_variable_get(:@input_mode) == "optionally"
+      end
+    end
+
+    context "when instance variable does not have a value" do
+      it "calls option function" do
+        expect(subject).to receive(:option)
+        expect(subject.input_mode).to eq "substantial"
+        subject.instance_variable_get(:@input_mode) == "substantial"
+      end
     end
   end
+
 
   describe "#parse_line" do
 
@@ -309,6 +358,235 @@ RSpec.describe Deepblue::LogReader do
     end
   end
 
-  pending "#readlines"
+
+  describe "#readlines" do
+    before {
+      subject.instance_variable_set(:@lines_parsed, "default")
+      subject.instance_variable_set(:@current_line, "default")
+
+      subject.instance_variable_set(:@parsed_timestamp, "Time Stamp")
+      subject.instance_variable_set(:@parsed_event, "Event Name")
+      subject.instance_variable_set(:@parsed_event_note, "Event Note")
+      subject.instance_variable_set(:@parsed_class_name, "Class Name")
+      subject.instance_variable_set(:@parsed_id, "ID#")
+      subject.instance_variable_set(:@parsed_raw_key_values, "raw key values...")
+
+      allow(subject).to receive(:log_open_input)
+      allow(subject).to receive(:log_close_input)
+    }
+
+    context "when no block provided and input at end of file" do
+      before {
+        subject.instance_variable_set(:@lines_read, "default")
+        subject.instance_variable_set(:@input, OpenStruct.new(eof?: true))
+
+        allow(subject).to receive(:filter)
+      }
+      it "sets instance variables to zero or blank" do
+        subject.readlines
+
+        subject.instance_variable_get(:@lines_parsed) == 0
+        subject.instance_variable_get(:@lines_read) == 0
+        subject.instance_variable_get(:@current_line).blank? == true
+      end
+    end
+
+    context "when input provided" do
+      before {
+        subject.instance_variable_set(:@lines_read, 0)
+        allow(subject).to receive(:parse_line)
+      }
+
+      context "when @parsed is false" do
+        before {
+          subject.instance_variable_set(:@parsed, false)
+          subject.instance_variable_set(:@input, MockInputFile.new)
+          allow(subject).to receive(:filter)
+        }
+
+        it "calls parse_line" do
+          subject.readlines
+        end
+      end
+
+      context "when @parsed is true" do
+        before {
+          subject.instance_variable_set(:@parsed, true)
+          subject.instance_variable_set(:@input, MockInputFile.new)
+        }
+
+        context "when filter.filter_in returns false" do
+          mock_filter = MockInputFilter.new(false)
+          before {
+            allow(subject).to receive(:filter).and_return mock_filter
+          }
+          it "calls parse_line and filter_in" do
+            expect(mock_filter).to receive(:filter_in).with("Time Stamp", "Event Name", "Event Note", "Class Name", "ID#", "raw key values...")
+
+            subject.readlines
+          end
+
+          specify { expect { |b| subject.readlines(&b) }.not_to yield_control }  # method does not reach block
+        end
+
+        context "when filter.filter_in returns true" do
+          filter_mock = MockInputFilter.new(true)
+          before {
+            allow(subject).to receive(:filter).and_return filter_mock
+          }
+          it "calls parse_line and filter_in" do
+            expect(filter_mock).to receive(:filter_in).with("Time Stamp", "Event Name", "Event Note", "Class Name", "ID#", "raw key values...")
+
+            subject.readlines
+          end
+
+          specify { expect { |b| subject.readlines(&b) }.to yield_with_args }  # method reaches block which yields with arguments
+        end
+      end
+
+      after {
+        expect(subject).to have_received(:parse_line)
+
+        subject.instance_variable_get(:@current_line) == "Read this line here!"
+        subject.instance_variable_get(:@lines_read) == 1
+      }
+    end
+
+    after {
+      expect(subject).to have_received(:log_open_input)
+      expect(subject).to have_received(:log_close_input)
+    }
+  end
+
+
+  # protected methods
+
+  describe "#log_close_input" do
+    close_input = MockInputFile.new
+    before {
+      subject.instance_variable_set(:@input, close_input)
+    }
+
+    context "when @input_close is false" do
+      before {
+        subject.instance_variable_set(:@input_close, false)
+      }
+      it "does not call close on @input" do
+        expect(close_input).not_to receive(:close)
+        subject.send(:log_close_input)
+      end
+    end
+
+    context "when @input_close is true and @input has a value" do
+      before {
+        subject.instance_variable_set(:@input_close, true)
+      }
+      it "calls close on @input" do
+        expect(close_input).to receive(:close)
+        subject.send(:log_close_input)
+      end
+    end
+  end
+
+
+  describe "#log_open_input" do
+    path_name = Pathname.new("/tmp")
+
+    context "when @input is a string file location that exists" do
+      before {
+        subject.instance_variable_set(:@input, "/tmp")
+        allow(subject).to receive(:open).with(path_name, 'r').and_return "string pathname"
+      }
+      it "creates Pathname with string and opens it, sets instance variables" do
+        expect(subject).to receive(:open).with(path_name, 'r')
+        subject.send(:log_open_input)
+
+        subject.instance_variable_get(:@input) == "string pathname"
+        subject.instance_variable_get(:@input_close) == true
+      end
+    end
+
+    context "when @input is a Pathname that exists" do
+      before {
+        subject.instance_variable_set(:@input, path_name)
+        allow(subject).to receive(:open).with(path_name, 'r').and_return "original pathname"
+      }
+      it "opens Pathname and sets instance variables" do
+        expect(subject).to receive(:open).with(path_name, 'r')
+        subject.send(:log_open_input)
+
+        subject.instance_variable_get(:@input) == "original pathname"
+        subject.instance_variable_get(:@input_close) == true
+      end
+    end
+
+    context "when @input Pathname does not exist" do
+      before {
+        subject.instance_variable_set(:@input, "message")
+      }
+      it "does not open pathname or set instance variables" do
+        expect(subject).not_to receive(:open)
+        subject.send(:log_open_input)
+
+        subject.instance_variable_get(:@input).blank? == true
+        subject.instance_variable_get(:@input_close).blank? == true
+      end
+    end
+  end
+
+
+  describe "#option" do
+    context "when key is not an option" do
+      before {
+        allow(subject).to receive(:options_key?).with("platinum").and_return false
+      }
+      it "returns default value" do
+        expect(subject.send(:option, key: "platinum", default_value: "nickel")).to eq "nickel"
+      end
+    end
+
+    context "when key is an option" do
+      before {
+        allow(subject).to receive(:options_key?).with("silver").and_return true
+        allow(subject).to receive(:options_key?).with(:silver).and_return true
+        allow(subject).to receive(:options_key?).with("gold").and_return true
+        allow(subject).to receive(:options_key?).with(["copper"]).and_return true
+
+        subject.instance_variable_set(:@options, { "silver" => "treasure chest", :gold => "fort knox" })
+      }
+      it "returns @options key value" do
+        expect(subject.send(:option, key: "silver", default_value: "tin")).to eq "treasure chest"
+        expect(subject.send(:option, key: :silver, default_value: "tin")).to eq "treasure chest"
+        expect(subject.send(:option, key: "gold", default_value: "brass")).to eq "fort knox"
+      end
+
+      it "returns default value if key is not a string or a symbol" do
+        expect(subject.send(:option, key: ["copper"], default_value: "bronze")).to eq "bronze"
+      end
+    end
+  end
+
+
+  describe "#options_key?" do
+    before {
+      subject.instance_variable_set(:@options, { "apple" => "honeycrisp", :orange => "blood" })
+    }
+    it "returns true if key is present" do
+      expect(subject.send(:options_key?, "apple")).to eq true
+    end
+
+    it "returns true if key is present as a symbol but entered as a string" do
+      expect(subject.send(:options_key?, "orange")).to eq true
+    end
+
+    it "returns true if key is present as a string but entered as a symbol" do
+      expect(subject.send(:options_key?, :apple)).to eq true
+    end
+
+    it "returns false if key is absent" do
+      expect(subject.send(:options_key?, "pear")).to eq false
+    end
+
+  end
 
 end
