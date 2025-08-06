@@ -14,7 +14,6 @@ module Hyrax
     delegate :show_presenter, to: :class
 
     before_action :assign_date_coverage,         only: %i[create update]
-    before_action :assign_admin_set,             only: %i[create update]
     before_action :workflow_destroy,             only: [:destroy]
     before_action :provenance_log_update_before, only: [:update]
     before_action :visiblity_changed,            only: [:update]
@@ -83,15 +82,6 @@ module Hyrax
     def assign_date_coverage
       cov_interval = Dataset::DateCoverageService.params_to_interval params
       params[PARAMS_KEY]['date_coverage'] = cov_interval ? cov_interval.edtf : ""
-    end
-
-    def assign_admin_set
-      admin_sets = Hyrax::AdminSetService.new(self).search_results(:deposit)
-      admin_sets.each do |admin_set|
-        if admin_set.id != "admin_set/default"
-          params[PARAMS_KEY]['admin_set_id'] = admin_set.id
-        end
-      end
     end
 
     # end date_coverage
