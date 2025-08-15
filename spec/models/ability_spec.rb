@@ -5,7 +5,7 @@ RSpec.describe Ability do
   let(:options) { {} }
   let(:ability) { described_class.new(user, options) }
 
-  describe '#can_deposit?' do
+  describe '#can_deposit?', :clean do
     context 'when neither an admin nor depositor' do
       it 'returns false' do
         expect(ability.admin?).to be false
@@ -14,11 +14,9 @@ RSpec.describe Ability do
       end
     end
     context 'when a depositor' do
-      let(:admin_set) { AdminSet.find(AdminSet.find_or_create_default_admin_set_id) }
-      before do
-        # creates permission template and depositor permissions
-        Hyrax::AdminSetCreateService.new(admin_set: admin_set, creating_user: user).create
-      end
+      let(:depositing_role) { Sipity::Role.find_by_name(Hyrax::RoleRegistry::DEPOSITING) }
+      let(:depositing_agent) { Sipity::Agent.create(proxy_for_id: user.id, proxy_for_type: "User") }
+      let!(:responsibility) { Sipity::WorkflowResponsibility.create(workflow_role_id: depositing_role.id, agent_id: depositing_agent.id) }
       it 'returns true' do
         expect(ability.admin?).to be false
         expect(ability.depositor?).to be true
