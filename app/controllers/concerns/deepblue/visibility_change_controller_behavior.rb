@@ -1,46 +1,19 @@
 # frozen_string_literal: true
 
 module Deepblue
+  module VisibilityChangeControllerBehavior
+    extend ActiveSupport::Concern
 
-  module CollectionsControllerBehavior
-
-    include Deepblue::ControllerWorkflowEventBehavior
-
-    PARAMS_KEY = 'collection'
-
-    ## Provenance log
-
-    def provenance_log_update_after
-      # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
-      #                                        Deepblue::LoggingHelper.called_from,
-      #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
-      #                                        "@update_attr_key_values=#{@update_attr_key_values}",
-      #                                        "" ]
-      curation_concern.provenance_log_update_after( current_user: current_user,
-                                                    event_note: default_event_note,
-                                                    update_attr_key_values: @update_attr_key_values )
+    included do
+      before_action :visibility_changed,            only: [:update]
+      after_action :visibility_changed_update,     only: [:update]
     end
-
-    def provenance_log_update_before
-      # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
-      #                                        Deepblue::LoggingHelper.called_from,
-      #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
-      #                                        "@update_attr_key_values=#{@update_attr_key_values}",
-      #                                        "" ]
-      return unless @update_attr_key_values.nil?
-      @update_attr_key_values = curation_concern.provenance_log_update_before( form_params: params[params_key].dup )
-    end
-
-    ## end Provenance log
-
-    ## visibility / publish
 
     def visibility_changed
       # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
       #                                        Deepblue::LoggingHelper.called_from,
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
       #                                        "" ]
-      @update_attr_key_values = curation_concern.provenance_log_update_before( form_params: params[PARAMS_KEY].dup )
       if visibility_to_private?
         mark_as_set_to_private
       elsif visibility_to_public?
@@ -54,7 +27,7 @@ module Deepblue
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
       #                                        "" ]
       if curation_concern.private? && @visibility_changed_to_private
-        workflow_unpublish
+       workflow_unpublish
       elsif curation_concern.public? && @visibility_changed_to_public
         workflow_publish
       end
@@ -75,7 +48,7 @@ module Deepblue
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
       #                                        "" ]
       return false if curation_concern.public?
-      params[params_key]['visibility'] == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+      params[PARAMS_KEY]['visibility'] == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
     end
 
     def mark_as_set_to_private
@@ -87,9 +60,5 @@ module Deepblue
       @visibility_changed_to_public = true
       @visibility_changed_to_private = false
     end
-
-    ## end visibility / publish
-
   end
-
 end
