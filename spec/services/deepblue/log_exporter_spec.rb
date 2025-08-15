@@ -5,6 +5,12 @@ class OutputMock
   def puts (text)
     text
   end
+
+  def flush
+  end
+
+  def close
+  end
 end
 
 RSpec.describe Deepblue::LogExporter do
@@ -48,12 +54,14 @@ RSpec.describe Deepblue::LogExporter do
     end
 
     context "when pp_export is equivalent to false" do
+      mockoutput = OutputMock.new
       before {
         allow(subject).to receive(:pp_export).and_return false
+        subject.instance_variable_set(:@output, mockoutput)
       }
       it "calls @output.puts" do
-        expect(subject.export_line"line", "timestamp", "event", "event_note", "class_name", "id", "raw")
-          .to eq "line"
+        expect(mockoutput).to receive(:puts).with "line"
+        subject.export_line "line", "timestamp", "event", "event_note", "class_name", "id", "raw"
       end
     end
   end
@@ -147,6 +155,84 @@ RSpec.describe Deepblue::LogExporter do
 
       subject.quick_report
     end
+  end
+
+
+  # protected methods
+
+  describe "#log_close_output" do
+    context "when @output_close is false" do
+      it "returns nil" do
+        expect(subject.send(:log_close_output)).to be_blank
+      end
+    end
+
+    context "when @output_close is true" do
+      out_put = OutputMock.new
+      before {
+        subject.instance_variable_set(:@output_close, true)
+      }
+
+      context "when @output is nil" do
+        before {
+          subject.instance_variable_set(:@output, nil)
+        }
+        it "nothing happens" do
+          expect(out_put).not_to receive(:flush)
+          expect(out_put).not_to receive(:close)
+          subject.send(:log_close_output)
+        end
+      end
+      context "when @output is not nil" do
+        before {
+          subject.instance_variable_set(:@output, out_put)
+        }
+        it "calls flush and close on @output" do
+          expect(out_put).to receive(:flush)
+          expect(out_put).to receive(:close)
+          subject.send(:log_close_output)
+        end
+      end
+    end
+  end
+
+
+  describe "#log_open_output" do
+    before {
+      allow(subject).to receive(:output_mode).and_return "output mode"
+    }
+
+    context "when @output is a string" do
+      before {
+        subject.instance_variable_set(:@output, "things")
+        allow(Pathname).to receive(:new).with("things").and_return "string output pathname"
+        allow(subject).to receive(:open).with("string output pathname", "output mode").and_return "string output"
+      }
+      it "creates Pathname from string" do
+        subject.send(:log_open_output)
+
+        expect(subject.instance_variable_get(:@output_pathname)).to eq "string output pathname"
+        expect(subject.instance_variable_get(:@output)).to eq "string output"
+      end
+    end
+
+    context "when @output is a Pathname" do
+      path_name = Pathname.new("path name")
+      before {
+        subject.instance_variable_set(:@output, path_name)
+        allow(subject).to receive(:open).with(path_name, "output mode").and_return "pathname output"
+      }
+      it "uses Pathname" do
+        subject.send(:log_open_output)
+
+        expect(subject.instance_variable_get(:@output_pathname)).to eq path_name
+        expect(subject.instance_variable_get(:@output)).to eq "pathname output"
+      end
+    end
+
+    after {
+      expect(subject.instance_variable_get(:@output_close)).to eq true
+    }
   end
 
 end
