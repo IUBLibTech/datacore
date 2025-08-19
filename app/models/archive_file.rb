@@ -60,7 +60,7 @@ class ArchiveFile
 
   # used for :notice and :alert messages in controller flash
   def flash_message(current_status = status)
-    description_for(method: :flash_message, lookup_status: current_status, lookup_hash: Settings.archive_api.flash_messages.to_hash.with_indifferent_access)
+    description_for_status(method: :flash_message, lookup_status: current_status, lookup_hash: Settings.archive_api.flash_messages.to_hash.with_indifferent_access)
   end
 
   # requests staging (if available and not requested yet)
@@ -193,7 +193,7 @@ class ArchiveFile
     # if not yet staged: requests for staging (if possible)
     # @return Hash
     def stage_request!(request_hash = {})
-      Rails.logger.warn("Staging request for #{archive_url} made in status: #{status}") if staged? # log :staged_without_request cases
+      staged_request_warn
       if block_new_jobs?
         log_denied_attempt!(request_hash: request_hash.merge({ reason: 'block_new_jobs' }))
         { status: request_hash[:status], action: :throttled, message: display_status(:too_many_requests), alert: true }
@@ -201,6 +201,10 @@ class ArchiveFile
         create_or_update_job_file!(new_params: { requests: [request_hash.merge({ action: 'create_or_update_job_file!'})] })
         { status: request_hash[:status], action: :create_or_update_job_file!, message: display_status(:staging_requested) }
       end
+    end
+
+    def staged_request_warn
+      Rails.logger.warn("Staging request for #{archive_url} made in status: #{status}") if staged? # log :staged_without_request cases
     end
 
     def job_file_path
