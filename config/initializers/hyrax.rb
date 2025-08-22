@@ -55,23 +55,18 @@ Hyrax.config do |config|
   # Enable displaying usage statistics in the UI
   # Defaults to false
   # Requires a Google Analytics id and OAuth2 keyfile.  See README for more info
-  config.analytics = false
+  # config.analytics = false
 
   # Google Analytics tracking ID to gather usage statistics
   # config.google_analytics_id = Rails.application.secrets.analytics_id
-  path = "#{Rails.application.config.paths["config"].existent.first}/analytics_id.yml"
-  if File.exist? path
-    Settings.analytics_id ||= Rails.application.config_for(:analytics_id)
-    config.google_analytics_id = Settings.analytics_id['analytics_id']
-  else
-    config.google_analytics_id = nil
-  end
+
+  config.google_analytics_id = Settings.google_analytics.id
 
   # Date you wish to start collecting Google Analytic statistics for
   # Leaving it blank will set the start date to when ever the file was uploaded by
   # NOTE: if you have always sent analytics to GA for downloads and page views leave this commented out
   # This is the date on the UMRDR WorkViewStat table record number 1
-  config.analytic_start_date = DateTime.new(2016, 4, 10 )
+  # config.analytic_start_date = DateTime.new(2016, 4, 10 )
 
   # Enables a link to the citations page for a work
   # Default is false
