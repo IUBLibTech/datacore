@@ -203,3 +203,6 @@ rack_attack:
   config_ttl: 60
   throttle_limit: 50
   throttle_period: 120
+
+google_analytics:
+    id:
