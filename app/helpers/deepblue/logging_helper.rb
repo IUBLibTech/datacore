@@ -139,13 +139,6 @@ module Deepblue
     def self.timestamp_zone
       DeepBlueDocs::Application.config.timezone_zone
     end
-
-    def self.to_log_format_timestamp( timestamp )
-      timestamp = Time.parse( timestamp ) if timestamp.is_a? String
-      timestamp = timestamp.to_formatted_s( :db ) if timestamp.is_a? Time
-      timestamp.to_s
-    end
-
   end
 
 end
