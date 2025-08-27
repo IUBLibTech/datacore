@@ -86,13 +86,7 @@ module Deepblue
                           end
           next unless has_old_value
           if value.is_a? Array
-            if value.blank?
-              value = nil
-            elsif [''] == value
-              value = nil
-            elsif 1 < value.size
-              value.pop if '' == value.last
-            end
+            value = handle_array_value(value)
           end
           # old_value = curation_concern[key]
           new_value = nil
@@ -114,6 +108,17 @@ module Deepblue
         end
         attr_key_values[:embargo] = embargo_values if embargo_values.present?
         attr_key_values
+      end
+
+      def handle_array_value (array)
+        if array.blank?
+          array = nil
+        elsif array == ['']
+          array = nil
+        elsif array.size > 1
+          array.pop if '' == array.last
+        end
+        array
       end
 
       def logger_initialize_key_values( user_email:, event_note:, **added_key_values )
@@ -190,11 +195,11 @@ module Deepblue
       end
 
       def timestamp_now
-        Time.now.to_formatted_s(:db )
+        Deepblue::LoggingHelper.timestamp_now
       end
 
       def timestamp_zone
-        DeepBlueDocs::Application.config.timezone_zone
+        Deepblue::LoggingHelper.timestamp_zone
       end
 
       def to_log_format_timestamp( timestamp )
