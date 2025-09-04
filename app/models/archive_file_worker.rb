@@ -51,7 +51,7 @@ class ArchiveFileWorker
   def self.block_new_jobs?
     too_many_jobs? || too_much_space_used?
   end
-  delegate :bloack_new_jobs?, to: :class
+  delegate :block_new_jobs?, to: :class
 
   def process_file
     # if the file is not currently open by another process
@@ -195,7 +195,7 @@ class ArchiveFileWorker
   end
 
   def path
-    file_path = '.datacore.yml'
+    file_path + '.datacore.yml'
   end
 
   def curl_command(output: false)
