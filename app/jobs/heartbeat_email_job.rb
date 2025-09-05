@@ -16,9 +16,7 @@ class HeartbeatEmailJob < ::Hyrax::ApplicationJob
                                            "options=#{options}",
                                            Deepblue::LoggingHelper.obj_class( 'options', options ),
                                            "" ]
-    verbose = job_options_value(options, key: 'verbose', default_value: false )
-    ::Deepblue::LoggingHelper.debug "verbose=#{verbose}" if verbose
-    hostnames = job_options_value(options, key: 'hostnames', default_value: [], verbose: verbose )
+    hostnames = get_hostnames(options)
     hostname = ::DeepBlueDocs::Application.config.hostname
     return unless hostnames.include? hostname
     ::DeepBlueDocs::Application.config.scheduler_heartbeat_email_targets.each do |email_target|
@@ -28,6 +26,12 @@ class HeartbeatEmailJob < ::Hyrax::ApplicationJob
     Rails.logger.error "#{e.class} #{e.message} at #{e.backtrace[0]}"
     Rails.logger.error e.backtrace.join("\n")
     raise e
+  end
+
+  def get_hostnames(options)
+    verbose = job_options_value(options, key: 'verbose', default_value: false )
+    ::Deepblue::LoggingHelper.debug "verbose=#{verbose}" if verbose
+    job_options_value(options, key: 'hostnames', default_value: [], verbose: verbose )
   end
 
   def heartbeat_email( email_target:, hostname: )
