@@ -120,6 +120,8 @@ gem 'riiif', '~> 1.1'
 gem 'rsolr', '>= 1.0'
 group :development, :test do
   gem 'capybara'
+  gem 'capybara-screenshot', '~> 1.0'
+  gem 'capybara_watcher'
   gem 'chromedriver-helper'
   gem 'database_cleaner'
   gem 'factory_bot', require: false
