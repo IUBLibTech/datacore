@@ -63,7 +63,7 @@ module Hyrax
         # set up a member search builder for collections only
         # @return [CollectionMemberSearchBuilder] new or existing
         def subcollections_search_builder
-          @subcollections_search_builder ||= Hyrax::CollectionMemberSearchBuilder.new(scope: scope, collection: collection, search_includes_models: :collections)
+          @subcollections_search_builder ||= Hyrax::SubcollectionMemberSearchBuilder.new(scope: scope, collection: collection, page:params[:sub_collection_page])
         end
 
         # @api private
@@ -93,7 +93,8 @@ module Hyrax
         def params_for_subcollections
           # To differentiate current page for works vs subcollections, we have to use a sub_collection_page
           # param. Map this to the page param before querying for subcollections, if it's present
-          params[:page] = params.delete(:sub_collection_page)
+          params[:page] = params[:sub_collection_page]
+          params.delete(:sub_collection_page)
           params
         end
     end
