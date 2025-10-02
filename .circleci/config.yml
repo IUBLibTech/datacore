@@ -28,7 +28,9 @@ jobs:
       - image: ghcr.io/samvera/fcrepo4:4.7.5
         environment:
           CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
-      - image: solr:7
+      - image: solr:9
+        environment:
+          - SOLR_MODULES=analysis-extras,extraction
         command: bin/solr -cloud -noprompt -f -p 8985
 
     # Specify service dependencies here if necessary
@@ -113,7 +115,7 @@ jobs:
             cd solr/config
             zip -1 -r solr_hyrax_config.zip ./*
             curl -H "Content-type:application/octet-stream" --data-binary @solr_hyrax_config.zip "http://localhost:8985/solr/admin/configs?action=UPLOAD&name=hyrax"
-            curl -H 'Content-type: application/json' http://localhost:8985/v2/collections/ -d '{create: {name: hydra-test, config: hyrax, numShards: 1}}'
+            curl "http://localhost:8985/solr/admin/collections?action=CREATE&name=hydra-test&numShards=1&collection.configName=hyrax"
 
       - run:
           name: Run rspec in parallel
