@@ -157,7 +157,7 @@ module Deepblue
         when AbstractEventBehavior::EVENT_INGEST
           register_ingest( timestamp, event, event_note, class_name, id )
         when AbstractEventBehavior::EVENT_CHILD_ADD
-          register_ingest( timestamp, event, event_note, class_name, id )
+          register_child_add( timestamp, event, event_note, class_name, id )
         when AbstractEventBehavior::EVENT_FIXITY_CHECK
           register_fixity_check( timestamp, event, event_note, class_name, id )
         when AbstractEventBehavior::EVENT_VIRUS_SCAN
