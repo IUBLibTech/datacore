@@ -5,7 +5,8 @@ class Ability
   include Hyrax::Ability
 
   # self.ability_logic += [:everyone_can_create_curation_concerns]
-  self.ability_logic += [:deepblue_abilities]
+  self.ability_logic += [:deepblue_abilities,
+                         :featured_collection_abilities]
 
   def deepblue_abilities
     alias_action :display_provenance_log,    to: :read
@@ -64,5 +65,9 @@ class Ability
       agent.workflow_responsibilities.joins(:workflow_role)
            .where('sipity_workflow_roles.role_id' => depositing_role.id).any?
     end
+  end
+
+  def featured_collection_abilities
+    can [:create, :destroy, :update], FeaturedCollection if admin?
   end
 end

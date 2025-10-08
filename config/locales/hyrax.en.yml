@@ -148,3 +148,15 @@ en:
         no_works: No links have been featured
         tab_label: Documentation
         title: Documentation
+      featured_collections:
+        drag: Drag
+        no_works: No collections have been featured
+        document:
+          title_label: Featured Collections
+          creator_label: Creator
+          creator_missing: no creator value
+          keyword_label: Keywords
+          keyword_missing: no keywords specified
+      featured_works:
+        tab_label: Featured
+        title: Featured

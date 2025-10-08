@@ -156,4 +156,17 @@ Rails.application.routes.draw do
   match '*unmatched', to: 'application#rescue_404', via: :all
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  resources :collections, only: :show do
+  end
+end
+
+Hyrax::Engine.routes.draw do
+  resources :collections, only: :show do
+    member do
+      resource :featured_collection, only: [:create, :destroy], defaults: { format: :json }
+    end
+  end
+
+  resources :featured_collection_lists, path: 'featured_collections', only: :create
 end

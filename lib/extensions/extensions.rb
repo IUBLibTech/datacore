@@ -19,3 +19,6 @@ Hyrax::AdminStatsPresenter.prepend Extensions::Hyrax::AdminStatsPresenter::Admin
 
 # accessibility improvements
 Hyrax::CollapsableSectionPresenter.prepend Extensions::Hyrax::CollapsableSectionPresenter::CollapsableSectionPresenterBehavior
+
+# adding Featured Collections
+Hyrax::HomepageController.prepend Extensions::Hyrax::HomepageController::HomepageControllerBehavior

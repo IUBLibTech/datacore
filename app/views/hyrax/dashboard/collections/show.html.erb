@@ -92,13 +92,30 @@
   </section><!-- /collections-panel-wrapper -->
 </div><!-- /collections-wrapper -->
 
-<div class="panel-body">
-  <div class="row">
-    <div class="col-sm-12">
-      <%= render '/provenance_log_entries', presenter: @presenter %>
+<% if @presenter.provenance_log_entries? %>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-sm-12">
+        <%= render '/provenance_log_entries', presenter: @presenter %>
+      </div>
     </div>
   </div>
-</div>
+<% end %>
+
+<% if @presenter.collection_featurable? %>
+  <div class="panel-body">
+    <h4>Admin Actions</h4>
+    <div class="panel-body">
+      <%= link_to "Feature", hyrax.featured_collection_path(@presenter, format: :json),
+                  data: { behavior: 'feature' },
+                  class: @presenter.display_unfeature_link? ? 'btn btn-default collapse' : 'btn btn-subtle' %>
+
+      <%= link_to "Unfeature", hyrax.featured_collection_path(@presenter, format: :json),
+                  data: { behavior: 'unfeature' },
+                  class: @presenter.display_feature_link? ? 'btn btn-subtle collapse' : 'btn btn-subtle' %>
+    </div>
+  </div>
+<% end %>
 
 <% if @presenter.collection_type_is_nestable? && !has_collection_search_parameters? %>
   <%= render 'hyrax/my/collections/modal_add_to_collection', source: 'show' %>
