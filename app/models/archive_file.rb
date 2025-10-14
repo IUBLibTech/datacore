@@ -133,6 +133,7 @@ class ArchiveFile
     ARCHIVE_STATUS_CODES =
       { 'local' => :local, # File downloaded
         '000' => :no_response, # No response from file archiver service
+        '001' => :downtime, # server downtime, API disabled
         '503' => :unstaged, # File found in archives but not yet staged for download -- converted to :staging_available or :staging_requested
         'staging available' => :staging_available, # :unstaged, with not job indicating user request
         'staging requested' => :staging_requested, # :unstaged, but job indicates staging has been requested
@@ -160,7 +161,7 @@ class ArchiveFile
     #   staged: [:staged_after_request, :staged_without_request]
     # leaves :local status check to #status
     # avoids memoization to always get updated server status
-    # @return Symbol [:staging_requested, :staging_available, :staged_after_request, :staged_without_request, :not_found, :no_response, :unexpected]
+    # @return Symbol [:staging_requested, :staging_available, :staged_after_request, :staged_without_request, :not_found, :no_response, :unexpected, :downtime]
     def virtual_status
       remote_status = archive_status
       case remote_status
@@ -186,7 +187,7 @@ class ArchiveFile
     VirtualResponse = Struct.new(:code)
 
     def status_request
-      return VirtualResponse.new(code: '000') if Settings.archive_api.disabled
+      return VirtualResponse.new('001') if Settings.archive_api.disabled
       archive_request
     end
  

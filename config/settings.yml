@@ -149,6 +149,7 @@ archive_api:
     no_response: "File archives server is not responding.  Unable to request file."
     unexpected: "Unexpected response from file archives server.  Unable to request file."
     too_many_requests: "File is available in archives, but too many archive retrieval requests are currently running.  Please try again later."
+    downtime: "The file archives server is currently down for planned maintenance. Please try again later. Contact the Research Data Services department (resdata@iu.edu) if you would like to be notified when the archives are available."
   # used for button text
   request_actions:
     staging_available: &available 'Request file retrieval from archives'
@@ -160,6 +161,7 @@ archive_api:
     no_response: *unavailable
     unexpected: *unavailable
     too_many_requests: *unavailable
+    downtime: 'Unavailable during planned maintenance'
   # used for :notice and :alert messages in controller flash
   flash_messages: *status_messages
   # used for UI display of status codes
@@ -173,6 +175,7 @@ archive_api:
     no_response: &archives_unavailable "Archives unavailable"
     unexpected: *archives_unavailable
     too_many_requests: *archives_unavailable
+    downtime: 'Unavailable during planned maintenance'
 
 # keys need to be present in .env as well
 recaptcha:

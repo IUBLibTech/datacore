@@ -3,7 +3,7 @@
     <div class="form-group <%= 'required' if @presenter.require_request_email? %>">
       <label class="control-label">Archival file status: <%= @presenter.archive_status_code %></label>
       <p class="help-block">
-        <%= @presenter.archive_status_description %>
+        <%= auto_link(@presenter.archive_status_description) %>
       </p>
     </div>
     <% if Settings.archive_api.use_recaptcha %>
