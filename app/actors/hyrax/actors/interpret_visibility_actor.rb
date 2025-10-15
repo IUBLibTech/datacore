@@ -21,7 +21,7 @@ module Hyrax
           #                                      "attributes=#{attributes}",
           #                                      "embargo_release_date=#{embargo_release_date}" ]
 
-          valid_embargo_release_date = DeepBlueDocs::Application.config.embargo_enforce_future_release_date ? valid_future_date?(env, embargo_release_date) : true
+          valid_embargo_release_date = validate_embargo_release_date(env, embargo_release_date)
           # valid_template_embargo_date = valid_template_embargo_date?(env, embargo_release_date, template)
           # valid_template_visibility_after_embargo = valid_template_visibility_after_embargo?(env, attributes, template)
           # Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
@@ -40,6 +40,10 @@ module Hyrax
           false
         end
 
+
+      def validate_embargo_release_date(env, embargo_release_date)
+        DeepBlueDocs::Application.config.embargo_enforce_future_release_date ? valid_future_date?(env, embargo_release_date) : true
+      end
     end
 
   end
