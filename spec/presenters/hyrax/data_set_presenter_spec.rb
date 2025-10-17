@@ -19,26 +19,401 @@ RSpec.describe Hyrax::DataSetPresenter do
   let(:ability) { double Ability }
   let(:presenter) { described_class.new(solr_document, ability, request) }
 
-  it { is_expected.to delegate_method(:to_s).to(:solr_document) }
-#  it { is_expected.to delegate_method(:human_readable_type).to(:solr_document) }
-  it { is_expected.to delegate_method(:curation_notes_admin).to(:solr_document) }
-  it { is_expected.to delegate_method(:curation_notes_user).to(:solr_document) }
-  it { is_expected.to delegate_method(:date_created).to(:solr_document) }
-  it { is_expected.to delegate_method(:date_modified).to(:solr_document) }
-  it { is_expected.to delegate_method(:date_published).to(:solr_document) }
-  it { is_expected.to delegate_method(:date_uploaded).to(:solr_document) }
-  it { is_expected.to delegate_method(:fundedby).to(:solr_document) }
-  it { is_expected.to delegate_method(:fundedby_other).to(:solr_document) }
-  it { is_expected.to delegate_method(:rights_license).to(:solr_document) }
-  it { is_expected.to delegate_method(:rights_license_other).to(:solr_document) }
+  describe "delegates methods to solr_document:" do
+    [:authoremail,
+     :based_near_label,
+     :curation_notes_admin,
+     :curation_notes_user,
+     :date_created, :date_modified,
+     :date_published, :date_published2,
+     :date_uploaded,
+     :depositor,
+     :doi, :doi_the_correct_one,
+     :doi_minted?,
+     :doi_minting_enabled?,
+     :doi_pending?,
+     :fundedby,
+     :fundedby_other,
+     :grantnumber,
+     :methodology,
+     :prior_identifier,
+     :referenced_by,
+     :related_url,
+     :rights_license,
+     :rights_license_other,
+     :subject_discipline,
+     :access_deepblue,
+     :geo_location_place,
+     :geo_location_box,
+     :license_other,
+     :academic_affiliation,
+     :alt_title,
+     :bibliographic_citation,
+     :contributor_affiliationumcampus,
+     :date_attribute,
+     :date_issued,
+     :description_abstract,
+     :description_mapping,
+     :description_sponsorship,
+     :external_link,
+     :identifier,
+     :identifier_orcid,
+     :identifier_source,
+     :itemtype,
+     :keyword,
+     :language_none,
+     :linked,
+     :other_affiliation,
+     :peerreviewed,
+     :relation_ispartofseries,
+     :resource_type,
+     :to_s,
+     :type_none].each do
+    |method|
+      it "#{method}" do
+        expect(subject).to delegate_method(method).to(:solr_document)
+      end
+    end
+  end
 
-  it { is_expected.to delegate_method(:based_near_label).to(:solr_document) }
-  it { is_expected.to delegate_method(:related_url).to(:solr_document) }
-  it { is_expected.to delegate_method(:depositor).to(:solr_document) }
-  it { is_expected.to delegate_method(:identifier).to(:solr_document) }
-  it { is_expected.to delegate_method(:resource_type).to(:solr_document) }
-  it { is_expected.to delegate_method(:keyword).to(:solr_document) }
-  it { is_expected.to delegate_method(:itemtype).to(:solr_document) }
+  pending "delegates date_coverage and total_file_size to solr_document"
+
+  describe "#box_enabled?" do
+    before {
+      allow(DeepBlueDocs::Application.config).to receive(:box_integration_enabled).and_return "box integration enabled"
+    }
+    it "returns result of DeepBlueDocs::Application.config.box_integration_enabled"  do
+      expect(subject.box_enabled?).to eq "box integration enabled"
+    end
+  end
+
+  describe "#box_link" do
+    context "when box_enabled? is false" do
+      before {
+        allow(subject).to receive(:box_enabled?).and_return false
+      }
+      it "returns nil" do
+        expect(subject.box_link).to be_blank
+      end
+    end
+
+    context "when box_enabled? is true" do
+      it "returns result of BoxHelper.box_link" do
+        skip "Add a test"
+      end
+    end
+  end
+
+
+  describe "#box_link_display_for_work?" do
+    context "when box_enabled? is false" do
+      before {
+        allow(subject).to receive(:box_enabled?).and_return false
+      }
+      it "returns false" do
+        expect(subject.box_link_display_for_work? "current user").to eq false
+      end
+    end
+
+    context "when box_enabled? is true" do
+      it "returns result of BoxHelper.box_link_display_for_work?" do
+        skip "Add a test"
+      end
+    end
+  end
+
+
+  describe "#date_coverage" do
+    context "when @solr_document.date_coverage is blank" do
+      before {
+        subject.instance_variable_set(:@solr_document, OpenStruct.new(date_coverage: []))
+      }
+      it "returns nil" do
+        expect(subject.date_coverage).to be_blank
+      end
+    end
+
+    context "when @solr_document.date_coverage contains '/open'" do
+      before {
+        subject.instance_variable_set(:@solr_document, OpenStruct.new(date_coverage: "/open/hello world"))
+      }
+      it "returns substring" do
+        expect(subject.date_coverage).to eq "/hello world"
+      end
+    end
+
+    context "when @solr_document.date_coverage does not contain '/open'" do
+      before {
+        subject.instance_variable_set(:@solr_document, OpenStruct.new(date_coverage: "/closed/hello world"))
+      }
+      it "returns substring" do
+        expect(subject.date_coverage).to eq " to closed/hello world"
+      end
+    end
+  end
+
+
+  describe "#display_provenance_log_enabled?" do
+    it "returns true" do
+      expect(subject.display_provenance_log_enabled?).to eq true
+    end
+  end
+
+
+  describe "#provenance_log_entries?" do
+    before {
+      allow(subject).to receive(:id).and_return 1234
+      allow(Deepblue::ProvenancePath).to receive(:path_for_reference).with(1234).and_return "file path"
+    }
+
+    context "when path_for_reference exists" do
+      before {
+        allow(File).to receive(:exist?).with("file path").and_return true
+      }
+      it "returns true" do
+        expect(subject.provenance_log_entries?).to eq true
+      end
+    end
+
+    context "when path_for_reference does not exist" do
+      before {
+        allow(File).to receive(:exist?).with("file path").and_return false
+      }
+      it "returns false" do
+        expect(subject.provenance_log_entries?).to eq false
+      end
+    end
+  end
+
+
+  describe "#globus_download_enabled?" do
+    before {
+      allow(DeepBlueDocs::Application.config).to receive(:globus_enabled).and_return true
+    }
+    it "returns config globus_enabled" do
+      expect(subject.globus_download_enabled?).to eq true
+    end
+  end
+
+
+  describe "#globus_enabled?" do
+    before {
+      allow(DeepBlueDocs::Application.config).to receive(:globus_enabled).and_return true
+    }
+    it "returns config globus_enabled" do
+      expect(subject.globus_download_enabled?).to eq true
+    end
+  end
+
+
+  describe "#globus_external_url" do
+    before {
+      subject.instance_variable_set(:@solr_document, OpenStruct.new(id: 999))
+      allow(::GlobusJob).to receive(:external_url).with(999).and_return "external url"
+    }
+    it "returns ::GlobusJob.external_url" do
+      expect(subject.globus_external_url).to eq "external url"
+    end
+  end
+
+
+  describe "#globus_files_available?" do
+    before {
+      subject.instance_variable_set(:@solr_document, OpenStruct.new(id: 999))
+      allow(::GlobusJob).to receive(:files_available?).with(999).and_return true
+    }
+    it "returns ::GlobusJob.files_available?" do
+      expect(subject.globus_files_available?).to eq true
+    end
+  end
+
+
+  describe "#globus_files_prepping?" do
+    before {
+      subject.instance_variable_set(:@solr_document, OpenStruct.new(id: 999))
+      allow(::GlobusJob).to receive(:files_prepping?).with(999).and_return true
+    }
+    it "returns ::GlobusJob.files_prepping?" do
+      expect(subject.globus_files_prepping?).to eq true
+    end
+  end
+
+
+  describe "#globus_last_error_msg" do
+    before {
+      subject.instance_variable_set(:@solr_document, OpenStruct.new(id: 999))
+      allow(::GlobusJob).to receive(:error_file_contents).with(999).and_return "last message"
+    }
+    it "returns ::GlobusJob.error_file_contents?" do
+      expect(subject.globus_last_error_msg).to eq "last message"
+    end
+  end
+
+
+  describe "#hdl" do
+    it "returns nil" do
+      expect(subject.hdl).to be_blank
+    end
+  end
+
+
+  describe "#human_readable" do
+    before {
+      allow(ActiveSupport::NumberHelper::NumberToHumanSizeConverter).to receive(:convert).with("value", precision: 3).and_return "human readable value"
+    }
+    it "returns human readable value" do
+      expect(subject.human_readable "value").to eq "human readable value"
+    end
+  end
+
+
+  describe "#label_with_total_file_size" do
+    context "when total_file_size is zero" do
+      before {
+        allow(subject).to receive(:total_file_size).and_return 0
+      }
+      it "returns the value passed in" do
+        expect(subject.label_with_total_file_size "label passed in").to eq "label passed in"
+      end
+    end
+
+    context "when total_file_size is one" do
+      before {
+        allow(subject).to receive(:total_file_size).and_return 100
+        allow(subject).to receive(:total_file_count).and_return 1
+        allow(subject).to receive(:total_file_size_human_readable).and_return "lots of kilobytes"
+      }
+      it "returns the value passed in" do
+        expect(subject.label_with_total_file_size "This").to eq "This (lots of kilobytes in 1 file)"
+      end
+    end
+
+    context "when total_file_size is more than one" do
+      before {
+        allow(subject).to receive(:total_file_size).and_return 1000
+        allow(subject).to receive(:total_file_count).and_return 10
+        allow(subject).to receive(:total_file_size_human_readable).and_return "lots of MB"
+      }
+      it "returns the value passed in" do
+        expect(subject.label_with_total_file_size "That").to eq "That (lots of MB in 10 files)"
+      end
+    end
+  end
+
+
+  describe "#tombstone" do
+    context "when @solr_document is blank" do
+      before {
+        subject.instance_variable_set(:@solr_document, nil)
+      }
+      it "returns nil" do
+        expect(subject.tombstone).to be_blank
+      end
+    end
+
+    context "when @solr_document is not blank" do
+      before {
+        allow(Solrizer).to receive(:solr_name).with("tombstone", :symbol).and_return 0
+      }
+      context "when tombstone is not blank" do
+        before {
+          subject.instance_variable_set(:@solr_document, [["mausoleum", "crypt"], "monument", "epitaph"])
+        }
+        it "returns tombstone" do
+          expect(subject.tombstone).to eq "mausoleum"
+        end
+      end
+
+      context "when tombstone is blank" do
+        before {
+          subject.instance_variable_set(:@solr_document, [" ", "pyramid"])
+        }
+        it "returns nil" do
+          expect(subject.tombstone).to be_blank
+        end
+      end
+    end
+  end
+
+
+  describe "#tombstone_enabled?" do
+    it "returns true" do
+      expect(subject.tombstone_enabled?).to eq true
+    end
+  end
+
+
+  describe "#total_file_count" do
+    before {
+      allow(Solrizer).to receive(:solr_name).with("file_set_ids", :symbol).and_return 1
+    }
+
+    context "when file set ids are blank" do
+      before {
+        subject.instance_variable_set(:@solr_document, ["a", "", "c"])
+      }
+      it "returns 0" do
+        expect(subject.total_file_count).to eq 0
+      end
+    end
+
+    context "when file set ids are not blank" do
+      before {
+        subject.instance_variable_set(:@solr_document, ["a", OpenStruct.new(size: 99), "c"])
+      }
+      it "returns size parameter" do
+        expect(subject.total_file_count).to eq 99
+      end
+    end
+  end
+
+
+  describe "#total_file_size" do
+    before {
+      allow(Solrizer).to receive(:solr_name).with("total_file_size", Hyrax::FileSetIndexer::STORED_LONG).and_return 2
+    }
+
+    context "when total file size is blank" do
+      before {
+        subject.instance_variable_set(:@solr_document, ["a", "b", ""])
+      }
+      it "returns 0" do
+        expect(subject.total_file_size).to eq 0
+      end
+    end
+
+    context "when total file size is not blank" do
+      before {
+        subject.instance_variable_set(:@solr_document, ["a", "b", "total file size"])
+      }
+      it "returns size parameter" do
+        expect(subject.total_file_size).to eq "total file size"
+      end
+    end
+  end
+
+
+  describe "#total_file_size_human_readable" do
+    before {
+      allow(subject).to receive(:total_file_size).and_return "total file size"
+      allow(subject).to receive(:human_readable).with("total file size").and_return "total file size human readable"
+    }
+    it "passes total_file_size to human_readable" do
+      expect(subject.total_file_size_human_readable).to eq "total file size human readable"
+    end
+  end
+
+
+  describe "#zip_download_enabled?" do
+    before {
+      allow(Settings).to receive(:zip_download_enabled).and_return true
+    }
+    it "returns zip_download_enabled from Settings" do
+      expect(subject.zip_download_enabled?).to eq true
+    end
+  end
+
+
 
   describe "#relative_url_root" do
     subject { presenter.relative_url_root }
