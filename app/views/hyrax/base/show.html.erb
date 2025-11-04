@@ -33,9 +33,6 @@
           <%= render 'work_title', presenter: @presenter %>
         </span>
       </div>
-      <% if !@presenter.tombstone.present? && @presenter.workflow.state != "deposited" && !can?( :edit, @presenter.id ) %>
-      &nbsp;
-      <% else %>
       <div class="panel-body">
         <div class="row">
           <%= render 'workflow_actions_widget', presenter: @presenter %>
@@ -61,7 +58,11 @@
           </div>
           <div class="col-sm-12">
             <%= render 'relationships', presenter: @presenter %>
-            <%= render 'items', presenter: @presenter %>
+            <% if !@presenter.tombstone.present? && @presenter.workflow.state != "deposited" && !can?( :edit, @presenter.id ) %>
+              <%= render 'hidden_items', presenter: @presenter %>
+            <% else %>
+              <%= render 'items', presenter: @presenter %>
+            <% end %>
             <%# TODO: we may consider adding these partials in the future %>
             <%# = render 'sharing_with', presenter: @presenter %>
             <%# = render 'user_activity', presenter: @presenter %>
@@ -72,7 +73,6 @@
           </div>
         </div>
       </div>
-      <% end %>
     </div>
   </div>
 </div>
