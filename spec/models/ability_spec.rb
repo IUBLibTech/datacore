@@ -5,6 +5,12 @@ RSpec.describe Ability do
   let(:options) { {} }
   let(:ability) { described_class.new(user, options) }
 
+  describe "#ability_logic" do
+    it "returns an array of functions" do
+      expect(Ability.ability_logic).to include(:deepblue_abilities, :featured_collection_abilities)
+    end
+  end
+
   describe '#can_deposit?', :clean do
     context 'when neither an admin nor depositor' do
       it 'returns false' do
