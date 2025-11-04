@@ -1,5 +1,7 @@
 en:
   data_set:
+    deposit_pending:
+      "Files will become available for download after the work has been fully deposited."
     doi_already_exists:
       "A DOI already exists for this work."
     doi_is_being_minted:
