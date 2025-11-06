@@ -4,10 +4,8 @@ module Datacore
 
   class DoiMintingService
 
-    PUBLISHER = "Indiana University".freeze
-    RESOURCE_TYPE = "Dataset".freeze
-
-    attr_reader :current_user, :work, :metadata, :prefix, :doi
+    attr_reader :current_user, :work, :prefix, :doi, :metadata_service
+    delegate :basic_metadata, :expanded_metadata, :full_metadata, :metadata, to: :metadata_service
 
     # @return Boolean
     def self.enabled?
@@ -25,7 +23,7 @@ module Datacore
     def initialize(work:, current_user:)
       @work = work
       @current_user = current_user
-      @metadata = local_metadata
+      @metadata_service = Datacore::DoiMetadataService.new(work: work)
       @prefix = Settings.datacite.prefix&.to_s # cast inadvertent Float to String
       @doi = work.doi
     end
@@ -74,17 +72,6 @@ module Datacore
           @doi = work.doi
         end
         @doi
-      end
-
-      # @return [Hash] work minimal metadata for remote record creation or update
-      def local_metadata
-        { creators: work.creator.map { |c| { name: c } },
-          titles: work.title.map { |t| { title: t } },
-          publisher: PUBLISHER,
-          publicationYear: Date.today.year.to_s,
-          types: { resourceTypeGeneral: RESOURCE_TYPE },
-          url: Rails.application.routes.url_helpers.hyrax_data_set_url(id: work.id)
-        }
       end
 
       # @return [DataCite::Client] client instance for Datacite interactions
