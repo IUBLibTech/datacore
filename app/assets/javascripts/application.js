@@ -24,4 +24,5 @@
 //= require tufts/ensure_upload_fade_in
 
 //= require hyrax
+//= require hyrax/featured_collections
 //= require bulkrax/application

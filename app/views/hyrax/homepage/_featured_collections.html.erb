@@ -1,0 +1,19 @@
+<h2 class="sr-only"><%= t('hyrax.homepage.featured_collections.title') %><</h2>
+<% if @featured_collection_list.empty? %>
+  <p><%= t('hyrax.homepage.featured_collections.no_works') %></p>
+<% elsif can? :update, FeaturedCollection %>
+  <%= form_for [hyrax, @featured_collection_list] do |f| %>
+    <div class="panel-group dd" id="dd_collections">
+      <ol id="featured_collections">
+        <%= f.fields_for :featured_collections do |featured| %>
+          <%= render 'sortable_featured_collections', f: featured %>
+        <% end %>
+      </ol>
+    </div>
+    <%= f.submit("Save order", class: 'btn btn-default') %>
+  <% end %>
+<% else %>
+  <ol class="list-group list-group-striped" id="featured_collections">
+    <%= render partial: 'featured', collection: @featured_collection_list.featured_collections %>
+  </ol>
+<% end %>

@@ -26,8 +26,7 @@ module Hyrax
     end
 
     # CurationConcern methods
-    delegate :stringify_keys, :human_readable_type, :collection?, :representative_id,
-             :to_s, to: :solr_document
+    delegate :has?, :first, :depositor, :stringify_keys, :human_readable_type, :collection?, :representative_id, :to_s, to: :solr_document
 
     delegate(*Hyrax::CollectionType.collection_type_settings_methods, to: :collection_type, prefix: :collection_type_is)
 
@@ -197,7 +196,28 @@ module Hyrax
     def allow_batch?
       return true if current_ability.can?(:edit, solr_document)
       false
-    end    
+    end
+
+    def featured?
+      @featured = FeaturedCollection.where(collection_id: solr_document.id).exists? if @featured.nil?
+      @featured
+    end
+
+    def user_can_feature_collections?
+      current_ability.can?(:create, FeaturedCollection)
+    end
+
+    def collection_featurable?
+      user_can_feature_collections? && solr_document.public?
+    end
+
+    def display_feature_link?
+      collection_featurable? && FeaturedCollection.can_create_another? && !featured?
+    end
+
+    def display_unfeature_link?
+      collection_featurable? && featured?
+    end
 
   end
 

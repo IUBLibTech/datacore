@@ -57,6 +57,7 @@ h1,h2,h3,h4,h5{color: $crimson; font-weight: 600;
 
 
 .featured-works--home h2 {text-align: left; border: none;}
+ol#featured_collections {list-style: none; margin-left: 0; padding-left: 0;}
 ol.list-group.list-group-striped li:nth-of-type(2n+1){border: 1px solid $limestone-med; background: $limestone-light;}
 ol.list-group.list-group-striped li:nth-of-type(2n){border: 1px solid $limestone-med;}
 

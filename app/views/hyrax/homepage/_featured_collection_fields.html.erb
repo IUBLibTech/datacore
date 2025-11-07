@@ -1,0 +1,19 @@
+<div>
+  <div class="featured-item-title">
+    <span class="sr-only"><%= t('hyrax.homepage.featured_collections.document.title_label') %></span>
+    <h3>
+      <%= link_to hyrax.collection_path(featured.id) do %>
+        <%= render_thumbnail_tag(featured.solr_document, {width: 90}, {suppress_link: true}) + featured.title.first %>
+      <% end %>
+    </h3>
+  </div>
+  <div class="featured-field featured-item-depositor">
+   <span class="featured-label"><%= t('hyrax.homepage.featured_collections.document.creator_label') %>:</span>
+    <%= link_to_facet_list(featured.creator, 'creator', t('hyrax.homepage.featured_collections.document.creator_missing')) %>
+
+  </div>
+  <div class="featured-field featured-item-keywords">
+    <span class="featured-label"><%= t('hyrax.homepage.featured_collections.document.keyword_label') %>:</span>
+     <%= link_to_facet_list(featured.keyword, 'keyword', t('hyrax.homepage.featured_collections.document.keyword_missing')) %>
+  </div>
+</div>
