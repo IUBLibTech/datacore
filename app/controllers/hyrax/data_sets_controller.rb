@@ -16,7 +16,7 @@ module Hyrax
     before_action :assign_date_coverage,         only: %i[create update]
     before_action :workflow_destroy,             only: [:destroy]
     before_action :provenance_log_update_before, only: [:update]
-    before_action :visiblity_changed,            only: [:update]
+    before_action :visibility_changed, only: [:update]
     before_action :prepare_permissions,          only: [:show]
 
     after_action :workflow_create,               only: [:create]

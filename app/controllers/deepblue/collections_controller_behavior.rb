@@ -6,8 +6,6 @@ module Deepblue
 
     include Deepblue::ControllerWorkflowEventBehavior
 
-    PARAMS_KEY = 'collection'
-
     ## Provenance log
 
     def provenance_log_update_after
@@ -28,19 +26,19 @@ module Deepblue
       #                                        "@update_attr_key_values=#{@update_attr_key_values}",
       #                                        "" ]
       return unless @update_attr_key_values.nil?
-      @update_attr_key_values = curation_concern.provenance_log_update_before( form_params: params[params_key].dup )
+      @update_attr_key_values = curation_concern.provenance_log_update_before( form_params: params[Hyrax::My::CollectionsController::PARAMS_KEY].dup )
     end
 
     ## end Provenance log
 
     ## visibility / publish
 
-    def visiblity_changed
+    def visibility_changed
       # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
       #                                        Deepblue::LoggingHelper.called_from,
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
       #                                        "" ]
-      @update_attr_key_values = curation_concern.provenance_log_update_before( form_params: params[PARAMS_KEY].dup )
+      @update_attr_key_values = curation_concern.provenance_log_update_before( form_params: params[Hyrax::My::CollectionsController::PARAMS_KEY].dup )
       if visibility_to_private?
         mark_as_set_to_private
       elsif visibility_to_public?
@@ -66,7 +64,7 @@ module Deepblue
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
       #                                        "" ]
       return false if curation_concern.private?
-      params[params_key]['visibility'] == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+      params[Hyrax::My::CollectionsController::PARAMS_KEY]['visibility'] == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
     end
 
     def visibility_to_public?
@@ -75,7 +73,7 @@ module Deepblue
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
       #                                        "" ]
       return false if curation_concern.public?
-      params[params_key]['visibility'] == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+      params[Hyrax::My::CollectionsController::PARAMS_KEY]['visibility'] == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
     end
 
     def mark_as_set_to_private
