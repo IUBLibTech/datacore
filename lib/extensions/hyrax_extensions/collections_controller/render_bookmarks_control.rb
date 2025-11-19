@@ -1,5 +1,5 @@
 module Extensions
-  module Hyrax
+  module HyraxExtensions
     module CollectionsController
       module RenderBookmarksControl
         protected
