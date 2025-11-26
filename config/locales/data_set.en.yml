@@ -207,9 +207,9 @@ en:
           Provide a general description of the research that produced this data. If specific software or scripts
           are required to access your data, this is a good place to document that as well.
         download_total_work_size_too_large: >
-          Total work file size of %{total_file_size} is too large to download directly. Consider using Globus (see below).
+          Total work file size of %{total_file_size} is too large to download directly.
         download_total_work_size_may_be_too_large: >
-          Total work file size of %{total_file_size} may be too large to download directly. Consider using Globus (see below).
+          Total work file size of %{total_file_size} may be too large to download directly. Contact Research Data Services (<a href="mailto:resdata@iu.edu">resdata@iu.edu</a>) if you need assistance accessing the files.
         download_general_message: >
           Best for data sets < 3 GB. Downloads all files plus metadata into a zip file.
         fundedby: >
