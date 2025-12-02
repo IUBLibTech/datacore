@@ -20,14 +20,14 @@ module Hyrax
       @solr_document = solr_document
     end
 
-    def embargo_depostor
+    def embargo_depositor
       solr_document.fetch('depositor_ssim', []).first
     end
 
     def embargo_release_date
       date = solr_document.embargo_release_date
-      return date if date.blank?
-      date.to_formatted_s(:rfc822)
+      return date unless date.present? && date.is_a?(Date)
+      date.to_date.to_formatted_s(:rfc822) # cast possible DateTime value (from DataSet) to Date (from solr)
     end
 
     def visibility_after_embargo
@@ -37,7 +37,5 @@ module Hyrax
     def embargo_history
       solr_document['embargo_history_ssim']
     end
-
   end
-
 end
