@@ -1,5 +1,5 @@
 module Extensions
-  module Hyrax
+  module HyraxExtensions
     module AdminStatsPresenter
       module AdminStatsPresenterBehavior
 

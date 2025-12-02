@@ -7,13 +7,13 @@ class HomepageControllerBehaviorMockParent
 end
 
 class HomepageControllerBehaviorMock < HomepageControllerBehaviorMockParent
-  include ::Extensions::Hyrax::HomepageController::HomepageControllerBehavior
+  include ::Extensions::HyraxExtensions::HomepageController::HomepageControllerBehavior
 
 end
 
 
 
-describe Extensions::Hyrax::HomepageController::HomepageControllerBehavior do
+describe Extensions::HyraxExtensions::HomepageController::HomepageControllerBehavior do
 
   subject { HomepageControllerBehaviorMock.new }
 
