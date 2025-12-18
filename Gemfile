@@ -139,7 +139,7 @@ group :development, :test do
   gem 'shoulda-matchers', '~> 3.1'
   gem 'simplecov'
   gem 'coveralls_reborn'
-  gem 'solr_wrapper', '~> 2.1.0'
+  gem 'solr_wrapper'#, '~> 2.1.0'
 end
 
 gem 'willow_sword', github: 'notch8/willow_sword', ref: '0a669d7'
