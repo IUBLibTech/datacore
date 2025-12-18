@@ -1,6 +1,6 @@
 # modified from hyrax 2.9.6: added aria-label attribute
 module Extensions
-  module Hyrax
+  module HyraxExtensions
     module CollapsableSectionPresenter
       module CollapsableSectionPresenterBehavior
         private
