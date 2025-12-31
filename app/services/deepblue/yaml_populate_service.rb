@@ -640,17 +640,6 @@ module Deepblue
         end
       end
 
-      def metadata_filename_collection( pathname_dir, collection )
-        pathname_dir.join "w_#{collection.id}_metadata_report.txt"
-      end
-
-      def metadata_filename_collection_work( pathname_dir, collection, work )
-        pathname_dir.join "c_#{collection.id}_w_#{work.id}_metadata_report.txt"
-      end
-
-      def metadata_filename_work( pathname_dir, work )
-        pathname_dir.join "w_#{work.id}_metadata_report.txt"
-      end
 
       def metadata_multi_valued?( attribute_value )
         return false if attribute_value.blank?
