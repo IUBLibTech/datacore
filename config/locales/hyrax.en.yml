@@ -161,5 +161,5 @@ en:
         tab_label: Featured
         title: Featured
     announcement:
-        show: true
+        show: false
         banner: "DataCORE has reduced staffing during the holidays.  Responses will be delayed through January 5."
