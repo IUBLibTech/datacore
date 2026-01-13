@@ -1,6 +1,6 @@
 # modified from hyrax for bypass_fedora case
 module Extensions
-  module Hyrax
+  module HyraxExtensions
     module DownloadsController
       module VariableDownloadSourcing
         # Render the 404 page if the file doesn't exist.
