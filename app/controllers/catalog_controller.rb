@@ -16,6 +16,9 @@ class CatalogController < ApplicationController
   end
 
   configure_blacklight do |config|
+    # Do not store searches for anyone since Hyrax can't display them anyway
+    config.crawler_detector = ->(req) { true }
+
     config.view.gallery.partials = %i[index_header index]
     config.view.masonry.partials = [:index]
     config.view.slideshow.partials = [:index]
