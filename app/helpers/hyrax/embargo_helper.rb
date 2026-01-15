@@ -48,7 +48,7 @@ module Hyrax
       visibility = visibility_on_embargo_deactivation( curation_concern: curation_concern )
       url = ::Deepblue::EmailHelper.curation_concern_url( curation_concern: curation_concern )
       email = curation_concern.authoremail
-      ::Deepblue::LoggingHelper.debug "about_to_expire_embargo_email: curation concern id: #{id} email: #{email} exipration_days: #{expiration_days}" if verbose
+      ::Deepblue::LoggingHelper.debug "about_to_expire_embargo_email: curation concern id: #{id} email: #{email} expiration_days: #{expiration_days}" if verbose
       body = []
       body << ::Deepblue::EmailHelper.t( "hyrax.email.about_to_expire_embargo.for",
                                          expiration_days: expiration_days,
