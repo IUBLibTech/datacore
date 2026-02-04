@@ -5,9 +5,9 @@
 version: 2.1
 
 orbs:
-  browser-tools: circleci/browser-tools@1.4.1
-  ruby: circleci/ruby@1.8.0
-  coveralls: coveralls/coveralls@2.2.5
+  browser-tools: circleci/browser-tools@1
+  ruby: circleci/ruby@2
+  coveralls: coveralls/coveralls@2
 
 default_environment: &default_environment
   RAILS_ENV: test
