@@ -62,6 +62,9 @@ jobs:
             echo 'unset BUNDLE_PATH' >> $BASH_ENV
             echo 'export USER="circleci"' >> $BASH_ENV
             source $BASH_ENV
+            # Use AWS-based Ubuntu mirror for better connectivity
+            sudo sed -i 's|http://archive.ubuntu.com|http://us-east-1.ec2.archive.ubuntu.com|g' /etc/apt/sources.list
+            sudo sed -i 's|http://security.ubuntu.com|http://us-east-1.ec2.archive.ubuntu.com|g' /etc/apt/sources.list
 
       - run:
           name: Install system deps
