@@ -25,4 +25,5 @@
 
 //= require hyrax
 //= require hyrax/featured_collections
+//= require hyrax/contact_form
 //= require bulkrax/application
