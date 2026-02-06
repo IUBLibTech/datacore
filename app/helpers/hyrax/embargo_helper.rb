@@ -48,7 +48,7 @@ module Hyrax
       visibility = visibility_on_embargo_deactivation( curation_concern: curation_concern )
       url = ::Deepblue::EmailHelper.curation_concern_url( curation_concern: curation_concern )
       email = curation_concern.authoremail
-      ::Deepblue::LoggingHelper.debug "about_to_expire_embargo_email: curation concern id: #{id} email: #{email} exipration_days: #{expiration_days}" if verbose
+      ::Deepblue::LoggingHelper.debug "about_to_expire_embargo_email: curation concern id: #{id} email: #{email} expiration_days: #{expiration_days}" if verbose
       body = []
       body << ::Deepblue::EmailHelper.t( "hyrax.email.about_to_expire_embargo.for",
                                          expiration_days: expiration_days,
@@ -84,7 +84,7 @@ module Hyrax
       ::Deepblue::EmailHelper.send_email( to: email, from: email, subject: subject, body: body ) unless test_mode
     end
 
-    def days_to_embargo_release_date( now: DateTime.now, embargo_release_date: )
+    def days_to_embargo_release_date( embargo_release_date: )
       embargo_release_date = DateTime.parse "#{embargo_release_date} #{Time.zone}" if embargo_release_date.is_a? String
       ((embargo_release_date - @start_of_day).to_f + 0.5).to_i
     end
@@ -200,10 +200,6 @@ module Hyrax
 
     def my_assets_with_deactivated_embargoes( current_user_key )
       @my_assets_with_deactivated_embargoes ||= EmbargoService.my_assets_with_deactivated_embargoes( current_user_key )
-    end
-
-    def warn_deactivate_embargo_email( curation_concern:, days: )
-      # TODO
     end
 
     def visibility_on_embargo_deactivation( curation_concern: )
