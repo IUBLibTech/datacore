@@ -22,3 +22,6 @@ Hyrax::CollapsableSectionPresenter.prepend Extensions::Hyrax::CollapsableSection
 
 # adding Featured Collections
 Hyrax::HomepageController.prepend Extensions::Hyrax::HomepageController::HomepageControllerBehavior
+
+# adding reCAPTCHA
+Hyrax::ContactFormController.prepend Extensions::Hyrax::ContactFormController::ContactFormRecaptcha
