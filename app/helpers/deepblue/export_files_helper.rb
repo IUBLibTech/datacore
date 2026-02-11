@@ -9,8 +9,11 @@ module Deepblue
     def self.export_file_uri( source_uri:, target_file: )
       if source_uri.starts_with?( "http:" ) || source_uri.starts_with?( "https:" )
         begin
-          # see: https://github.com/janko-m/down
-          Down.download( source_uri, destination: target_file )
+          URI.open(source_uri, 'rb', http_basic_authentication: [Settings.fedora.user, Settings.fedora.password]) do |source|
+            File.open(target_file, 'wb') do |destination|
+              IO.copy_stream(source, destination)
+            end
+          end
           bytes_exported = File.size target_file
         rescue Exception => e # rubocop:disable Lint/RescueException
           Rails.logger.error "ExportFilesHelper.export_file_uri(#{source_uri},#{target_file}) #{e.class}: #{e.message} at #{e.backtrace[0]}"

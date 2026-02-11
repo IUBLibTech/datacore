@@ -329,8 +329,7 @@ module Hyrax
       require 'zip'
       require 'tempfile'
 
-      tmp_dir = Settings.tmpdir || '/tmp'
-      tmp_dir = Pathname.new tmp_dir
+      tmp_dir = Rails.root.join(Settings.zip_download_dir)
       # Deepblue::LoggingHelper.debug "Download Zip begin tmp_dir #{tmp_dir}"
       Deepblue::LoggingHelper.bold_debug [ "zip_download begin", "tmp_dir=#{tmp_dir}" ]
       target_dir = target_dir_name_id( tmp_dir, curation_concern.id )
