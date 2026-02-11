@@ -199,6 +199,7 @@ ldap:
   group_ou: 'ldap_group_ou'
 
 zip_download_enabled: true
+zip_download_dir: 'tmp/zip_downloads'
 
 rack_attack:
   enabled: true
