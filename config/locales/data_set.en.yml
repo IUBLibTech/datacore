@@ -112,7 +112,7 @@ en:
         globus_download_and_notify_me:  "Download All for Globus and Email Me When Complete"
         globus_download_dont_notify_me: "Don't Add My Email"
         mint_doi:                       "Mint DOI"
-        mint_help:                      "Once you have uploaded your files, you can mint a Digital Object Identifier (<a href=\"https://www.doi.org\" target=\"_blank\">DOI</a>) to provide persistent access to your deposit. You do not need to wait until your deposit is published to mint a DOI. Questions? <a href=\"%{contact_path}\" target=\"_blank\">Contact us!</a>"
+        mint_help:                      "<a href=\"%{contact_path}\" target=\"_blank\">Contact us</a> to have a Digital Object Identifier (<a href=\"https://www.doi.org\" target=\"_blank\">DOI</a>) created for your deposit."
         save_metadata:                  "Save Metadata"
         save_metadata_public:           "Save Description (Public)"
         submit_help:                    "Submit your work for review and publication"

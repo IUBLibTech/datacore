@@ -39,7 +39,6 @@ class Ability
     # restrict depositing permissions
     if can_deposit?
       can [:create], DataSet
-      can [:doi], DataSet
       can [:create], FileSet
     else
       cannot [:create, :edit, :update, :destroy], DataSet
@@ -47,6 +46,9 @@ class Ability
     end
     if admin?
       # can [:create, :show, :add_user, :remove_user, :index, :edit, :update, :destroy], Role  # uncomment to expose Role management in UI
+      can [:doi], DataSet
+    else
+      cannot [:doi], DataSet
     end 
   end
 

@@ -23,5 +23,7 @@
   <span class="Z3988" title="<%= export_as_openurl_ctx_kev(@presenter) %>"></span>
 </div>
 
-<%= render 'modal_mint_doi', id: @presenter.id %>
+<% if @presenter.current_ability.admin? %>
+  <%= render 'modal_mint_doi', id: @presenter.id %>
+<% end %>
 <%= render 'modal_tombstone_work', id: @presenter.id %>
