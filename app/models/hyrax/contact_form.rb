@@ -29,6 +29,7 @@ module Hyrax
         I18n.t('hyrax.contact_form.issue_types.browsing'),
         I18n.t('hyrax.contact_form.issue_types.reporting'),
         I18n.t('hyrax.contact_form.issue_types.general'),
+        I18n.t('hyrax.contact_form.issue_types.doi'),
         I18n.t('hyrax.contact_form.issue_types.size')
       ]
     end
