@@ -26,6 +26,14 @@ td.status span.enabled {
   font-family: "Open Sans", sans-serif;
 }
 
+
+/* override to increase contrast ratio for accessibility */
+
+.btn.disabled {
+  opacity: 0.7;
+}
+
+
 /** 
 Design System alert announcements for Warning(orange), Informational(blue), Error(red) 
 **/
@@ -107,6 +115,7 @@ form#new_collection,
 
 .help-block {
   font-size: 0.85em;
+  background-color: #ffffff;
 }
 
 /* To support [more...] and [less...] */

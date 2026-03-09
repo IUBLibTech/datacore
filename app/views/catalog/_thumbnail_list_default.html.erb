@@ -1,5 +1,5 @@
 <div class="col-md-2">
   <div class="list-thumbnail">
-    <%= raw (render_thumbnail_tag document).gsub!('data-context-href', 'data-reference') %>
+    <%= raw (render_thumbnail_tag document, {:alt => document.title_or_label}).gsub!('data-context-href', 'data-reference') %>
   </div>
 </div>
