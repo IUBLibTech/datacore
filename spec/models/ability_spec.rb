@@ -18,6 +18,9 @@ RSpec.describe Ability do
         expect(ability.depositor?).to be false
         expect(ability.can? :create, DataSet).to be false
       end
+      it 'without doi access' do
+        expect(ability.can? :doi, DataSet).to be false
+      end
     end
     context 'when a depositor' do
       let(:depositing_role) { Sipity::Role.find_by_name(Hyrax::RoleRegistry::DEPOSITING) }
@@ -28,6 +31,9 @@ RSpec.describe Ability do
         expect(ability.depositor?).to be true
         expect(ability.can? :create, DataSet).to be true
       end
+      it 'without doi access' do
+        expect(ability.can? :doi, DataSet).to be false
+      end
     end
     context 'when an admin' do
       let(:user) { FactoryBot.create :admin }
@@ -35,6 +41,9 @@ RSpec.describe Ability do
         expect(ability.admin?).to be true
         expect(ability.depositor?).to be false
         expect(ability.can? :create, DataSet).to be true
+      end
+      it 'with doi access' do
+        expect(ability.can? :doi, DataSet).to be true
       end
     end
   end
