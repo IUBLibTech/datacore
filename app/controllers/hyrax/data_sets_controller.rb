@@ -16,7 +16,7 @@ module Hyrax
     before_action :assign_date_coverage,         only: %i[create update]
     before_action :workflow_destroy,             only: [:destroy]
     before_action :provenance_log_update_before, only: [:update]
-    before_action :visiblity_changed,            only: [:update]
+    before_action :visibility_changed,           only: [:update]
 
     after_action :workflow_create,               only: [:create]
     after_action :visibility_changed_update,     only: [:update]
@@ -78,7 +78,7 @@ module Hyrax
           globus_copy_job( user_email: user_email_one, delay_per_file_seconds: 0 )
           flash_and_redirect_to_main_cc globus_files_prepping_msg( user_email: user_email_one )
         else
-          flash.now[:error] = emails_did_not_match_msg( user_email_one, user_email_two )
+          flash.now[:error] = emails_did_not_match_msg()
           render 'globus_download_add_email_form'
         end
       else
@@ -119,17 +119,21 @@ module Hyrax
         flash_and_redirect_to_main_cc globus_files_available_here
       else
         user_email = Deepblue::EmailHelper.user_email_from( current_user, user_signed_in: user_signed_in? )
-        msg = if globus_prepping?
-                globus_files_prepping_msg( user_email: user_email )
-              else
-                globus_file_prep_started_msg( user_email: user_email )
-              end
+        msg = globus_download_msg(user_email: user_email)
         if user_signed_in?
           globus_copy_job( user_email: user_email )
           flash_and_redirect_to_main_cc msg
         else
           render 'globus_download_notify_me_form'
         end
+      end
+    end
+
+    def globus_download_msg(user_email: )
+      if globus_prepping?
+        globus_files_prepping_msg( user_email: user_email )
+      else
+        globus_file_prep_started_msg( user_email: user_email )
       end
     end
 
@@ -158,8 +162,7 @@ module Hyrax
           globus_copy_job( user_email: user_email_one )
           flash_and_redirect_to_main_cc globus_file_prep_started_msg( user_email: user_email_one )
         else
-          # flash_and_go_back emails_did_not_match_msg( user_email_one, user_email_two )
-          flash.now[:error] = emails_did_not_match_msg( user_email_one, user_email_two )
+          flash.now[:error] = emails_did_not_match_msg()
           render 'globus_download_notify_me_form'
         end
       else
@@ -246,7 +249,7 @@ module Hyrax
 
     ## visibility / publish
 
-    def visiblity_changed
+    def visibility_changed
       # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
       #                                        Deepblue::LoggingHelper.called_from,
       #                                        Deepblue::LoggingHelper.obj_class( 'class', self ),
@@ -254,7 +257,7 @@ module Hyrax
       if visibility_to_private?
         mark_as_set_to_private
       elsif visibility_to_public?
-        mark_as_set_to_public
+          mark_as_set_to_public
       end
     end
 
@@ -371,8 +374,8 @@ module Hyrax
 
     protected
 
-      def emails_did_not_match_msg( _user_email_one, _user_email_two )
-        "Emails did not match" # + ": '#{user_email_one}' != '#{user_email_two}'"
+      def emails_did_not_match_msg()
+        "Emails did not match"
       end
 
       def export_file_sets_to( target_dir:,
@@ -455,7 +458,7 @@ module Hyrax
         begin
           Time.parse(field)
         rescue
-          Rails.logger.info "Unable to parse date: #{field.first.inspect} for #{self['id']}"
+          Rails.logger.info "Unable to parse date: #{field.first.inspect} for #{params['id']}"
         end
       end
 
