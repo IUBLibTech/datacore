@@ -1,8 +1,8 @@
 <div class="document">
   <div class="thumbnail">
-    <%= link_to '#', data: { :'slide-to' => document_counter, toggle: "modal", target: "#slideshow-modal" } do %>
+    <%= link_to '#', title: document.title_or_label, data: { :'slide-to' => document_counter, toggle: "modal", target: "#slideshow-modal" } do %>
       <% if thumbnail_url(document) %>
-          <%= image_tag thumbnail_url(document), alt: document.title_or_label %>
+          <%= image_tag thumbnail_url(document), {alt: document.title_or_label} %>
         <% else %>
           <%= t('.missing_image', scope: [:blacklight_gallery]) %>
         <% end %>
