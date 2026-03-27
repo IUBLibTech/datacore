@@ -1,9 +1,12 @@
-# Generated via
-#  `rails generate hyrax:work GenericWork`
 require 'rails_helper'
 
 RSpec.describe GenericWork do
-  it "has tests" do
-    skip "Add your tests here"
+
+  describe "presenter_class", type: :model do
+    it do
+      expect(GenericWork.indexer).to eq GenericWorkIndexer
+    end
   end
+
+
 end
