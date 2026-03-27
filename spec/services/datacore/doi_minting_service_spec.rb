@@ -105,4 +105,19 @@ describe Datacore::DoiMintingService do
       end
     end
   end
+
+  describe "metadata_service" do
+    let(:doi) { namespaced_doi }
+    it "returns a distinct DoiMetadataService" do
+      expect(service.metadata_service).to be_an_instance_of ::Datacore::DoiMetadataService
+    end
+    describe "receives delegated methods:" do
+      [:basic_metadata, :expanded_metadata, :full_metadata, :metadata].each do |method|
+        it "#{method}" do
+          expect(service.metadata_service).to receive method
+          service.send(method)
+        end
+      end
+    end
+  end
 end
