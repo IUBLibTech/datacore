@@ -1,6 +1,6 @@
 <section class="image-masthead">
-  <h1 class="sr-only"> Browse or Deposit Work in DataCORE </h1>
-    <div class="splash-text">
+  <h1 class="sr-only">Browse or Deposit Work in DataCORE</h1>
+    <div class="splash-text" role="main">
       <div class="splash-container">
         <div class="container">
           <div class="col-md-8 splash-surround">
@@ -8,11 +8,11 @@
             <p>IU DataCORE is an open-access institutional data repository designed to support the sharing, long-term preservation, and discovery of research data
               collected by researchers at Indiana University.&nbsp;
               For our repository of publications please visit IU ScholarWorks:
-              <a href="https://scholarworks.iu.edu/dspace/home" target="blank">https://scholarworks.iu.edu/dspace/home</a>.
+              <a href="https://scholarworks.iu.edu/dspace/home" target="blank" role="link">https://scholarworks.iu.edu/dspace/home</a>.
             </p>
 
               <p>You will need permissions to submit datasets.<br />
-                Please contact IU Libraries Research Data Services (<a href="mailto:resdata@iu.edu">resdata@iu.edu</a>) to receive deposit permissions.
+                Please contact IU Libraries Research Data Services (<a href="mailto:resdata@iu.edu" role="link">resdata@iu.edu</a>) to receive deposit permissions.
               </p>
             </div>
           </div>
@@ -21,7 +21,8 @@
             <!--Placeholder for Browse + Deposit/Share your work buttons-->
             <div class="home_share_work row">
               <div class="col-sm-12 text-center">
-                <%= link_to "<i class=\"glyphicon glyphicon-search\" aria-hidden=\"true\"></i> #{t('hyrax.browse')}".html_safe, main_app.search_catalog_path, class: "btn btn-primary btn-lg browse-btn", id: "browse_link", style: 'width: 100%' %>
+                <%= link_to "<i class=\"glyphicon glyphicon-search\" aria-hidden=\"true\"></i> #{t('hyrax.browse')}".html_safe, main_app.search_catalog_path,
+                            class: "btn btn-primary btn-lg browse-btn", id: "browse_link", role: "link", style: 'width: 100%' %>
               </div>
             </div>
               <% if @presenter.display_share_button? %>
