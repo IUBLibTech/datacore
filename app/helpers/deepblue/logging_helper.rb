@@ -54,13 +54,6 @@ module Deepblue
       "#{caller_locations(1, 1)[0]}"
     end
 
-    def self.initialize_key_values( user_email:, event_note:, **added_key_values )
-      key_values = { user_email: user_email }
-      key_values.merge!( event_note: event_note ) if event_note.present?
-      key_values.merge!( added_key_values ) if added_key_values.present?
-      key_values
-    end
-
     def self.log( class_name: 'UnknownClass',
                   event: 'unknown',
                   event_note: '',
@@ -139,13 +132,6 @@ module Deepblue
     def self.timestamp_zone
       DeepBlueDocs::Application.config.timezone_zone
     end
-
-    def self.to_log_format_timestamp( timestamp )
-      timestamp = Time.parse( timestamp ) if timestamp.is_a? String
-      timestamp = timestamp.to_formatted_s( :db ) if timestamp.is_a? Time
-      timestamp.to_s
-    end
-
   end
 
 end
