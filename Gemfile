@@ -149,3 +149,4 @@ gem 'recaptcha'
 gem 'redlock', '~> 1.2' # redis locking fails on newer
 gem 'flipflop', '2.6.0' # hyrax 2.9.6 interaction breaks on newer versions
 gem 'rack-attack', '~> 6.7'
+gem 'mail', '~> 2.8.1' # mail 2.9.0 breaks with ArgumentError
