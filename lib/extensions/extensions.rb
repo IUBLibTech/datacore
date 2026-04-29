@@ -25,3 +25,6 @@ Hyrax::HomepageController.prepend Extensions::Hyrax::HomepageController::Homepag
 
 # adding reCAPTCHA
 Hyrax::ContactFormController.prepend Extensions::Hyrax::ContactFormController::ContactFormRecaptcha
+
+# Additional controllers for the Settings Dashboard sub-menu
+Hyrax::MenuPresenter.prepend Extensions::Hyrax::MenuPresenter::MenuPresenterBehavior
