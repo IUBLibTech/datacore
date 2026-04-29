@@ -6,7 +6,12 @@ class DeepblueMailer < ApplicationMailer
   layout "mailer.html"
 
   def send_an_email( to:, from:, subject:, body: )
-    mail( to: to, from: from, subject: subject, body: body )
+    begin
+      mail( to: to, from: from, subject: subject, body: body )
+    rescue => e
+      Rails.logger.error "Error in DeepblueMailer#send_an_email"
+      Rails.logger.error "#{e.class}: #{e.inspect}"
+      nil
+    end
   end
-
 end

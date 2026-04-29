@@ -94,7 +94,7 @@ module Deepblue
       return if to.blank?
       return unless email_enabled
       email = DeepblueMailer.send_an_email( to: to, from: from, subject: subject, body: body )
-      email.deliver_now
+      email&.deliver_now
     end
 
     def self.user_email
