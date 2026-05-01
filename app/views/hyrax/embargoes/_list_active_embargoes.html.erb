@@ -1,28 +1,34 @@
-<% if assets_under_embargo.present? %>
-<div class="table-responsive1">
-  <table class="embargoes table table-striped datatable">
-  <thead>
-    <tr>
-      <%= render partial: 'table_headers' %>
-    </tr>
-  </thead>
-  <tbody>
-  <% hide_files = DeepBlueDocs::Application.config.embargo_manage_hide_files %>
-  <% assets_under_embargo.each do |curation_concern| %>
-    <% hrt = curation_concern.human_readable_type %>
-    <% next if hide_files && hrt == "File" %>
-    <tr>
-      <td class="human-readable-type"><%= hrt %></td>
-      <% if current_ability.admin? %>
-      <td class="depositor"><%= curation_concern.embargo_depositor %></td>
-      <% end %>
-      <td class="title"><%= link_to curation_concern, edit_embargo_path(curation_concern) %></td>
-      <td class="current-visibility"><%= visibility_badge(curation_concern.visibility) %></td>
-      <td class="embargo-release-date"><%= curation_concern.embargo_release_date %></td>
-      <td class="visibility-after-embargo"><%= visibility_badge(curation_concern.visibility_after_embargo) %></td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
-</div>
+<% unless assets_under_embargo.present? %>
+
+  <p class="text-center"><%= t('.missing') %></p>
+
+<% else %>
+
+  <div class="table-responsive1">
+    <table class="embargoes table table-striped datatable">
+    <thead>
+      <tr>
+        <%= render partial: 'table_headers' %>
+      </tr>
+    </thead>
+    <tbody>
+    <% hide_files = DeepBlueDocs::Application.config.embargo_manage_hide_files %>
+    <% assets_under_embargo.each do |curation_concern| %>
+      <% hrt = curation_concern.human_readable_type %>
+      <% next if hide_files && hrt == "File" %>
+      <tr>
+        <td class="human-readable-type"><%= hrt %></td>
+        <% if current_ability.admin? %>
+        <td class="depositor"><%= curation_concern.embargo_depositor %></td>
+        <% end %>
+        <td class="title"><%= link_to curation_concern, edit_embargo_path(curation_concern) %></td>
+        <td class="current-visibility"><%= visibility_badge(curation_concern.visibility) %></td>
+        <td class="embargo-release-date"><%= curation_concern.embargo_release_date %></td>
+        <td class="visibility-after-embargo"><%= visibility_badge(curation_concern.visibility_after_embargo) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  </div>
+
 <% end %>

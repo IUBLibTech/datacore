@@ -1,17 +1,17 @@
 <%= render "shared/nav_safety_modal" %>
 <div class="panel panel-default tabs" id="collection-types-controls">
   <ul class="nav nav-tabs" role="tablist">
-    <li class="active">
+    <li class="active" role="presentation">
       <a href="#metadata" role="tab" data-toggle="tab" class="nav-safety-confirm"><%= t('hyrax.admin.collection_types.form.tab.metadata') %></a>
     </li>
     <% if @form.persisted? %>
-      <li>
+      <li role="presentation">
         <a href="#settings" role="tab" data-toggle="tab" class="nav-safety-confirm"><%= t('hyrax.admin.collection_types.form.tab.settings') %></a>
       </li>
-      <li>
+      <li role="presentation">
         <a href="#participants" role="tab" data-toggle="tab" class="nav-safety-confirm"><%= t('hyrax.admin.collection_types.form.tab.participants') %></a>
       </li>
-      <li>
+      <li role="presentation">
         <a href="#appearance" role="tab" data-toggle="tab" class="nav-safety-confirm"><%= t('hyrax.admin.collection_types.form.tab.appearance') %></a>
       </li>
     <% end %>
