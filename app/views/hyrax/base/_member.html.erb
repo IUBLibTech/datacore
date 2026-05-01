@@ -1,6 +1,6 @@
 <% if @presenter.tombstone.present? %>
   <tr class="<%= dom_class(member) %> attributes">
-    <td class="attribute thumbnail"><center>-</center></td>
+    <td class="attribute thumbnail">-</td>
     <td class="attribute attribute-filename"><%= member.link_name %></td>
     <td class="attribute date_uploaded"><%= member.try(:date_uploaded) %></td>
     <td class="attribute date_modified"><%= member.try(:date_modified) %></td>

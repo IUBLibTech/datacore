@@ -1,4 +1,4 @@
-<h3><%= t('.add_participants') %></h3>
+<h2><%= t('.add_participants') %></h2>
 <p><%= t('.instructions') %></p>
 <% access_options = options_for_select([['Manager', Hyrax::CollectionTypeParticipant::MANAGE_ACCESS], ['Creator', Hyrax::CollectionTypeParticipant::CREATE_ACCESS]]) %>
 <% unless @collection_type_participant.nil? %>
@@ -46,6 +46,7 @@
                 <%= f.text_field :agent_id,
                                  placeholder: "Search for a user..." %>
                 as
+                <label class="sr-only" for="collection_type_participant_access" >Select a role</label>
                 <%= f.select :access,
                              access_options,
                              { prompt: "Select a role..." },

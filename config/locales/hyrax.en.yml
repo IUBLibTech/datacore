@@ -161,5 +161,13 @@ en:
         tab_label: Featured
         title: Featured
     announcement:
-        show: false
-        banner: "DataCORE has reduced staffing during the holidays.  Responses will be delayed through January 5."
+      show: false
+      banner: "DataCORE has reduced staffing during the holidays.  Responses will be delayed through January 5."
+    embargoes:
+      list_active_embargoes:
+        missing: There are no active embargoes in effect at this time.
+      list_deactivated_embargoes:
+        missing: There are no deactivated embargoes.
+    features:
+      index:
+        active: Enabled or not

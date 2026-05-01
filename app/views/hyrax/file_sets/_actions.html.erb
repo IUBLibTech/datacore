@@ -39,7 +39,7 @@
       <% end %>
     <% end %>
   <% elsif @presenter.workflow.state == "deposited" %>
-    <li>
+    <li role="menuitem">
       <%= link_to 'View Details', polymorphic_path([main_app, file_set]), method: :get %>
     </li>
   <% end %>

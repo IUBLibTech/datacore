@@ -1,6 +1,9 @@
-<h3><%= t('hyrax.admin.stats.works.headers.main') %> (<%= @presenter.date_filter_string %>)</h3>
-<h4><%= t('hyrax.admin.stats.works.headers.total') %> <%= @presenter.works_count[:total] %> </h4>
-<h4><%= t('hyrax.admin.stats.works.headers.visibility') %></h4>
+<h2><%= t('hyrax.admin.stats.works.headers.main') %> (<%= @presenter.date_filter_string %>)</h2>
+<div class="stats_works">
+  <h3><%= t('hyrax.admin.stats.works.headers.total') %></h3>
+  <div><%= @presenter.works_count[:total] %></div>
+</div>
+<h3><%= t('hyrax.admin.stats.works.headers.visibility') %></h3>
 <ul>
   <li><%= t('hyrax.visibility.open.text') %> <span class="count">(<%= @presenter.works_count[:public] %>)</span></li>
   <li><%= t('hyrax.visibility.authenticated.text', institution: institution_name) %> <span class="count">(<%= @presenter.works_count[:registered] %>)</span></li>

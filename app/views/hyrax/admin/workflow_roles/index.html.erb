@@ -42,9 +42,11 @@
                 <td>
                   <ul class="workflow-roles">
                     <% agent_presenter.responsibilities do |responsibility_presenter| %>
-                      <li><%= responsibility_presenter.label %>
+                      <li>
+                        <%= responsibility_presenter.label %>
                         <%= link_to hyrax.admin_workflow_role_path(responsibility_presenter.responsibility),
                                     method: :delete,
+                                    title: :delete,
                                     data: { confirm: t('.delete.confirm') } do %>
                           <span class="fa fa-remove"></span>
                         <% end %>
