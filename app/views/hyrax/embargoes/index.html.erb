@@ -3,10 +3,10 @@
 <% end %>
 
 <div class="panel panel-default tabs">
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#active" data-toggle="tab"><%= t('.active') %></a></li>
-    <li><a href="#expired" data-toggle="tab"><%= t('.expired') %></a></li>
-    <li><a href="#deactivated" data-toggle="tab"><%= t('.deactivated') %></a></li>
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="active" role="presentation"><a href="#active" data-toggle="tab" role="tab"><%= t('.active') %></a></li>
+    <li role="presentation"><a href="#expired" data-toggle="tab" role="tab"><%= t('.expired') %></a></li>
+    <li role="presentation"><a href="#deactivated" data-toggle="tab" role="tab"><%= t('.deactivated') %></a></li>
   </ul>
   <div class="panel-body">
     <div class="tab-content">
