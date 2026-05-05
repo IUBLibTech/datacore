@@ -5,9 +5,10 @@
       <%= render 'download_panel' %>
     <% end %>
 
-    <% if ((@presenter.editor? && @presenter.workflow.state != "deposited" ) ||
-         @presenter.current_ability.admin? ) %>
+    <% if @presenter.current_ability.admin?  %>
       <%= render 'edit_panel' %>
+    <% elsif @presenter.editor? %>
+      <%= render 'no_edit_panel' %>
     <% end %>
 
     <% if Hyrax.config.analytics? %>
