@@ -9,8 +9,9 @@
     <table class="embargoes table">
       <thead>
         <tr>
-          <th><input type="checkbox" id="checkAllBox" class="batch_document_selector"/> Select All</th>
+          <th><input type="checkbox" id="checkAllBox" class="batch_document_selector"/><label for="checkAllBox">Select All</label></th>
           <%= render partial: 'table_headers' %>
+          <th><span class="sr_only">Actions</span></th>
         </tr>
       </thead>
       <tbody>
@@ -19,7 +20,8 @@
         <% hrt = curation_concern.human_readable_type %>
         <% next if hide_files && hrt == "File" %>
         <tr>
-          <td><%= render 'hyrax/batch_select/add_button', document: curation_concern %></td>
+          <td><label for="batch_document_<%= curation_concern.id %>" class="sr-only"><%= t("hyrax.dashboard.my.sr.batch_checkbox") %></label>
+            <%= render 'hyrax/batch_select/add_button', document: curation_concern %></td>
           <td class="human-readable-type"><%= hrt %></td>
           <% if current_ability.admin? %>
             <td class="depositor"><%= curation_concern.embargo_depositor %></td>
