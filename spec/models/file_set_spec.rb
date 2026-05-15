@@ -796,4 +796,6 @@ RSpec.describe FileSet do
   # end
   #
 
+  let(:archive_file_object) { FactoryBot.create(:file_set) }
+  include_examples "PresentsArchiveFile behaviors"
 end
