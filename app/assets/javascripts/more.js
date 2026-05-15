@@ -30,11 +30,6 @@ $(document).on('turbolinks:load', function() {
 
     function start_substr(string, length) {
         var endtag = 0,i=0;
-        for(i; i<string.length; i++)
-        {
-          if(string[i] == ">")
-            endtag = i;
-        }
 
         i = length;
         if (endtag > length)
