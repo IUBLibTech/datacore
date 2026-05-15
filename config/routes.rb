@@ -104,7 +104,9 @@ Rails.application.routes.draw do
         get    'globus_download_notify_me'
         post   'identifiers'
         post   'tombstone'
-        post   'zip_download'
+        if Settings.zip_download_enabled
+          post   'zip_download'
+        end
       end
     end
   end
