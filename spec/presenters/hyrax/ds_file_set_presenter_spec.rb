@@ -183,4 +183,7 @@ RSpec.describe Hyrax::DsFileSetPresenter do
        end
      }
   end
+
+  let(:archive_file_object) { presenter }
+  include_examples "PresentsArchiveFile behaviors"
 end
