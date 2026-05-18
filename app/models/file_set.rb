@@ -197,14 +197,6 @@ class FileSet < ActiveFedora::Base
     return true
   end
 
-  def file_size_value
-    if file_size.blank?
-      original_file.nil? ? 0 : original_file.size
-    else
-      file_size[0]
-    end
-  end
-
   def original_name_value
     return '' if original_file.nil?
     return original_file.original_name if original_file.respond_to?( :original_name )

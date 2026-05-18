@@ -97,4 +97,14 @@ RSpec.describe Hyrax::DataSetsController do
       end
     end
   end
+
+  describe "#export_file_sets_to" do
+    let(:controller) { described_class.new }
+    before { allow(controller).to receive(:curation_concern).and_return(data_set) }
+    before { allow(Deepblue::ExportFilesHelper).to receive(:export_file_sets).and_return(nil) }
+    it "delegates to ExportFilesHelper" do
+      expect(Deepblue::ExportFilesHelper).to receive(:export_file_sets)
+      controller.send(:export_file_sets_to, target_dir: 'target_dir')
+    end
+  end
 end

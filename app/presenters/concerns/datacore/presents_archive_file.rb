@@ -1,11 +1,33 @@
 # frozen_string_literal: true
 
+# included in both FileSet and DsFileSetPresenter
 module Datacore
   module PresentsArchiveFile
 
     # archive files bypass fedora storage
     def archive_file?
       mime_type.to_s.match(/^message\/external-body\;.*access-type=URL/).present?
+    end
+
+    # file that should have bypassed fedora storage, but didn't
+    def large_file?
+      file_size_value > Settings.ingest.size_limit.fedora
+    end
+
+    def exclude_from_zip?
+      archive_file? || large_file?
+    end
+
+    # common interface across presenter, model
+    def file_size_value
+      case file_size
+      when Integer # DsFileSetPresenter, solr storage
+        file_size
+      when Array, ActiveTriples::Relation # FileSet storage
+        file_size.first.to_i
+      else # nil values, etc.
+        0
+      end
     end
 
     # needs to pass through archive_file in case any / to %2F encoding happened there

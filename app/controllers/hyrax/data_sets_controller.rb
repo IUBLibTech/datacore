@@ -380,7 +380,7 @@ module Hyrax
                                do_export_predicate: ->(_target_file_name, _target_file) { true },
                                quiet: false,
                                &block )
-        file_sets = curation_concern.file_sets
+        file_sets = curation_concern.file_sets.reject(&:exclude_from_zip?)
         Deepblue::ExportFilesHelper.export_file_sets( target_dir: target_dir,
                                                       file_sets: file_sets,
                                                       log_prefix: log_prefix,
