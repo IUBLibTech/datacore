@@ -34,9 +34,9 @@
                     <%= link_to raw('<span class="glyphicon glyphicon-download"></span>'), exporter_download_path(exporter) %>
                   <% end%>
                 </td>
-                <td><%= link_to raw('<span class="glyphicon glyphicon-info-sign"></span>'), exporter_path(exporter), title: "View ' + exporter.name + '" %></td>
-                <td><%= link_to raw('<span class="glyphicon glyphicon-pencil"></span>'), edit_exporter_path(exporter), title: "Edit ' + exporter.name + '" %></td>
-                <td><%= link_to raw('<span class="glyphicon glyphicon-remove"></span>'), exporter, method: :delete, data: { confirm: 'Are you sure?' }, title: "Delete ' + exporter.name + '" %></td>
+                <td><%= link_to raw('<span class="glyphicon glyphicon-info-sign"></span>'), exporter_path(exporter), title: 'View ' + exporter.name %></td>
+                <td><%= link_to raw('<span class="glyphicon glyphicon-pencil"></span>'), edit_exporter_path(exporter), title: 'Edit ' + exporter.name %></td>
+                <td><%= link_to raw('<span class="glyphicon glyphicon-remove"></span>'), exporter, method: :delete, data: { confirm: 'Are you sure?' }, title: 'Delete ' + exporter.name %></td>
               </tr>
             <% end %>
           </tbody>
