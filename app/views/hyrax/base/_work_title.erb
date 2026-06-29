@@ -2,13 +2,13 @@
   <div class="row">
     <div class="col-sm-12">
       <% if index == 0 %>
-        <h2 class="title-header"><span class="bold">Title: </span><%= title %></h2>
+        <h2 class="title-header"><span class="bold">Title: </span><%= title %>
           <% if @presenter.tombstone.present? %>
-            <span class="label label-danger">Tombstone</span> <%= presenter.workflow.badge %>
+            <small class="text-muted"><span class="label label-danger">Tombstone</span> <%= presenter.workflow.badge %></small>
           <% else %>
-            <%= @presenter.permission_badge %> <%= presenter.workflow.badge %>
+            <small class="text-muted"><%= @presenter.permission_badge %> <%= presenter.workflow.badge %></small>
           <% end %>
-
+        </h2>
       <% else %>
         <h2 class="title-header"><%= title %></h2>
       <% end %>
