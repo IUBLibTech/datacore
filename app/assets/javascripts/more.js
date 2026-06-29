@@ -29,17 +29,20 @@ $(document).on('turbolinks:load', function() {
     });
 
     function start_substr(string, length) {
-        var endtag = 0,i=0;
-        for(i; i<string.length; i++)
+        var atag = 0, i=length;
+        for(i; i>=0; i--)
         {
-          if(string[i] == ">")
-            endtag = i;
+           if((string[i] == "<") && (string[i+1] == "a"))
+           {
+              atag = i-1;
+              i = 0;
+           }
         }
 
         i = length;
-        if (endtag > length)
+        if (atag > 0)
         {
-           i = endtag;
+           i = atag;
         }
 
         var newString = string.substring(0,(i+1));

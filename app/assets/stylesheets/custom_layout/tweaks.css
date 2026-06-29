@@ -123,8 +123,18 @@ a.morelink {
   text-decoration: none;
   outline: none;
 }
+
+a.morelink:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px
+}
+
 .morecontent span {
   display: none;
+}
+
+.glyphicon-new-window {
+  display: inline-block !important;
 }
 /* End [more...] and [less...] */
 
@@ -184,16 +194,6 @@ ol.catalog li:after {
 .generic-icon {
   max-width: 8em;
 }
-
-/* To support [more...] and [less...] */
-a.morelink {
-  text-decoration: none;
-  outline: none;
-}
-.morecontent span {
-  display: none;
-}
-/* End [more...] and [less...] */
 
 #page-positioner {
   background-color: #f2f2f2;
