@@ -177,6 +177,9 @@ archive_api:
     too_many_requests: *archives_unavailable
     downtime: 'Unavailable during planned maintenance'
 
+browse_everything:
+  enabled: false
+
 # keys need to be present in .env as well
 recaptcha:
   minimum_score: 0.5
