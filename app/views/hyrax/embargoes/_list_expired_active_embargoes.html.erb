@@ -1,6 +1,19 @@
 <% if assets_with_expired_embargoes.blank? %>
 
-  <p class="text-center"><%= t('.missing') %></p>
+  <table class="embargoes table">
+    <thead>
+      <tr>
+        <%= render partial: 'table_headers' %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="5" class="text-center">
+          <p><%= t('.missing') %></p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
 <% else %>
 
