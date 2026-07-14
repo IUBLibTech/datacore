@@ -4,6 +4,7 @@
 
 <div class="row">
   <div class="col-md-12">
+    <div class="settings_intro">
     <p><a href="https://github.com/rack/rack-attack">Rack Attack</a> allows the site to reject or throttle
       clients based on the criteria set in the <a href="https://yaml.org/">YAML</a> formatted file below.
       Changes may take up to the Config TTL to become active.
@@ -18,7 +19,7 @@
       Specifying only a string (e.g. <code>"GoogleBot"</code>) will search for substrings in the client's user agent.
       Multiple agents can be combined into one discriminator (e.g. <code>"bot|spider|crawler"</code>)
       and a blank or missing agent can be matched using <code>"^$"</code>.</p>
-
+  </div>
     <%= render 'form' %>
   </div>
 </div>

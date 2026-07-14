@@ -4,7 +4,7 @@
   <div class="form-group">
     <%= f.label :avatar, '<i class="glyphicon glyphicon-camera"></i> Change picture'.html_safe, class: "col-xs-4 control-label" %>
     <div class="col-xs-8">
-      <%= image_tag @user.avatar.url(:thumb) if @user.avatar? %>
+      <%= image_tag @user.avatar.url(:thumb), alt: "Current User Avatar" if @user.avatar? %>
       <%= f.file_field :avatar %>
       <%= f.hidden_field :avatar_cache %>
       <span class="help-block">JPG, GIF, or PNG (less than 2MB)</span>
