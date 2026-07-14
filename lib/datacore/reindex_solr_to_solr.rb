@@ -12,8 +12,8 @@ module Datacore
 
     # Example reindexing a delta via query: "timestamp:[#{(DateTime.now - 1.day).utc.iso8601} TO *]"
     def reindex(query: "*", batch_size: 1000)
-      puts "Old solr: #{@old_solr.conn.uri.to_s}"
-      puts "New solr: #{@new_solr.conn.uri.to_s}"
+      puts "Old solr: #{old_solr.conn.uri.to_s}"
+      puts "New solr: #{new_solr.conn.uri.to_s}"
 
       total_docs = old_solr.conn.get('select', params: {q: query, rows: 0})["response"]["numFound"]
       if total_docs == 0
@@ -27,17 +27,19 @@ module Datacore
         docs = old_solr.conn.get('select', params: {q: query, fl: '*', sort: 'timestamp asc', rows: batch_size, start: docs_processed})["response"]["docs"]
 
         reconstructed_docs = docs.collect do |doc|
-          SolrDocReconstructor.new(doc).reconstruct
-        rescue RuntimeError => e
+          SolrDocReconstructor.new(doc, old_solr).reconstruct
+        rescue RuntimeError, StandardError => e
           puts "Error reconstructing #{doc["id"]}...falling back to ActiveFedora method"
           puts e.message
           begin
             ActiveFedora::Base.find(doc["id"]).to_solr
           rescue Ldp::Gone
             puts "Object no longer exists in Fedora (Ldp::Gone)"
-          rescue RuntimeError => e2
+          rescue ActiveFedora::ObjectNotFoundError
+            puts "Object no longer exists in Fedora (ActiveFedora::ObjectNotFoundError)"
+          rescue RuntimeError, StandardError => e2
             puts "Error reindexing from Fedora"
-            puts e.message
+            puts e2.message
           end
         end
 
@@ -58,15 +60,17 @@ module Datacore
       STORED_DEFINITIONS = ["stored_searchable", "stored_sortable", "displayable", "symbol"]
       NON_STORED_DEFINITIONS = ["facetable", "searchable", "sortable"]
 
-      attr_accessor :doc
+      attr_accessor :doc, :old_solr
       
-      def initialize(doc)
+      def initialize(doc, old_solr)
         @doc = doc
+        @old_solr = old_solr
       end
 
       def reconstruct
         klass = detect_class(doc)
         new_doc = doc.except("timestamp", "score", "_version_")
+        validate_reconstructable(new_doc, klass)
         reconstruct_class(new_doc, klass)
         reconstruct_includes(new_doc, klass)
         new_doc
@@ -126,6 +130,10 @@ module Datacore
           end
       end
 
+      def validate_reconstructable(new_doc, klass)
+        raise "Cannot reconstruct all_text_timv" if klass == FileSet && old_solr.conn.get('select', params: { q: "id:#{new_doc['id']} AND all_text_timv:[* TO *]", rows: 0})["response"]["numFound"].positive?
+      end
+
       # Characterization terms (e.g. width, height) are all stored and defined in Hyrax::FileSetIndexer
 
       # Hyrax::CoreMetadata
@@ -156,34 +164,47 @@ module Datacore
         "based_near_label_sim" => "based_near_label_tesim"
       }
 
-      # FIXME: change to "additional"
-      def reconstruct_dynamic_fields(new_doc)
-        properties = DataSet.properties # FIXME: drop things covered by constant arrays for modules
-        problem_fields = []
-        properties.each do |field, field_def|
-          # next unless field_def.behaviors.any?
-          non_stored = (field_def.behaviors || []).map(&:to_s) & NON_STORED_DEFINITIONS
-          next unless non_stored.present?
-          stored = field_def.behaviors.map(&:to_s) & STORED_DEFINITIONS
-          unless stored.present?
-            problem_fields += [field]
-            next
-          end
-          value = find_value(field, Array(stored).first, new_doc)
-          next unless value.present?
-          non_stored.each { |non_store_def| set_value(field, non_store_def, value, new_doc) }
-        end
-        raise "Unable to reindex (Problem fields: #{problem_fields})" if problem_fields.present?
-      end
+      DEEPBLUE_METADATA_FIELDS = {
+        "conference_name_sim" => "conference_name_tesim",
+        "conference_section_sim" => "conference_section_tesim",
+        "date_accepted_sim" => "date_accepted_tesim",
+        "date_collected_sim" => "date_collected_tesim",
+        "date_valid_sim" => "date_valid_tesim",
+        "degree_field_sim" => "degree_field_tesim",
+        "degree_level_sim" => "degree_level_tesim",
+        "degree_name_sim" => "degree_name_tesim",
+        "funding_body_sim" => "funding_body_tesim",
+        "funding_statement_sim" => "funding_statement_tesim",
+        "hydrologic_unit_code_sim" => "hydrologic_unit_code_tesim",
+        "license_sim" => "license_tesim",
+        "resource_type_sim" => "resource_type_tesim",
+        "rights_statement_sim" => "rights_statement_tesim",
+        "based_near_sim" => "based_near_tesim",
+        "creator_sim" => "creator_tesim",
+        "date_available_sim" => "date_available_tesim",
+        "date_copyright_sim" => "date_copyright_tesim",
+        "date_created_sim" => "date_created_tesim",
+        "date_issued_sim" => "date_issued_tesim",
+        "file_format_sim" => "file_format_tesim",
+        "language_sim" => "language_tesim",
+        "subject_sim" => "subject_tesim",
+        "peerreviewed_sim" => "peerreviewed_tesim",
+        "academic_affiliation_sim" => "academic_affiliation_tesim",
+        "other_affiliation_sim" => "other_affiliation_tesim"
+      }
+
+      UMRDR_METADATA_FIELDS = {
+        "date_coverage_sim" => "date_coverage_tesim",
+        "date_published_sim" => "date_published_tesim",
+        "subject_discipline_sim" => "subject_discipline_tesim"
+      }
 
       def reconstruct_includes(new_doc, klass)
         BASIC_METADATA_FIELDS.each { |unstored, stored| new_doc[unstored] = new_doc[stored] } if klass.ancestors.include? Hyrax::BasicMetadata
         CORE_METADATA_FIELDS.each { |unstored, stored| new_doc[unstored] = new_doc[stored] } if klass.ancestors.include? Hyrax::CoreMetadata
         HUMAN_READABLE_FIELDS.each { |unstored, stored| new_doc[unstored] = new_doc[stored] } if klass.ancestors.include? Hyrax::HumanReadableType
-        # Deepblue::DefaultMetadata
-        # Deepblue::FileSetMetadata
-        # Umrdr::UmrdrWorkMetadata
-        reconstruct_dynamic_fields(new_doc) # if klass.ancestors.include? AllinsonFlex::DynamicMetadataBehavior # FIXME
+        DEEPBLUE_METADATA_FIELDS.each { |unstored, stored| new_doc[unstored] = new_doc[stored] } if klass.ancestors.include? Deepblue::DefaultMetadata
+        UMRDR_METADATA_FIELDS.each { |unstored, stored| new_doc[unstored] = new_doc[stored] } if klass.ancestors.include? Umrdr::UmrdrWorkMetadata
         new_doc
       end
 
