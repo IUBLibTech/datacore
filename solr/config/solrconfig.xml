@@ -28,13 +28,8 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
   -->
-  <luceneMatchVersion>5.0.0</luceneMatchVersion>
+  <luceneMatchVersion>9.10.0</luceneMatchVersion>
   
-  <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lib" />
-  <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lucene-libs" />
-  <lib dir="${solr.install.dir:../../../..}/contrib/extraction/lib" regex=".*\.jar" />
-  <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-cell-\d.*\.jar" />
-
   <directoryFactory name="DirectoryFactory" 
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}">
   </directoryFactory> 
