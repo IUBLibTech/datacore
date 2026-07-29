@@ -438,4 +438,8 @@ class CatalogController < ApplicationController
     false
   end
 
+  # disable querying, storing blacklight Search records which are never used
+  def find_search_session
+    return nil
+  end
 end
