@@ -14,4 +14,11 @@ RSpec.describe CatalogController do
     end
   end
 
+  describe '#index' do
+    context 'with a query term' do
+      it 'does not save searches' do
+        expect { get 'index', params: { q: 'test' } }.not_to change { Search.count }
+      end
+    end
+  end
 end
