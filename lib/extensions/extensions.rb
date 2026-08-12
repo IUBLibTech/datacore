@@ -10,7 +10,8 @@ ActiveFedora::File.prepend Extensions::ActiveFedora::File::EscapingObsoletions
 # Collections search
 Qa::Authorities::Collections.prepend Extensions::Qa::Authorities::Collections::CollectionsSearch
 
-# return false for render_bookmarks_control? in CollectionsController
+# return false for render_bookmarks_control?
+CatalogController.prepend Extensions::Hyrax::CollectionsController::RenderBookmarksControl
 Hyrax::CollectionsController.prepend Extensions::Hyrax::CollectionsController::RenderBookmarksControl
 Hyrax::My::CollectionsController.prepend Extensions::Hyrax::CollectionsController::RenderBookmarksControl
 
@@ -28,3 +29,10 @@ Hyrax::ContactFormController.prepend Extensions::Hyrax::ContactFormController::C
 
 # Additional presenter method for the Settings Dashboard sub-menu
 Hyrax::MenuPresenter.prepend Extensions::Hyrax::MenuPresenter::MenuPresenterBehavior
+
+# block creation, querying of blacklight Search records
+CatalogController.prepend Extensions::CatalogController::BlockFindSearchSession
+Hyrax::Dashboard::WorksController.prepend Extensions::CatalogController::BlockFindSearchSession
+Hyrax::Dashboard::CollectionsController.prepend Extensions::CatalogController::BlockFindSearchSession
+Hyrax::My::WorksController.prepend Extensions::CatalogController::BlockFindSearchSession
+Hyrax::My::CollectionsController.prepend Extensions::CatalogController::BlockFindSearchSession
