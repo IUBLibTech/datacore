@@ -57,7 +57,9 @@
             <%= render 'citations', presenter: @presenter %>
           </div>
           <div class="col-sm-12">
-            <%= render 'relationships', presenter: @presenter %>
+            <% if @presenter.grouped_presenters.each_pair.count > 0  %>
+              <%= render 'relationships', presenter: @presenter %>
+            <% end %>
             <% if !@presenter.tombstone.present? && @presenter.workflow.state != "deposited" && !can?( :edit, @presenter.id ) %>
               <%= render 'hidden_items', presenter: @presenter %>
             <% else %>
