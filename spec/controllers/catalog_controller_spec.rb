@@ -10,7 +10,7 @@ RSpec.describe CatalogController do
 
   describe '#render_bookmarks_control?' do
     it 'returns false' do
-      expect(controller.render_bookmarks_control?).to eq false
+      expect(controller.send(:render_bookmarks_control?)).to eq false
     end
   end
 
