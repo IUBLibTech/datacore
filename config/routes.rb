@@ -147,7 +147,7 @@ Rails.application.routes.draw do
 
   get '/sda/request/(:collection)/(:object)', to: 'archive#download_request'
   get '/sda/status/(:collection)/(:object)', to: 'archive#status'
-  match '/sda/request/:collection/:object', to: 'archive#download_request', constraints: { object: /[^\/]+/ }, via: :get
+  match '/sda/request/:collection/:object', to: 'archive#download_request', constraints: { object: /.*/ }, via: :get
 
   # robots.txt and rack attack config forms
   resource :robots, only: [:show, :edit, :update]
