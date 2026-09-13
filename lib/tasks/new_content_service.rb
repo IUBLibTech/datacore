@@ -138,7 +138,6 @@ module Deepblue
 
     def run
       validate_config
-      build_repo_contents
     rescue RestrictedVocabularyError => e
       logger.error e.message.to_s
     rescue TaskConfigError => e
@@ -337,10 +336,7 @@ module Deepblue
         # puts "work.id=#{work.id} admin_set.id=#{admin_set.id} visibility=#{work.visibility}"
         return if TaskHelper.dbd_version_1?
         return unless admin_set_data_set? admin_set
-        if work.id.nil?
-          work.save!
-          work.reload
-        end
+        apply_work(work)
         wf = work.active_workflow
         # puts "wf.name=#{wf.name}"
         wgid = work.to_global_id.to_s
@@ -348,17 +344,28 @@ module Deepblue
         # agent = PowerConverter.convert( user, to: :sipity_agent )
         entity = Sipity::Entity.create!( proxy_for_global_id: wgid, workflow: wf, workflow_state: nil )
         # entity = PowerConverter.convert( work, to: :sipity_entity )
-        action_name = if "open" == work.visibility
-                        "deposited"
-                      else
-                        "pending_review"
-                      end
+        action_name = action_name(work.visibility)
         # puts "action_name=#{action_name}"
         action = Sipity::WorkflowAction.find_or_create_by!( workflow: wf, name: action_name )
         action_id = action.id
         wf_state = Sipity::WorkflowState.find_or_create_by!( workflow: wf, name: action_name )
         entity.update!( workflow_state_id: action_id, workflow_state: wf_state )
         log_provenance_workflow( curation_concern: work, workflow: wf, workflow_state: action_name )
+      end
+
+      def apply_work(work)
+        if work.id.nil?
+          work.save!
+          work.reload
+        end
+      end
+
+      def action_name(visibility)
+        if visibility == "open"
+          "deposited"
+        else
+          "pending_review"
+        end
       end
 
       def attr_prefix( cc_or_fs )
@@ -386,37 +393,29 @@ module Deepblue
 
       def build_collection( id:, collection_hash: )
         return nil unless continue_new_content_service
-        if MODE_APPEND == mode && id.present?
-          collection = find_collection_using_prior_id( prior_id: id )
-          log_msg( "#{mode}: found collection with prior id: #{id} title: #{collection.title.first}" ) if collection.present?
-          return collection if collection.present?
-        end
-        if MODE_MIGRATE == mode && id.present?
-          collection = find_collection_using_id( id: id )
-          log_msg( "#{mode}: found collection with id: #{id} title: #{collection.title.first}" ) if collection.present?
-          return collection if collection.present?
-        end
+
+        collection = find_existing_collection(id: id)
+        return collection if collection.present?
+
         creator = Array( collection_hash[:creator] )
         curation_notes_admin = Array( collection_hash[:curation_notes_admin] )
         curation_notes_user = Array( collection_hash[:curation_notes_user] )
         date_created = build_date( hash: collection_hash, key: :date_created )
         date_modified = build_date( hash: collection_hash, key: :date_modified )
         date_uploaded = build_date( hash: collection_hash, key: :date_uploaded )
-        description = Array( collection_hash[:description] )
-        description = ["Missing description"] if description.blank?
-        description = ["Missing description"] if [nil] == description
+        description = default_description(collection_hash[:description])
         doi = build_doi( hash: collection_hash )
         edit_users = Array( collection_hash[:edit_users] )
         keyword = Array( collection_hash[:keyword] )
         language = Array( collection_hash[:language] )
         prior_identifier = build_prior_identifier( hash: collection_hash, id: id )
         referenced_by = build_referenced_by( hash: collection_hash )
-        resource_type = Array( collection_hash[:resource_type] || 'Collection' )
+        resource_type = default_collection_resource_type(resource_type: collection_hash[:resource_type])
         subject_discipline = build_subject_discipline( hash: collection_hash )
         title = Array( collection_hash[:title] )
         # user_create_users( emails: depositor )
         id_new = MODE_MIGRATE == mode ? id : nil
-        collection = new_collection( creator: creator,
+        collection = Collection.new( creator: creator,
                                      curation_notes_admin: curation_notes_admin,
                                      curation_notes_user: curation_notes_user,
                                      date_created: date_created,
@@ -439,10 +438,37 @@ module Deepblue
         collection.visibility = visibility_from_hash( hash: collection_hash )
         collection.save!
         collection.reload
-        log_provenance_migrate( curation_concern: collection ) if MODE_MIGRATE == mode
+        log_provenance_migrate( curation_concern: collection, build_mode: mode )
         log_provenance_ingest( curation_concern: collection )
         # doi_mint( curation_concern: collection ) if doi_mint_flag
         return collection
+      end
+
+      def find_existing_collection(id: )
+        return unless id.present?
+
+        collection = nil
+        if MODE_APPEND == mode
+          collection = find_collection_using_prior_id( prior_id: id )
+        elsif MODE_MIGRATE == mode
+          collection = find_collection_using_id( id: id )
+        end
+
+        log_msg "#{mode}: found collection with id: #{id} title: #{collection.title.first}" if collection.present?
+        collection
+      end
+
+      def default_description(description)
+        description = "Missing description" if description.blank?
+        Array( description )
+      end
+
+      def default_methodology(methodology)
+        methodology || "No Methodology Available"
+      end
+
+      def default_collection_resource_type(resource_type: nil)
+       Array( resource_type || 'Collection' )
       end
 
       def build_collection_type( hash: )
@@ -524,7 +550,7 @@ module Deepblue
 
       def build_file_set( id:, path:, work:, filename: nil, file_ids: nil, file_set_of:, file_set_count:, file_size: '' )
         # puts "id=#{id} path=#{path} filename=#{filename} file_ids=#{file_ids}"
-        log_msg( "#{mode}: building file #{file_set_of} of #{file_set_count}#{file_size}" ) if @verbose
+        log_verbose_msg( "#{mode}: building file #{file_set_of} of #{file_set_count}#{file_size}", verbose: @verbose )
         fname = filename || File.basename( path )
         file_set = build_file_set_new( id: id,
                                        depositor: work.depositor,
@@ -567,7 +593,7 @@ module Deepblue
           log_msg( "#{build_mode}: found file_set with id: #{id} title: #{file_set.title.first}" ) if file_set.present?
           return file_set if file_set.present?
         end
-        log_msg( "#{build_mode}: building file #{file_set_of} of #{file_set_count}#{file_size}" ) if @verbose
+        log_verbose_msg( "#{build_mode}: building file #{file_set_of} of #{file_set_count}#{file_size}", verbose: @verbose )
         # puts "id=#{id} path=#{path} filename=#{filename} file_ids=#{file_ids}"
         depositor = build_depositor( hash: file_set_hash )
         path = file_set_hash[:file_path]
@@ -612,9 +638,10 @@ module Deepblue
                                       build_mode: build_mode )
       end
 
+      # NOTE: calls the mode function and also uses the build_mode parameter
       def build_file_set_ingest( file_set:, path:, checksum_algorithm:, checksum_value:, build_mode: )
         log_object file_set
-        log_provenance_migrate( curation_concern: file_set ) if MODE_MIGRATE == build_mode
+        log_provenance_migrate( curation_concern: file_set, build_mode: mode )
         repository_file_id = nil
         IngestHelper.characterize( file_set,
                                    repository_file_id,
@@ -650,7 +677,7 @@ module Deepblue
                                            fixity_check_status: 'failed',
                                            fixity_check_note: msg )
             end
-          else
+          elsif checksum.present?
             msg = "incompatible checksum algorithms: #{checksum.algorithm} vs #{checksum_algorithm}"
             log_msg( "#{build_mode}: #{msg}" )
             log_provenance_fixity_check( curation_concern: file_set,
@@ -673,7 +700,7 @@ module Deepblue
           current_user
         end
         id_new = MODE_MIGRATE == build_mode ? id : nil
-        file_set = new_file_set( id: id_new )
+        file_set = FileSet.new( id: id_new )
         file_set.apply_depositor_metadata( depositor )
         upload_file_to_file_set( file_set, file )
         return file_set
@@ -704,11 +731,11 @@ module Deepblue
       def build_or_find_user( user_hash:, user_update: true )
         return nil if user_hash.blank?
         email = user_hash[:email]
-        log_msg( "build_or_find_user: email: #{email}" ) if verbose
+        log_verbose_msg( "build_or_find_user: email: #{email}", verbose: verbose)
         user = User.find_by_user_key( email )
         if user.present?
           log_object user if verbose
-          log_msg( "found user: #{user}" ) if verbose
+          log_verbose_msg("found user: #{user}", verbose: verbose)
           update_user( user: user, user_hash: user_hash ) if user_update
           return user
         end
@@ -726,7 +753,7 @@ module Deepblue
         mode = work_hash[:mode]
         mode = MODE_BUILD if id.blank?
         work = nil
-        work = find_work_using_id( id ) if MODE_APPEND == mode
+        work = find_work_using_id( id: id ) if MODE_APPEND == mode
         work = build_work( id: id, work_hash: work_hash, parent: parent ) if work.nil?
         return nil if work.nil?
         log_object work if work.present?
@@ -758,18 +785,14 @@ module Deepblue
         end
       end
 
-      def build_rights_liscense( hash: )
+      def build_rights_license(hash: )
         rv = if SOURCE_DBDv1 == source
                hash[:rights]
              else
                hash[:rights_license]
              end
-        rv = rv[0] if rv.respond_to?( '[]' )
+        rv = rv[0] if rv.is_a?(Array)  # don't want to return first letter of string
         return rv
-      end
-
-      def build_repo_contents
-        # override with something interesting
       end
 
       def build_subject_discipline( hash: )
@@ -803,13 +826,13 @@ module Deepblue
           users.each do |users_hash|
             user_emails = users_hash[:user_emails]
             next if user_emails.blank?
-            log_msg( "users_hash: #{users_hash}" ) if verbose
+            log_verbose_msg( "users_hash: #{users_hash}", verbose: "verbose")
             user_emails.each do |user_email|
-              log_msg( "processing user: #{user_email}" ) if verbose
+              log_verbose_msg( "processing user: #{user_email}", verbose: "verbose")
               user_email_id = "user_#{user_email}".to_sym
-              log_msg( "user_email_id: #{user_email_id}" ) if verbose
+              log_verbose_msg( "user_email_id: #{user_email_id}", verbose: "verbose")
               user_hash = users_hash[user_email_id]
-              log_msg( "user_hash: #{user_hash}" ) if verbose
+              log_verbose_msg( "user_hash: #{user_hash}", verbose: "verbose")
               user = build_or_find_user( user_hash: user_hash )
               log_object user if user.present?
             end
@@ -820,16 +843,10 @@ module Deepblue
 
       def build_work( id:, work_hash:, parent: )
         return nil unless continue_new_content_service
-        if MODE_APPEND == mode && id.present?
-          work = find_work_using_prior_id( prior_id: id, parent: parent )
-          log_msg( "#{mode}: found work with prior id: #{id} title: #{work.title.first}" ) if work.present?
-          return work if work.present?
-        end
-        if MODE_MIGRATE == mode && id.present?
-          work = find_work_using_id( id: id )
-          log_msg( "#{mode}: found work with id: #{id} title: #{work.title.first}" ) if work.present?
-          return work if work.present?
-        end
+
+        work = find_existing_work(id: id, parent: parent)
+        return work if work.present?
+
         authoremail = work_hash[:authoremail]
         contributor = Array( work_hash[:contributor] )
         creator = Array( work_hash[:creator] )
@@ -837,12 +854,10 @@ module Deepblue
         curation_notes_user = Array( work_hash[:curation_notes_user] )
         date_coverage = build_date_coverage( hash: work_hash )
         date_created = build_date( hash: work_hash, key: :date_created )
-        date_modified = build_date( hash: work_hash, key: :date_modified )
+        date_modified = build_date( hash: work_hash,  key: :date_modified )
         date_published = build_date( hash: work_hash, key: :date_published )
         date_uploaded = build_date( hash: work_hash, key: :date_uploaded )
-        description = Array( work_hash[:description] )
-        description = ["Missing description"] if description.blank?
-        description = ["Missing description"] if [nil] == description
+        description = default_description(work_hash[:description])
         doi = build_doi( hash: work_hash )
         edit_users = Array( work_hash[:edit_users] )
         fundedby = build_fundedby( hash: work_hash )
@@ -850,42 +865,42 @@ module Deepblue
         grantnumber = work_hash[:grantnumber]
         language = Array( work_hash[:language] )
         keyword = Array( work_hash[:keyword] )
-        methodology = work_hash[:methodology] || "No Methodology Available"
+        methodology = default_methodology(work_hash[:methodology])
         prior_identifier = build_prior_identifier( hash: work_hash, id: id )
         referenced_by = build_referenced_by( hash: work_hash )
-        resource_type = Array( work_hash[:resource_type] || 'Dataset' )
-        rights_license = build_rights_liscense( hash: work_hash )
+        resource_type = default_work_resource_type(resource_type: work_hash[:resource_type])
+        rights_license = build_rights_license(hash: work_hash )
         rights_license_other = work_hash[:rights_license_other]
         subject_discipline = build_subject_discipline( hash: work_hash )
         title = Array( work_hash[:title] )
         id_new = MODE_MIGRATE == mode ? id : nil
         user_create_users( emails: authoremail )
-        work = new_data_set( authoremail: authoremail,
-                             contributor: contributor,
-                             creator: creator,
-                             curation_notes_admin: curation_notes_admin,
-                             curation_notes_user: curation_notes_user,
-                             date_coverage: date_coverage,
-                             date_created: date_created,
-                             date_modified: date_modified,
-                             date_published: date_published,
-                             date_uploaded: date_uploaded,
-                             description: description,
-                             doi: doi,
-                             fundedby: fundedby,
-                             fundedby_other: fundedby_other,
-                             grantnumber: grantnumber,
-                             id: id_new,
-                             keyword: keyword,
-                             language: language,
-                             methodology: methodology,
-                             prior_identifier: prior_identifier,
-                             referenced_by: referenced_by,
-                             resource_type: resource_type,
-                             rights_license: rights_license,
-                             rights_license_other: rights_license_other,
-                             subject_discipline: subject_discipline,
-                             title: title )
+        work = DataSet.new( authoremail: authoremail,
+                            contributor: contributor,
+                            creator: creator,
+                            curation_notes_admin: curation_notes_admin,
+                            curation_notes_user: curation_notes_user,
+                            date_coverage: date_coverage,
+                            date_created: date_created,
+                            date_modified: date_modified,
+                            date_published: date_published,
+                            date_uploaded: date_uploaded,
+                            description: description,
+                            doi: doi,
+                            fundedby: fundedby,
+                            fundedby_other: fundedby_other,
+                            grantnumber: grantnumber,
+                            id: id_new,
+                            keyword: keyword,
+                            language: language,
+                            methodology: methodology,
+                            prior_identifier: prior_identifier,
+                            referenced_by: referenced_by,
+                            resource_type: resource_type,
+                            rights_license: rights_license,
+                            rights_license_other: rights_license_other,
+                            subject_discipline: subject_discipline,
+                            title: title )
 
         depositor = build_depositor( hash: work_hash )
         work.apply_depositor_metadata( depositor )
@@ -896,10 +911,27 @@ module Deepblue
         apply_visibility_and_workflow( work: work, work_hash: work_hash, admin_set: admin_set )
         work.save!
         work.reload
-        log_provenance_migrate( curation_concern: work ) if MODE_MIGRATE == mode
+        log_provenance_migrate( curation_concern: work, build_mode: mode )
         log_provenance_ingest( curation_concern: work )
         # doi_mint( curation_concern: work ) if doi_mint_flag
         return work
+      end
+
+      def find_existing_work(id:, parent: nil)
+        if MODE_APPEND == mode && id.present?
+          work = find_work_using_prior_id( prior_id: id, parent: parent )
+          log_msg( "#{mode}: found work with prior id: #{id} title: #{work.title.first}" ) if work.present?
+          return work if work.present?
+        end
+        if MODE_MIGRATE == mode && id.present?
+          work = find_work_using_id( id: id )
+          log_msg( "#{mode}: found work with id: #{id} title: #{work.title.first}" ) if work.present?
+          return work if work.present?
+        end
+      end
+
+      def default_work_resource_type(resource_type: nil)
+        Array( resource_type || 'Dataset' )
       end
 
       def build_works
@@ -908,7 +940,7 @@ module Deepblue
         works.each do |work_hash|
           next unless continue_new_content_service
           work = nil
-          work_id = 'nil'
+          work_id = nil
           measurement = Benchmark.measure do
             work = build_or_find_work( work_hash: work_hash, parent: nil )
             work_id = work.id if work.present?
@@ -938,33 +970,45 @@ module Deepblue
 
       def diff_attr( diffs, cc_or_fs, cc_or_fs_hash, attr_name:, attr_name_hash: nil, multi: true )
         return diffs unless diff_attr? attr_name
-        attr_current = cc_or_fs[attr_name]
-        value = cc_or_fs_hash[attr_name] if attr_name_hash.blank?
-        value = cc_or_fs_hash[attr_name_hash] if attr_name_hash.present?
-        value = Array( value ) if multi
+        value = value_from_attr(cc_or_fs_hash, attr_name: attr_name, attr_name_hash: attr_name_hash, multi: multi)
+        attr_current_time = attr_current_time(cc_or_fs[attr_name], value)
+        return diffs unless diff_attr_if_blank?( attr_name, value: attr_current_time[1] )
+        return diffs if attr_current_time[0] == attr_current_time[1]
+        diffs << "#{attr_prefix cc_or_fs}: #{attr_name} '#{attr_current_time[0]}' vs. '#{attr_current_time[1]}'"
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        diffs << "#{attr_prefix cc_or_fs}: #{attr_name} -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
+      end
+
+      def value_from_attr(hash, attr_name:, attr_name_hash: nil, multi: true)
+        if attr_name_hash.blank?
+          value = hash[attr_name]
+        else
+          value = hash[attr_name_hash]
+        end
+        return Array( value ) if multi
+        value
+      end
+
+      def attr_current_time(attr_current, value)
         if attr_current.is_a?( Time )
           attr_current = attr_current.change(usec: 0)
           value = build_time( value: value )
           value = value.change(usec: 0) if value.is_a? Time
         end
-        return diffs unless diff_attr_if_blank?( attr_name, value: value )
-        return diffs if attr_current == value
-        diffs << "#{attr_prefix cc_or_fs}: #{attr_name} '#{attr_current}' vs. '#{value}'"
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        diffs << "#{attr_prefix cc_or_fs}: #{attr_name} -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
+        return [attr_current, value]
       end
 
-      def diff_attr?( attr_name, parent: nil )
+      def diff_attr?(attr_name)
         return false if diff_attrs_skip.include? attr_name
         return true
       end
 
-      def diff_attr_if_blank?( attr_name, value:, parent: nil )
+      def diff_attr_if_blank?( attr_name, value: )
         return false if value.blank? && diff_attrs_skip_if_blank.include?( attr_name )
         return true
       end
 
-      def diff_attr_value( diffs, cc_or_fs, attr_name:, value: nil, multi: true )
+      def diff_attr_value( diffs, cc_or_fs, attr_name:, value: nil )
         return diffs unless diff_attr? attr_name
         return diffs unless diff_attr_if_blank?( attr_name, value: value )
         attr_current = cc_or_fs[attr_name]
@@ -987,9 +1031,7 @@ module Deepblue
         diff_attr_value( diffs, collection, attr_name: :date_uploaded, value: build_date( hash: collection_hash, key: :date_uploaded ) )
         depositor = build_depositor( hash: collection_hash )
         diff_attr_value( diffs, collection, attr_name: :depositor, value: depositor )
-        description = Array( collection_hash[:description] )
-        description = ["Missing description"] if description.blank?
-        description = ["Missing description"] if [nil] == description
+        description = default_description(collection_hash[:description])
         diff_attr_value( diffs, collection, attr_name: :description, value: description )
         diff_attr( diffs, collection, collection_hash, attr_name: :description_ordered, multi: false )
         diff_attr( diffs, collection, collection_hash, attr_name: :doi, multi: false )
@@ -1000,7 +1042,7 @@ module Deepblue
         diff_attr( diffs, collection, collection_hash, attr_name: :language_ordered, multi: false )
         diff_attr( diffs, collection, collection_hash, attr_name: :prior_identifier )
         diff_attr_value( diffs, collection, attr_name: :referenced_by, value: build_referenced_by( hash: collection_hash ) )
-        resource_type = Array( collection_hash[:resource_type] || 'Collection' )
+        resource_type = default_collection_resource_type(resource_type: collection_hash[:resource_type] )
         diff_attr_value( diffs, collection, attr_name: :resource_type, value: resource_type )
         diff_attr_value( diffs, collection, attr_name: :subject_discipline, value: build_subject_discipline( hash: collection_hash ) )
         diff_attr( diffs, collection, collection_hash, attr_name: :title )
@@ -1035,7 +1077,7 @@ module Deepblue
           return diffs unless continue_new_content_service
           if collection_works.key? work_id
             work_hash = work_hash_from_id( parent_hash: collection_hash, work_id: work_id.to_s )
-            diff_work( diffs: diffs, work_hash: work_hash, work: collection_works[work_id], parent: collection )
+            diff_work( diffs: diffs, work_hash: work_hash, work: collection_works[work_id] )
             collection_works.delete work_id
           else
             diffs << "#{attr_prefix collection}: is missing work #{work_id}"
@@ -1053,7 +1095,7 @@ module Deepblue
         collections.each do |collection_hash|
           next unless continue_new_content_service
           collection = nil
-          collection_id = 'nil'
+          collection_id = nil
           measurement = Benchmark.measure do
             collection, collection_id = find_collection( collection_hash: collection_hash )
             if collection.nil?
@@ -1073,7 +1115,7 @@ module Deepblue
         end
       end
 
-      def diff_file_set( diffs:, file_set:, file_set_hash:, parent: nil )
+      def diff_file_set( diffs:, file_set:, file_set_hash:)
         return diffs unless continue_new_content_service
         diff_attr( diffs, file_set, file_set_hash, attr_name: :curation_notes_admin )
         diff_attr( diffs, file_set, file_set_hash, attr_name: :curation_notes_admin_ordered, multi: false )
@@ -1089,7 +1131,7 @@ module Deepblue
         diff_edit_users( diffs, file_set, file_set_hash )
         original_name = file_set_hash[:original_name]
         diff_attr( diffs, file_set, file_set_hash, attr_name: :label, multi: false )
-        diff_value_value( diffs, file_set, attr_name: :orignal_name, current_value: file_set.original_name_value, value: original_name )
+        diff_value_value( diffs, file_set, attr_name: :original_name, current_value: file_set.original_name_value, value: original_name )
         diff_attr( diffs, file_set, file_set_hash, attr_name: :prior_identifier )
         diff_attr( diffs, file_set, file_set_hash, attr_name: :title )
         diff_value_value( diffs, file_set, attr_name: :visibility, current_value: file_set.visibility, value: visibility_from_hash( hash: file_set_hash ) )
@@ -1099,7 +1141,7 @@ module Deepblue
       def diff_file_sets( diffs:, work_hash:, work: )
         file_set_ids = work_hash[:file_set_ids]
         return diff_file_sets_from_file_set_ids( diffs: diffs, work_hash: work_hash, work: work ) if file_set_ids.present?
-        return diff_file_sets_from_files( diffs: diffs, work_hash: work_hash, work: work )
+        diffs
       end
 
       def diff_file_sets_from_file_set_ids( diffs:, work_hash:, work: )
@@ -1114,7 +1156,7 @@ module Deepblue
           if work_file_sets.key? file_set_id
             file_set_key = "f_#{file_set_id}"
             file_set_hash = work_hash[file_set_key.to_sym]
-            diff_file_set( diffs: diffs, file_set: work_file_sets[file_set_id], file_set_hash: file_set_hash, parent: work )
+            diff_file_set( diffs: diffs, file_set: work_file_sets[file_set_id], file_set_hash: file_set_hash )
             work_file_sets.delete file_set_id
           else
             diffs << "#{attr_prefix work}: is missing file #{file_set_id}"
@@ -1124,11 +1166,6 @@ module Deepblue
           return diffs unless continue_new_content_service
           diffs << "#{attr_prefix work}: has extra file #{file_set.id}"
         end
-        return diffs
-      end
-
-      def diff_file_sets_from_files( diffs:, work_hash:, work: )
-        # TODO
         return diffs
       end
 
@@ -1178,10 +1215,9 @@ module Deepblue
         attr_name = attr_name.to_sym if attr_name.is_a? String
         return diffs unless diff_user_attr? attr_name
         attr_current = user[attr_name]
-        value = user_hash[attr_name] if attr_name_hash.blank?
-        value = user_hash[attr_name_hash] if attr_name_hash.present?
-        value = Array( value ) if multi
-        return diffs unless diff_user_attr_if_blank?( attr_name, value: value )
+        value = value_from_attr(user_hash, attr_name: attr_name, attr_name_hash: attr_name_hash, multi: multi)
+        return diffs unless diff_user_attr_if_blank?( value: value )
+
         return diffs if attr_current == value
         diffs << "#{user_email}: #{attr_name} '#{attr_current}' vs. '#{value}'"
       rescue Exception => e # rubocop:disable Lint/RescueException
@@ -1193,8 +1229,8 @@ module Deepblue
         return true
       end
 
-      def diff_user_attr_if_blank?( attr_name, value:, parent: nil )
-        return false if value.blank? # && diff_attrs_skip_if_blank.include?( attr_name )
+      def diff_user_attr_if_blank?( value: )
+        return false if value.blank?
         return true
       end
 
@@ -1207,7 +1243,7 @@ module Deepblue
         diffs << "#{attr_prefix cc_or_fs}: #{attr_name} -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
       end
 
-      def diff_work( diffs: nil, work_hash:, work:, parent: nil )
+      def diff_work( diffs: nil, work_hash:, work: )
         diffs = [] if diffs.nil?
         return diffs unless continue_new_content_service
         diff_attr( diffs, work, work_hash, attr_name: :authoremail, multi: false )
@@ -1225,9 +1261,7 @@ module Deepblue
         diff_attr_value( diffs, work, attr_name: :date_uploaded, value: build_date( hash: work_hash, key: :date_uploaded ) )
         depositor = build_depositor( hash: work_hash )
         diff_attr_value( diffs, work, attr_name: :depositor, value: depositor )
-        description = Array( work_hash[:description] )
-        description = ["Missing description"] if description.blank?
-        description = ["Missing description"] if [nil] == description
+        description = default_description(work_hash[:description])
         diff_attr_value( diffs, work, attr_name: :description, value: description )
         diff_attr( diffs, work, work_hash, attr_name: :description_ordered, multi: false )
         diff_attr( diffs, work, work_hash, attr_name: :doi, multi: false )
@@ -1239,15 +1273,15 @@ module Deepblue
         diff_attr( diffs, work, work_hash, attr_name: :keyword_ordered, multi: false )
         diff_attr( diffs, work, work_hash, attr_name: :language )
         diff_attr( diffs, work, work_hash, attr_name: :language_ordered, multi: false )
-        methodology = work_hash[:methodology] || "No Methodology Available"
+        methodology = default_methodology(work_hash[:methodology])
         diff_attr_value( diffs, work, attr_name: :methodology, value: methodology )
         diff_attr_value( diffs, work, attr_name: :owner, value: depositor )
         diff_attr( diffs, work, work_hash, attr_name: :prior_identifier )
         diff_attr_value( diffs, work, attr_name: :referenced_by, value: build_referenced_by( hash: work_hash ) )
         diff_attr( diffs, work, work_hash, attr_name: :referenced_by_ordered, multi: false )
-        resource_type = Array( work_hash[:resource_type] || 'Dataset' )
+        resource_type = default_work_resource_type(resource_type: work_hash[:resource_type])
         diff_attr_value( diffs, work, attr_name: :resource_type, value: resource_type )
-        diff_attr_value( diffs, work, attr_name: :rights_license, value: build_rights_liscense( hash: work_hash ) )
+        diff_attr_value( diffs, work, attr_name: :rights_license, value: build_rights_license(hash: work_hash ) )
         diff_attr( diffs, work, work_hash, attr_name: :rights_license_other, multi: false )
         diff_attr_value( diffs, work, attr_name: :subject_discipline, value: build_subject_discipline( hash: work_hash ) )
         diff_attr( diffs, work, work_hash, attr_name: :title )
@@ -1263,7 +1297,7 @@ module Deepblue
           next if work_hash.nil?
           next unless continue_new_content_service
           work = nil
-          work_id = 'nil'
+          work_id = nil
           measurement = Benchmark.measure do
             work, work_id = find_work( work_hash: work_hash, error_if_not_found: false )
             if work.nil?
@@ -1297,7 +1331,7 @@ module Deepblue
                                    job_delay: 60 )
       rescue Exception => e # rubocop:disable Lint/RescueException
         # updates << "#{attr_prefix cc_or_fs}: #{attr_name} -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
-        Rails.logger.error "#{e.class} work.id=#{work.id} -- #{e.message} at #{e.backtrace[0]}"
+        Rails.logger.error "#{e.class} -- #{e.message} at #{e.backtrace[0]}"
         Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
                                              Deepblue::LoggingHelper.called_from,
                                              "ERROR",
@@ -1330,8 +1364,6 @@ module Deepblue
         return nil, nil unless continue_new_content_service
         return nil, nil if collection_hash.blank?
         id = collection_hash[:id].to_s
-        mode = collection_hash[:mode]
-        collection = nil
         collection = Collection.find( id )
         return collection, id
       end
@@ -1359,11 +1391,10 @@ module Deepblue
         user_create_users( emails: user_key )
         collections.each do |collection_hash|
           next unless continue_new_content_service
-          collection_id = 'nil'
+          collection_id = nil
           collection = nil
           measurement = Benchmark.measure do
             collection, collection_id = find_collection( collection_hash: collection_hash )
-            update_collection_from_hash( collection_hash: collection_hash, collection: collection )
           end
           next if collection.blank?
           measurement.instance_variable_set( :@label, collection_id )
@@ -1400,13 +1431,7 @@ module Deepblue
         return nil
       end
 
-      def find_or_create_user
-        user = User.find_by( user_key: user_key ) || create_user( user_key )
-        raise UserNotFoundError, "User not found: #{user_key}" if user.nil?
-        return user
-      end
-
-      def find_user( user_hash:, user_update: false )
+      def find_user( user_hash: )
         return nil if user_hash.blank?
         email = user_hash[:email]
         # log_msg( "find_user: email: #{email}" ) if verbose
@@ -1496,8 +1521,8 @@ module Deepblue
         @options = TaskHelper.task_options_parse options
         if @options.key?( :error ) || @options.key?( 'error' )
           puts "WARNING: options error #{@options['error']}"
-          puts "options=#{options}" if @options.key?
-          puts "@options=#{@options}" if @options.key?
+          puts "options=#{options}"
+          puts "@options=#{@options}"
         end
         @verbose = TaskHelper.task_options_value( @options, key: 'verbose', default_value: DEFAULT_VERBOSE )
         puts "@verbose=#{@verbose}" if @verbose
@@ -1534,6 +1559,10 @@ module Deepblue
         logger.info "#{timestamp_now} #{msg}"
       end
 
+      def log_verbose_msg( msg, verbose: false )
+        log_msg( msg ) if verbose
+      end
+
       def log_object( obj )
         id = if obj.respond_to?( :has_attribute? ) && obj.has_attribute?( :prior_identifier )
                "#{obj.id} prior id: #{Array( obj.prior_identifier )}"
@@ -1548,8 +1577,6 @@ module Deepblue
                   value = obj.title
                   value = value.first if value.respond_to? :first
                   value
-                else
-                  'no_title'
                 end
         msg = if obj.respond_to? :title
                 "#{mode}: #{obj.class.name} id: #{id} title: #{title}"
@@ -1584,9 +1611,11 @@ module Deepblue
                                             ingest_timestamp: ingest_timestamp )
       end
 
-      def log_provenance_migrate( curation_concern:, migrate_direction: 'import' )
-        return unless curation_concern.respond_to? :provenance_migrate
-        curation_concern.provenance_migrate( current_user: user, migrate_direction: migrate_direction )
+      def log_provenance_migrate( curation_concern:, build_mode:, migrate_direction: 'import' )
+        if MODE_MIGRATE == build_mode
+          return unless curation_concern.respond_to? :provenance_migrate
+          curation_concern.provenance_migrate( current_user: user, migrate_direction: migrate_direction )
+        end
       end
 
       def log_provenance_workflow( curation_concern:, workflow:, workflow_state: )
@@ -1618,149 +1647,6 @@ module Deepblue
       def mode
         # @mode ||= @cfg_hash[:user][:mode]
         @mode ||= cfg_hash_value( base_key: :user, key: :mode, default_value: MODE_APPEND )
-      end
-
-      def new_collection( creator:,
-                          curation_notes_admin:,
-                          curation_notes_user:,
-                          date_created:,
-                          date_modified:,
-                          date_uploaded:,
-                          description:,
-                          doi:,
-                          id:,
-                          keyword:,
-                          language:,
-                          prior_identifier:,
-                          referenced_by:,
-                          resource_type:,
-                          subject_discipline:,
-                          title: )
-
-        if id.present?
-          Collection.new( creator: creator,
-                          curation_notes_admin: curation_notes_admin,
-                          curation_notes_user: curation_notes_user,
-                          date_created: date_created,
-                          date_modified: date_modified,
-                          date_uploaded: date_uploaded,
-                          description: description,
-                          doi: doi,
-                          id: id,
-                          keyword: keyword,
-                          language: language,
-                          prior_identifier: prior_identifier,
-                          referenced_by: referenced_by,
-                          resource_type: resource_type,
-                          subject_discipline: subject_discipline,
-                          title: title )
-        else
-          Collection.new( creator: creator,
-                          curation_notes_admin: curation_notes_admin,
-                          curation_notes_user: curation_notes_user,
-                          date_created: date_created,
-                          date_modified: date_modified,
-                          date_uploaded: date_uploaded,
-                          description: description,
-                          doi: doi,
-                          keyword: keyword,
-                          language: language,
-                          prior_identifier: prior_identifier,
-                          referenced_by: referenced_by,
-                          resource_type: resource_type,
-                          subject_discipline: subject_discipline,
-                          title: title )
-        end
-      end
-
-      def new_data_set( authoremail:,
-                        contributor:,
-                        creator:,
-                        curation_notes_admin:,
-                        curation_notes_user:,
-                        date_coverage:,
-                        date_created:,
-                        date_modified:,
-                        date_published:,
-                        date_uploaded:,
-                        description:,
-                        doi:,
-                        fundedby:,
-                        fundedby_other:,
-                        grantnumber:,
-                        id:,
-                        keyword:,
-                        language:,
-                        methodology:,
-                        prior_identifier:,
-                        referenced_by:,
-                        resource_type:,
-                        rights_license:,
-                        rights_license_other:,
-                        subject_discipline:,
-                        title: )
-        if id.present?
-          DataSet.new( authoremail: authoremail,
-                       contributor: contributor,
-                       creator: creator,
-                       curation_notes_admin: curation_notes_admin,
-                       curation_notes_user: curation_notes_user,
-                       date_coverage: date_coverage,
-                       date_created: date_created,
-                       date_modified: date_modified,
-                       date_published: date_published,
-                       date_uploaded: date_uploaded,
-                       description: description,
-                       doi: doi,
-                       fundedby: fundedby,
-                       fundedby_other: fundedby_other,
-                       grantnumber: grantnumber,
-                       id: id,
-                       keyword: keyword,
-                       language: language,
-                       methodology: methodology,
-                       prior_identifier: prior_identifier,
-                       referenced_by: referenced_by,
-                       resource_type: resource_type,
-                       rights_license: rights_license,
-                       rights_license_other: rights_license_other,
-                       subject_discipline: subject_discipline,
-                       title: title )
-        else
-          DataSet.new( authoremail: authoremail,
-                       contributor: contributor,
-                       creator: creator,
-                       curation_notes_admin: curation_notes_admin,
-                       curation_notes_user: curation_notes_user,
-                       date_coverage: date_coverage,
-                       date_created: date_created,
-                       date_modified: date_modified,
-                       date_published: date_published,
-                       date_uploaded: date_uploaded,
-                       description: description,
-                       doi: doi,
-                       fundedby: fundedby,
-                       fundedby_other: fundedby_other,
-                       grantnumber: grantnumber,
-                       keyword: keyword,
-                       language: language,
-                       methodology: methodology,
-                       prior_identifier: prior_identifier,
-                       referenced_by: referenced_by,
-                       resource_type: resource_type,
-                       rights_license: rights_license,
-                       rights_license_other: rights_license_other,
-                       subject_discipline: subject_discipline,
-                       title: title )
-        end
-      end
-
-      def new_file_set( id: )
-        if id.present?
-          FileSet.new( id: id )
-        else
-          FileSet.new
-        end
       end
 
       def report( first_label:, first_id:, measurements:, total: nil )
@@ -1808,10 +1694,8 @@ module Deepblue
       def update_attr( updates, cc_or_fs, cc_or_fs_hash, attr_name:, attr_name_hash: nil, multi: true )
         return updates unless update_attr? attr_name
         attr_current = cc_or_fs[attr_name]
-        value = cc_or_fs_hash[attr_name] if attr_name_hash.blank?
-        value = cc_or_fs_hash[attr_name_hash] if attr_name_hash.present?
-        value = Array( value ) if multi
-        return updates unless update_attr_if_blank?( attr_name, value: value )
+        value = value_from_attr(cc_or_fs_hash, attr_name: attr_name, attr_name_hash: attr_name_hash, multi: multi)
+        return updates unless update_attr_if_blank?( value: value )
         return updates if attr_current == value
         cc_or_fs[attr_name] = value
         updates << "#{attr_prefix cc_or_fs}: #{attr_name} '#{attr_current}' updated to '#{value}'"
@@ -1819,13 +1703,13 @@ module Deepblue
         updates << "#{attr_prefix cc_or_fs}: #{attr_name} -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
       end
 
-      def update_attr?( attr_name, parent: nil )
+      def update_attr?( attr_name )
         return false if update_attrs_skip.include? attr_name
         return true
       end
 
-      def update_attr_if_blank?( attr_name, value:, parent: nil )
-        return false if value.blank? # && update_attrs_skip_if_blank.include?( attr_name )
+      def update_attr_if_blank?( value: )
+        return false if value.blank?
         return true
       end
 
@@ -1835,12 +1719,12 @@ module Deepblue
         doi_mint( curation_concern: cc_or_fs )
         return updates
       rescue Exception => e # rubocop:disable Lint/RescueException
-        updates << "#{attr_prefix cc_or_fs}: #{attr_name} -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
+        updates << "#{attr_prefix cc_or_fs}: attr_doi -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
       end
 
-      def update_attr_value( updates, cc_or_fs, attr_name:, value: nil, multi: true )
+      def update_attr_value( updates, cc_or_fs, attr_name:, value: nil)
         return updates unless update_attr? attr_name
-        return updates unless update_attr_if_blank?( attr_name, value: value )
+        return updates unless update_attr_if_blank?( value: value )
         attr_current = cc_or_fs[attr_name]
         return updates if attr_current == value
         cc_or_fs[attr_name] = value
@@ -1859,10 +1743,6 @@ module Deepblue
         curation_concern.edit_users = edit_users
       end
 
-      def update_collection_from_hash( collection_hash:, collection: )
-        # TODO
-      end
-
       def update_collection( updates: nil, collection:, collection_hash: )
         updates_in = updates
         updates_in = [] if updates_in.nil?
@@ -1878,9 +1758,8 @@ module Deepblue
         update_attr_value( updates, collection, attr_name: :date_uploaded, value: build_date( hash: collection_hash, key: :date_uploaded ) )
         depositor = build_depositor( hash: collection_hash )
         update_attr_value( updates, collection, attr_name: :depositor, value: depositor )
-        description = Array( collection_hash[:description] )
-        description = ["Missing description"] if description.blank?
-        description = ["Missing description"] if [nil] == description
+        description = default_description(collection_hash[:description])
+
         update_attr_value( updates, collection, attr_name: :description, value: description )
         update_attr( updates, collection, collection_hash, attr_name: :description_ordered, multi: false )
         # update_attr_doi( updates, collection, collection_hash )
@@ -1891,7 +1770,7 @@ module Deepblue
         update_attr( updates, collection, collection_hash, attr_name: :language_ordered, multi: false )
         update_attr( updates, collection, collection_hash, attr_name: :prior_identifier )
         update_attr_value( updates, collection, attr_name: :referenced_by, value: build_referenced_by( hash: collection_hash ) )
-        resource_type = Array( collection_hash[:resource_type] || 'Collection' )
+        resource_type = default_collection_resource_type(resource_type: collection_hash[:resource_type])
         update_attr_value( updates, collection, attr_name: :resource_type, value: resource_type )
         update_attr_value( updates, collection, attr_name: :subject_discipline, value: build_subject_discipline( hash: collection_hash ) )
         update_attr( updates, collection, collection_hash, attr_name: :title )
@@ -1914,7 +1793,7 @@ module Deepblue
           return updates unless continue_new_content_service
           if collection_works.key? work_id
             work_hash = work_hash_from_id( parent_hash: collection_hash, work_id: work_id.to_s )
-            update_work( updates: updates, work_hash: work_hash, work: collection_works[work_id], parent: collection )
+            update_work( updates: updates, work_hash: work_hash, work: collection_works[work_id] )
             collection_works.delete work_id
           else
             updates << "#{attr_prefix collection}: is missing work #{work_id}"
@@ -1933,7 +1812,7 @@ module Deepblue
           next if collection_hash.nil?
           next unless continue_new_content_service
           collection = nil
-          collection_id = 'nil'
+          collection_id = nil
           measurement = Benchmark.measure do
             collection, collection_id = find_collection( collection_hash: collection_hash )
             if collection.nil?
@@ -1967,7 +1846,7 @@ module Deepblue
         updates << "#{attr_prefix cc_or_fs}: #{attr_name} -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
       end
 
-      def update_file_set( updates:, file_set:, file_set_hash:, parent: nil )
+      def update_file_set( updates:, file_set:, file_set_hash: )
         return updates unless continue_new_content_service
         updates_in = updates
         updates_in = [] if updates_in.nil?
@@ -1986,7 +1865,7 @@ module Deepblue
         update_edit_users( updates, file_set, file_set_hash )
         update_attr( updates, file_set, file_set_hash, attr_name: :label, multi: false )
         original_name = file_set_hash[:original_name]
-        update_value_value( updates, file_set, attr_name: :orignal_name, current_value: file_set.original_name_value, value: original_name )
+        update_value_value( updates, file_set, attr_name: :original_name, current_value: file_set.original_name_value, value: original_name )
         update_attr( updates, file_set, file_set_hash, attr_name: :prior_identifier )
         update_attr( updates, file_set, file_set_hash, attr_name: :title )
         update_value_value( updates, file_set, attr_name: :visibility, current_value: file_set.visibility, value: visibility_from_hash( hash: file_set_hash ) )
@@ -1997,7 +1876,7 @@ module Deepblue
       def update_file_sets( updates:, work_hash:, work: )
         file_set_ids = work_hash[:file_set_ids]
         return update_file_sets_from_file_set_ids( updates: updates, work_hash: work_hash, work: work ) if file_set_ids.present?
-        return update_file_sets_from_files( updates: updates, work_hash: work_hash, work: work )
+        updates
       end
 
       def update_file_sets_from_file_set_ids( updates:, work_hash:, work: )
@@ -2012,7 +1891,7 @@ module Deepblue
           file_set_key = "f_#{file_set_id}"
           if work_file_sets.key? file_set_id
             file_set_hash = work_hash[file_set_key.to_sym]
-            update_file_set( updates: updates, file_set: work_file_sets[file_set_id], file_set_hash: file_set_hash, parent: work )
+            update_file_set( updates: updates, file_set: work_file_sets[file_set_id], file_set_hash: file_set_hash)
             work_file_sets.delete file_set_id
           else
             updates << "#{attr_prefix work}: is missing file #{file_set_id}"
@@ -2039,11 +1918,6 @@ module Deepblue
           file_set.delete
           updates << "#{attr_prefix work}: file deleted #{file_set.id}"
         end
-        return updates
-      end
-
-      def update_file_sets_from_files( updates:, work_hash:, work: )
-        # TODO: for now, just detect if they are there
         return updates
       end
 
@@ -2075,7 +1949,7 @@ module Deepblue
 
       def update_value_value( updates, cc_or_fs, attr_name:, current_value:, value: nil )
         return updates unless update_attr? attr_name
-        return updates unless update_attr_if_blank?( attr_name, value: value )
+        return updates unless update_attr_if_blank?( value: value )
         return updates if current_value == value
         updates << "#{attr_prefix cc_or_fs}: #{attr_name} '#{current_value}' vs. '#{value}'"
       rescue Exception => e # rubocop:disable Lint/RescueException
@@ -2119,18 +1993,12 @@ module Deepblue
         attr_name = attr_name.to_sym if attr_name.is_a? String
         return updates unless update_user_attr? attr_name
         attr_current = user[attr_name]
-        value = user_hash[attr_name] if attr_name_hash.blank?
-        value = user_hash[attr_name_hash] if attr_name_hash.present?
-        value = Array( value ) if multi
-        if attr_current.is_a?( Time )
-          attr_current = attr_current.change(usec: 0)
-          value = build_time( value: value )
-          value = value.change(usec: 0) if value.is_a? Time
-        end
-        return updates unless update_user_attr_if_blank?( attr_name, value: value )
-        return updates if attr_current == value
-        user[attr_name] = value
-        updates << "#{user_email}: #{attr_name} '#{attr_current}' updated to '#{value}'"
+        value = value_from_attr(user_hash, attr_name: attr_name, attr_name_hash: attr_name_hash, multi: multi)
+        attr_current_time = attr_current_time(attr_current, value)
+        return updates unless update_user_attr_if_blank?( value: attr_current_time[1] )
+        return updates if attr_current_time[0] == attr_current_time[1]
+        user[attr_name] = attr_current_time[1]
+        updates << "#{user_email}: #{attr_name} '#{attr_current_time[0]}' updated to '#{attr_current_time[1]}'"
       rescue Exception => e # rubocop:disable Lint/RescueException
         updates << "#{user_email}: #{attr_name} -- Exception: #{e.class}: #{e.message} at #{e.backtrace[0]}"
       end
@@ -2140,7 +2008,7 @@ module Deepblue
         return true
       end
 
-      def update_user_attr_if_blank?( attr_name, value:, parent: nil )
+      def update_user_attr_if_blank?( value: )
         return false if value.blank? # && update_attrs_skip_if_blank.include?( attr_name )
         return true
       end
@@ -2150,7 +2018,7 @@ module Deepblue
         curation_concern.visibility = visibility
       end
 
-      def update_work( updates: nil, work_hash:, work:, parent: nil )
+      def update_work( updates: nil, work_hash:, work: )
         updates_in = updates
         updates_in = [] if updates_in.nil?
         updates = []
@@ -2170,9 +2038,7 @@ module Deepblue
         update_attr_value( updates, work, attr_name: :date_uploaded, value: build_date(hash: work_hash, key: :date_uploaded ) )
         depositor = build_depositor( hash: work_hash )
         update_attr_value( updates, work, attr_name: :depositor, value: depositor )
-        description = Array( work_hash[:description] )
-        description = ["Missing description"] if description.blank?
-        description = ["Missing description"] if [nil] == description
+        description = default_description(work_hash[:description])
         update_attr_value( updates, work, attr_name: :description, value: description )
         update_attr( updates, work, work_hash, attr_name: :description_ordered, multi: false )
         update_edit_users( updates, work, work_hash )
@@ -2183,15 +2049,15 @@ module Deepblue
         update_attr( updates, work, work_hash, attr_name: :keyword_ordered, multi: false )
         update_attr( updates, work, work_hash, attr_name: :language )
         update_attr( updates, work, work_hash, attr_name: :language_ordered, multi: false )
-        methodology = work_hash[:methodology] || "No Methodology Available"
+        methodology = default_methodology(work_hash[:methodology])
         update_attr_value( updates, work, attr_name: :methodology, value: methodology )
         update_attr_value( updates, work, attr_name: :owner, value: depositor )
         update_attr( updates, work, work_hash, attr_name: :prior_identifier )
         update_attr_value( updates, work, attr_name: :referenced_by, value: build_referenced_by(hash: work_hash ) )
         update_attr( updates, work, work_hash, attr_name: :referenced_by_ordered, multi: false )
-        resource_type = Array( work_hash[:resource_type] || 'Dataset' )
+        resource_type = default_work_resource_type(resource_type: work_hash[:resource_type])
         update_attr_value( updates, work, attr_name: :resource_type, value: resource_type )
-        update_attr_value( updates, work, attr_name: :rights_license, value: build_rights_liscense(hash: work_hash ) )
+        update_attr_value( updates, work, attr_name: :rights_license, value: build_rights_license(hash: work_hash ) )
         update_attr( updates, work, work_hash, attr_name: :rights_license_other, multi: false )
         update_attr_value( updates, work, attr_name: :subject_discipline, value: build_subject_discipline(hash: work_hash ) )
         update_attr( updates, work, work_hash, attr_name: :title )
