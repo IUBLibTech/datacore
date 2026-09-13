@@ -44,7 +44,7 @@ module Deepblue
 
     def self.hydra_model_work?( hydra_model: )
       if dbd_version_1?
-        'GenericWork' == hyrda_model
+        'GenericWork' == hydra_model
       else
         'DataSet' == hydra_model
       end
@@ -89,10 +89,6 @@ module Deepblue
       end
       files_extracted.store( target_file_name, true )
       return target_file_name
-    end
-
-    def self.task_options_error?( options )
-      task_options_error( options, key: 'error', default_value: false )
     end
 
     def self.task_options_parse( options_str )
