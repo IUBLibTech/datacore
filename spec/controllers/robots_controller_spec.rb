@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe RobotsController do
+RSpec.describe RobotsController, type: :controller do
   let(:user) { create(:user) }
   let(:admin) { create(:admin) }
   let(:robots_txt) { ContentBlock.create(name: 'robots_txt', value: content) }
@@ -76,4 +76,47 @@ describe RobotsController do
       expect(response.body).to eq new_content
     end
   end
+
+  # private methods
+
+  describe "#find_robots_txt" do
+    before {
+      allow(ContentBlock).to receive(:find_or_create_by).with(name: 'robots_txt').and_return "robots txt file"
+    }
+    it "calls ContentBlock.find_or_create_by for the robots txt file" do
+      expect(ContentBlock).to receive(:find_or_create_by).with(name: 'robots_txt')
+      subject.send(:find_robots_txt)
+
+      expect(subject.instance_variable_get(:@robots_txt)).to eq "robots txt file"
+    end
+  end
+
+
+  describe "#throw_breadcrumbs" do
+    before {
+      allow(I18n).to receive(:t).with('hyrax.controls.home').and_return "Home"
+      allow(I18n).to receive(:t).with('hyrax.dashboard.breadcrumbs.admin').and_return "Dashboard"
+      allow(I18n).to receive(:t).with('hyrax.admin.sidebar.configuration').and_return "Configuration"
+      allow(subject).to receive(:root_path).and_return "root path"
+      allow(subject).to receive(:edit_robots_path).and_return "robot path"
+
+      allow(subject).to receive(:add_breadcrumb).with("Home", "root path")
+      allow(subject).to receive(:add_breadcrumb).with("Dashboard", "/dashboard?locale=en")
+      allow(subject).to receive(:add_breadcrumb).with("Configuration", "#")
+      allow(subject).to receive(:add_breadcrumb).with("robots.txt", "robot path")
+    }
+
+    it "adds breadcrumbs" do
+      expect(subject).to receive(:add_breadcrumb).with("Home", "root path")
+      expect(subject).to receive(:add_breadcrumb).with("Dashboard", "/dashboard?locale=en")
+      expect(subject).to receive(:add_breadcrumb).with("Configuration", "#")
+      expect(subject).to receive(:add_breadcrumb).with("robots.txt", "robot path")
+
+      subject.send(:throw_breadcrumbs)
+    end
+  end
+
+
+  pending "#permitted_params"
+
 end
