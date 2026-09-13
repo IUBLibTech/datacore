@@ -314,14 +314,19 @@ module Deepblue
         report_item( out, "Rights (other): ", work.rights_license_other ) if report_source == SOURCE_DBDv2
         report_item( out, "Admin set id: ", work.admin_set_id )
         report_item( out, "Tombstone: ", work.tombstone, optional: true )
-        if work.file_sets.count.positive?
-          work.file_sets.each do |file_set|
-            out.puts
-            report_file_set( file_set, out: out, depth: "=#{depth}" )
-          end
-        end
+
+        report_work_datasets(work.file_sets, out:out, depth: depth)
       end
       return target_file
+    end
+
+    def self.report_work_datasets(file_sets, out:, depth: )
+      if file_sets.count.positive?
+        file_sets.each do |file_set|
+          out.puts
+          report_file_set( file_set, out: out, depth: "=#{depth}" )
+        end
+      end
     end
 
     def self.report_item( out,
@@ -329,7 +334,7 @@ module Deepblue
                           value,
                           item_prefix: '',
                           item_postfix: '',
-                          item_seperator: FIELD_SEP,
+                          item_separator: FIELD_SEP,
                           one_line: nil,
                           optional: false )
       multi_item = value.respond_to?( :count ) && value.respond_to?( :each )
@@ -346,14 +351,14 @@ module Deepblue
       end
       if one_line
         if value.respond_to?( :join )
-          out.puts( "#{label}#{item_prefix}#{value.join( "#{item_prefix}#{item_seperator}#{item_postfix}" )}#{item_postfix}" )
+          out.puts( "#{label}#{item_prefix}#{value.join( "#{item_prefix}#{item_separator}#{item_postfix}" )}#{item_postfix}" )
         elsif multi_item
           out.print( label.to_s )
           count = 0
           value.each do |item|
             count += 1
             out.print( "#{item_prefix}#{item}#{item_postfix}" )
-            out.print( item_seperator.to_s ) unless value.count == count
+            out.print( item_separator.to_s ) unless value.count == count
           end
           out.puts
         else
@@ -377,7 +382,7 @@ module Deepblue
       curation_concern.title.join( field_sep )
     end
 
-    def self.yaml_body_collections( out, indent:, curation_concern:, source: )
+     def self.yaml_body_collections( out, indent:, curation_concern:, source: )
       yaml_item( out, indent, ":id:", curation_concern.id )
       if source == SOURCE_DBDv2
         yaml_item( out, indent, ":collection_type:", curation_concern.collection_type.machine_id, escape: true )
@@ -472,11 +477,7 @@ module Deepblue
         yaml_item( out, indent, ":checksum_algorithm:", checksum.present? ? checksum.algorithm : '', escape: true )
         yaml_item( out, indent, ":checksum_value:", checksum.present? ? checksum.value : '', escape: true )
         yaml_item( out, indent, ":edit_users:", file_set.edit_users, escape: true )
-        file_size = if file_set.file_size.blank?
-                      file_set.original_file.nil? ? 0 : file_set.original_file.size
-                    else
-                      file_set.file_size[0]
-                    end
+        file_size = yaml_file_size(file_set)
         yaml_item( out, indent, ":file_size:", file_size )
         yaml_item( out, indent, ":file_size_human_readable:", human_readable_size( file_size ), escape: true )
         yaml_item( out, indent, ":mime_type:", file_set.mime_type, escape: true )
@@ -491,6 +492,15 @@ module Deepblue
           yaml_item_file_set( out, indent, file_set, name: name )
         end
       end
+    end
+
+    def self.yaml_file_size(file_set)
+      if file_set.file_size.blank?
+        file_size = file_set.original_file.nil? ? 0 : file_set.original_file.size
+      else
+        file_size = file_set.file_size[0]
+      end
+      file_size
     end
 
     # def self.yaml_body_files2( out,
