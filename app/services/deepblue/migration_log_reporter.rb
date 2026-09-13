@@ -155,18 +155,14 @@ module Deepblue
         when AbstractEventBehavior::EVENT_MIGRATE
           register_migrate( timestamp, event, event_note, class_name, id )
         when AbstractEventBehavior::EVENT_INGEST
-          register_ingest( timestamp, event, event_note, class_name, id )
+
         when AbstractEventBehavior::EVENT_CHILD_ADD
-          register_ingest( timestamp, event, event_note, class_name, id )
+
         when AbstractEventBehavior::EVENT_FIXITY_CHECK
           register_fixity_check( timestamp, event, event_note, class_name, id )
         when AbstractEventBehavior::EVENT_VIRUS_SCAN
-          register_virus_scan( timestamp, event, event_note, class_name, id )
-        end
-      end
 
-      def register_child_add( timestamp, event, event_note, class_name, id )
-        # todo
+        end
       end
 
       def register_fixity_check( _timestamp, _event, event_note, _class_name, id )
@@ -175,10 +171,6 @@ module Deepblue
         else
           @fixity_check_failed_ids << id
         end
-      end
-
-      def register_ingest( timestamp, event, event_note, class_name, id )
-        # todo
       end
 
       def register_migrate( _timestamp, _event, _event_note, class_name, id )
@@ -190,10 +182,6 @@ module Deepblue
         when 'Collection'
           @collection_ids[id] = true unless @collection_ids.key? id
         end
-      end
-
-      def register_virus_scan( timestamp, event, event_note, class_name, id )
-        # todo
       end
 
       def run_rest
