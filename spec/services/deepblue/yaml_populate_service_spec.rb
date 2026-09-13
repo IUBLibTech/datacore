@@ -6,7 +6,7 @@ class MockOutput
   end
 end
 
-class MockFileSet
+class MockMetaData
   def original_name
     "original name"
   end
@@ -15,6 +15,34 @@ class MockFileSet
     "file name"
   end
 end
+
+class MockFileSetFile
+  def initialize(original_name)
+    @original_name = original_name
+  end
+
+  def original_name
+    @original_name || ""
+  end
+end
+
+class ConcernedCuration
+
+  def class
+    OpenStruct.new(name: "Concerned Curation")
+  end
+
+  def id
+    "L-2002"
+  end
+
+  def provenance_migrate(current_user:, parent_id:, migrate_direction:)
+  end
+end
+
+
+
+
 
 RSpec.describe Deepblue::YamlPopulateService do
   subject { described_class.new }
@@ -35,12 +63,57 @@ RSpec.describe Deepblue::YamlPopulateService do
         reset_password_sent_at ]
   end
 
+  def expected_attribute_names_always_include_cc
+    %w[ admin_set_id
+        authoremail
+        creator
+        creator_ordered
+        curation_notes_admin
+        curation_notes_admin_ordered
+        curation_notes_user
+        curation_notes_user_ordered
+        date_coverage
+        date_created
+        date_modified
+        date_published
+        date_uploaded
+        depositor
+        description
+        description_ordered
+        doi
+        fundedby
+        fundedby_other
+        grantnumber
+        isReferencedBy
+        isReferencedBy_ordered
+        keyword
+        keyword_ordered
+        language
+        language_ordered
+        methodology
+        owner
+        prior_identifier
+        referenced_by
+        referenced_by_ordered
+        rights_license_other
+        source
+        subject_discipline
+        title
+        title_ordered
+        tombstone
+        access_deepblue
+        access_deepblue_ordered
+        total_file_size ]
+  end
+
+
   describe 'constants' do
     it do
       expect( Deepblue::YamlPopulateService::DEFAULT_CREATE_ZERO_LENGTH_FILES ).to eq true
       expect( Deepblue::YamlPopulateService::DEFAULT_OVERWRITE_EXPORT_FILES ).to eq true
     end
   end
+
 
   describe "#initialize" do
     it "sets instance variables" do
@@ -57,11 +130,11 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_body_collections" do
     context do
       concern = OpenStruct.new(id: "XYZ-1000", edit_users: "editors", collection_type: OpenStruct.new(machine_id: "HAL"),
                                work_ids: [101,202,303,404], total_file_size: 203, visibility: "public")
-
       before {
         allow(subject).to receive(:yaml_item).with "out", "concave", ":id:", "XYZ-1000"
         allow(subject).to receive(:source).and_return 'DBDv2'
@@ -103,6 +176,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_file_size" do
     context "when file_set.file_size is blank and file_set.original_file is nil" do
       it "returns 0" do
@@ -125,6 +199,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       end
     end
   end
+
 
   describe "#yaml_body_files" do
     before {
@@ -205,6 +280,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_body_user_body" do
     user = OpenStruct.new(email: 'email z')
     before {
@@ -227,6 +303,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       subject.instance_variable_get(:@total_users_exported) == 1
     end
   end
+
 
   describe "#yaml_body_users" do
     before {
@@ -256,6 +333,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       end
     end
   end
+
 
   describe "#yaml_body_works" do
     context "when result of attribute_names_work is in skip array" do
@@ -312,6 +390,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_escape_value" do
     context "when value argument is nil" do
       it "returns blank" do
@@ -344,6 +423,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_export_file_path" do
     file_set = OpenStruct.new(id: 'file set id')
     before {
@@ -354,6 +434,7 @@ RSpec.describe Deepblue::YamlPopulateService do
         .to eq "dirname1 file set id_export file name dirname2 "
     end
   end
+
 
   # NOTE: if/else in function doesn't make a difference
   describe "#yaml_export_file_name" do
@@ -369,13 +450,14 @@ RSpec.describe Deepblue::YamlPopulateService do
 
     context "when file is not nil" do
       before {
-        allow(Deepblue::MetadataHelper).to receive(:file_from_file_set).with(fileset_arg).and_return MockFileSet.new
+        allow(Deepblue::MetadataHelper).to receive(:file_from_file_set).with(fileset_arg).and_return MockMetaData.new
       }
       it "returns filename appropriate string" do
         expect(subject.yaml_export_file_name file_set: fileset_arg).to eq "_file_"
       end
     end
   end
+
 
   describe "#yaml_file_set_checksum" do
     context "when file present" do
@@ -397,7 +479,9 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   pending "#yaml_filename"
+
 
   describe "#yaml_filename_collection" do
     before {
@@ -410,6 +494,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_filename_users" do
     before {
       allow(subject).to receive(:yaml_filename).with pathname_dir: "pathname", id: "", prefix: 'users', task: "populate"
@@ -421,6 +506,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_filename_work" do
     before {
       allow(subject).to receive(:yaml_filename).with pathname_dir: "pathname", id: "identify", prefix: 'w_', task: "populate"
@@ -431,6 +517,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       subject.yaml_filename_work pathname_dir: "pathname", work: OpenStruct.new(id: 'identify'), task: 'populate'
     end
   end
+
 
   describe "#yaml_header" do
     before {
@@ -462,6 +549,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_header_populate" do
     before {
       allow(subject).to receive(:yaml_line).with "out", "indent", 'target', comment: true
@@ -478,6 +566,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       subject.yaml_header_populate "out", indent: "indent", target_filename: "target"
     end
   end
+
 
   describe "#yaml_header_users" do
     before {
@@ -501,6 +590,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       subject.yaml_header_users "out", indent: "indent"
     end
   end
+
 
   describe "#yaml_is_a_work?" do
     context "when source is 'DBDv2'" do
@@ -558,6 +648,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_item_file_set" do
     context "when ATTRIBUTE_NAMES_IGNORE includes name argument" do
       it "returns blank" do
@@ -581,6 +672,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_item_prior_identifier" do
     context "when source is 'DBDv1'" do
       before {
@@ -602,6 +694,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       end
     end
   end
+
 
   describe "#yaml_item_referenced_by" do
     context "when source is 'DBDv1'" do
@@ -625,6 +718,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_item_rights" do
     context "when source is 'DBDv1'" do
       before {
@@ -647,6 +741,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_item_subject" do
     context "when source is 'DBDv1'" do
       before {
@@ -668,6 +763,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       end
     end
   end
+
 
   describe "#yaml_item_user" do
     context "when ATTRIBUTE_NAMES_USER_IGNORE includes name argument" do
@@ -692,6 +788,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_item_work" do
     context "when ATTRIBUTE_NAMES_IGNORE includes name argument" do
       it "returns blank" do
@@ -714,6 +811,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       end
     end
   end
+
 
   describe "#yaml_line" do
     context "when comment is false" do
@@ -738,6 +836,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       end
     end
   end
+
 
   describe "#yaml_populate_collection" do
     object1 = OpenStruct.new(id: 111)
@@ -835,6 +934,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_populate_stats" do
     before {
       allow(subject).to receive(:human_readable_size).with(0).and_return 100
@@ -849,6 +949,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       expect(subject.yaml_populate_stats).to eq expected_hash
     end
   end
+
 
   describe "#yaml_populate_users" do
     context "when out argument is not nil" do
@@ -886,6 +987,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       skip "Add tests"
     end
   end
+
 
   describe "#yaml_populate_work" do
     context "when out argument is not nil" do
@@ -954,6 +1056,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_targetdir" do
     context "when called with an object that is not a Pathname" do
       it "creates a new Pathname and returns text" do
@@ -968,6 +1071,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_targetdir_collection" do
     before {
       allow(subject).to receive(:yaml_targetdir).with(pathname_dir: "pathname dir", id: "collection id", prefix: "c_", task: "populate")
@@ -977,6 +1081,7 @@ RSpec.describe Deepblue::YamlPopulateService do
       expect(subject.yaml_targetdir_collection pathname_dir: "pathname dir", collection: OpenStruct.new(id: 'collection id')).to eq "population"
     end
   end
+
 
   describe "#yaml_targetdir_users" do
     before {
@@ -988,6 +1093,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_targetdir_work" do
     before {
       allow(subject).to receive(:yaml_targetdir).with(pathname_dir: "pathname dir", id: "work id", prefix: "w_", task: "populate")
@@ -998,11 +1104,13 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_user_email" do
     it "returns string" do
       expect(subject.yaml_user_email OpenStruct.new(email: "bpotter@example.com")).to eq "user_bpotter@example.com"
     end
   end
+
 
   describe "#yaml_work_export_files" do
     exception = StandardError.new("error message")
@@ -1026,6 +1134,7 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
+
   describe "#yaml_work_find" do
     context "when source is 'DBDv2'" do
       before {
@@ -1047,5 +1156,274 @@ RSpec.describe Deepblue::YamlPopulateService do
     end
   end
 
-  pending "#self.init_attribute_names_always_include_cc"
+
+  describe "#self.init_attribute_names_always_include_cc" do
+    it "returns hash of ATTRIBUTE_NAMES_ALWAYS_INCLUDE_CC items as keys with values of true" do
+      expected_result = {}
+      expected_attribute_names_always_include_cc.each { |name| expected_result[name] = true }
+
+      expect(Deepblue::YamlPopulateService.init_attribute_names_always_include_cc)
+        .to eq expected_result
+    end
+  end
+
+
+  # protected methods
+
+  # describe "#attribute_names_always_include_cc" do
+  #   context "when class variable has a value" do
+  #     before {
+  #       Deepblue::YamlPopulateService.class_variable_set :@@attribute_names_always_include_cc, true
+  #     }
+  #     it "returns value of class variable" do
+  #       #expect(subject).not_to receive(:init_attribute_names_always_include_cc)
+  #       expect(subject.send(:attribute_names_always_include_cc)).to eq true
+  #     end
+  #   end
+  #
+  #   context "when class variable does NOT have a value" do
+  #     before {
+  #       Deepblue::YamlPopulateService.class_variable_set :@@attribute_names_always_include_cc, nil
+  #       allow(subject).to receive(:init_attribute_names_always_include_cc).and_return "always"
+  #     }
+  #     it "returns result of init_attribute_names_always_include_cc method" do
+  #       #expect(subject).to receive(:init_attribute_names_always_include_cc)
+  #       expect(subject.send(:attribute_names_always_include_cc)).to eq "always"
+  #     end
+  #   end
+  # end
+
+
+  describe "#attribute_names_collection" do
+    context "when class variable has a value" do
+      before {
+        Deepblue::YamlPopulateService.class_variable_set :@@attribute_names_collection, "hello"
+      }
+      it "returns value of class variable" do
+        expect(Collection).not_to receive(:attribute_names)
+        expect(subject.send(:attribute_names_collection)).to eq "hello"
+      end
+    end
+
+    context "when class variable has NO value" do
+      before {
+        Deepblue::YamlPopulateService.class_variable_set :@@attribute_names_collection, nil
+        allow(Collection).to receive(:attribute_names).and_return [3,2,1]
+      }
+      it "sorts attribute_names from Collection class" do
+        expect(Collection).to receive(:attribute_names)
+        expect(subject.send(:attribute_names_collection)).to eq [1,2,3]
+      end
+    end
+  end
+
+
+  describe "#attribute_names_file_set" do
+    context "when class variable has a value" do
+      before {
+        Deepblue::YamlPopulateService.class_variable_set :@@attribute_names_file_set, "hey there"
+      }
+      it "returns value of class variable" do
+        expect(FileSet).not_to receive(:attribute_names)
+        expect(subject.send(:attribute_names_file_set)).to eq "hey there"
+      end
+    end
+
+    context "when class variable has NO value" do
+      before {
+        Deepblue::YamlPopulateService.class_variable_set :@@attribute_names_file_set, nil
+        allow(FileSet).to receive(:attribute_names).and_return ["c", "b", "a"]
+      }
+      it "sorts attribute_names from FileSet class" do
+        expect(FileSet).to receive(:attribute_names)
+        expect(subject.send(:attribute_names_file_set)).to eq ["a", "b", "c"]
+      end
+    end
+  end
+
+
+  describe "#attribute_names_user" do
+    context "when class variable has a value" do
+      before {
+        Deepblue::YamlPopulateService.class_variable_set :@@attribute_names_user, "howdy"
+      }
+      it "returns value of class variable" do
+        expect(User).not_to receive(:attribute_names)
+        expect(subject.send(:attribute_names_user)).to eq "howdy"
+      end
+    end
+
+    context "when class variable has NO value" do
+      before {
+        Deepblue::YamlPopulateService.class_variable_set :@@attribute_names_user, nil
+        allow(User).to receive(:attribute_names).and_return [DateTime.new(2025, 10, 1), DateTime.new(2025, 1, 10)]
+      }
+      it "sorts attribute_names from User class" do
+        expect(User).to receive(:attribute_names)
+        expect(subject.send(:attribute_names_user)).to eq [DateTime.new(2025, 1, 10), DateTime.new(2025, 10, 1)]
+      end
+    end
+  end
+
+
+  describe "#attribute_names_work" do
+    context "when source is 'DBDv2'" do
+      before {
+        subject.instance_variable_set(:@source, "DBDv2")
+        allow(DataSet).to receive(:attribute_names).and_return [1.0, 10, 1.1, 11]
+      }
+      it "sorts attribute_names from DataSet class" do
+        expect(subject.send(:attribute_names_work)).to eq [1, 1.1, 10, 11]
+      end
+    end
+
+    context "when source is NOT 'DBDv2'" do
+      before {
+        subject.instance_variable_set(:@source, "DBDv1")
+        allow(GenericWork).to receive(:attribute_names).and_return ["alpha", "zeta", "omega", "beta"]
+      }
+      it "sorts attribute_names from GenericWork class" do
+        expect(subject.send(:attribute_names_work)).to eq ["alpha", "beta", "omega", "zeta"]
+      end
+    end
+  end
+
+
+  describe "#file_from_file_set" do
+    context "when files are nil" do
+      it "returns nil" do
+        expect(subject.send(:file_from_file_set, OpenStruct.new(files: nil))).to be_blank
+      end
+    end
+
+    context "when files are empty" do
+      it "returns nil" do
+        expect(subject.send(:file_from_file_set, OpenStruct.new(files: []))).to be_blank
+      end
+    end
+
+    context "when files are present and at least one has an original_name" do
+      it "returns the last file with an original_name" do
+        file1 = MockFileSetFile.new("wildly original")
+        file2 = MockFileSetFile.new("somewhat derivative")
+        file3 = MockFileSetFile.new("")
+        file_set_files = OpenStruct.new(files: [file1, file2, file3])
+        expect(subject.send(:file_from_file_set, file_set_files)).to eq file2
+      end
+    end
+
+    context "when files are present but all have an empty original_name" do
+      it "returns the first file" do
+        file1 = MockFileSetFile.new("")
+        file2 = MockFileSetFile.new("")
+        file3 = MockFileSetFile.new("")
+        file_set_files = OpenStruct.new(files: [file1, file2, file3])
+        expect(subject.send(:file_from_file_set, file_set_files)).to eq file1
+      end
+    end
+  end
+
+
+  describe "#human_readable_size" do
+    before {
+      allow(ActiveSupport::NumberHelper::NumberToHumanSizeConverter).to receive(:convert).with(1500, precision: 3).and_return "1.5 KB"
+    }
+    it "returns result of NumberToHumanSizeConverter.convert" do
+      expect(subject.send(:human_readable_size, "1500")).to eq "1.5 KB"
+    end
+  end
+
+
+  describe "#log_lines" do
+    it "writes lines to file" do
+      subject.send(:log_lines, "temp_file.txt", ["line1", "line2", "line3"])
+      expect(File.read("temp_file.txt")).to eq("line1\nline2\nline3\n")
+      File.delete("temp_file.txt")    # Cleaning up
+    end
+  end
+
+
+  describe "#log_provenance_migrate" do
+    context "when source is DBDv1" do
+      before {
+        allow(subject).to receive(:source).and_return 'DBDv1'
+      }
+
+      context "when parent is present" do
+        msg = "Migrate export Concerned Curation L-2002 parent_id: P-3003"
+        before {
+          allow( PROV_LOGGER ).to receive( :info ).with msg
+        }
+        it "ProvenanceLogger logs parameters including parent id" do
+          expect( PROV_LOGGER ).to receive( :info ).with msg
+          subject.send(:log_provenance_migrate, curation_concern: ConcernedCuration.new, parent: OpenStruct.new(id: "P-3003"))
+        end
+      end
+
+      context "when parent is NOT present" do
+        parent_msg = "Migrate export Concerned Curation L-2002"
+        before {
+          allow( PROV_LOGGER ).to receive( :info ).with parent_msg
+        }
+        it "ProvenanceLogger logs parameters excluding parent id" do
+          expect( PROV_LOGGER ).to receive( :info ).with parent_msg
+          subject.send(:log_provenance_migrate, curation_concern: ConcernedCuration.new)
+        end
+      end
+    end
+
+    context "when source is NOT DBDv1" do
+      before {
+        allow(subject).to receive(:source).and_return 'DBDv2'
+      }
+
+      context "when curation_concern does NOT respond to provenance_migrate" do
+        it "returns nil" do
+          expect(subject.send(:log_provenance_migrate, curation_concern: "curation concern")).to be_blank
+        end
+      end
+
+      context "when curation_concern responds to provenance_migrate" do
+
+        context "when parent is present" do
+          it "calls provenance_migrate on curation_concern with parent id" do
+            cc = ConcernedCuration.new
+            expect(cc).to receive(:provenance_migrate).with(current_user: nil, parent_id: "P-3003", migrate_direction: "export")
+            subject.send(:log_provenance_migrate, curation_concern: cc, parent: OpenStruct.new(id: "P-3003"))
+          end
+        end
+
+        context "when parent is NOT present" do
+          it "calls provenance_migrate on curation_concern withOUT parent id" do
+            cc = ConcernedCuration.new
+            expect(cc).to receive(:provenance_migrate).with(current_user: nil, parent_id: nil, migrate_direction: "export")
+            subject.send(:log_provenance_migrate, curation_concern: cc)
+          end
+        end
+     end
+    end
+  end
+
+
+  describe "#metadata_multi_valued?" do
+    context "when attribute_value is blank" do
+      it "returns false" do
+        expect(subject.send(:metadata_multi_valued?, '')).to eq false
+      end
+    end
+
+    context "when attribute_value has multiple values" do
+      it "returns true" do
+        expect(subject.send(:metadata_multi_valued?, ["hi", "hello"])).to eq true
+      end
+    end
+
+    context "when attribute_value is hash or array with single value" do
+      it "returns false" do
+        expect(subject.send(:metadata_multi_valued?, { "goodbye" => "exit"})).to eq false
+      end
+    end
+  end
+
 end
+

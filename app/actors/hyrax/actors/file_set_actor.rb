@@ -182,7 +182,7 @@ module Hyrax
         Hyrax.config.callback.run(:after_revert_content, file_set, user, revision_id)
         true
       rescue Exception => e # rubocop:disable Lint/RescueException
-        Rails.logger.error "#{e.class} work.id=#{work.id} -- #{e.message} at #{e.backtrace[0]}"
+        Rails.logger.error "#{e.class} -- #{e.message} at #{e.backtrace[0]}"
         Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
                                              Deepblue::LoggingHelper.called_from,
                                              "ERROR",
