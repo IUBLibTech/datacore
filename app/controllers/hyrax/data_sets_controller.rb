@@ -221,6 +221,8 @@ module Hyrax
     ## Tombstone
 
     def tombstone
+      redirect_to(root_url, notice: 'Tombstoning is not enabled') and return unless tombstone_enabled?
+
       epitaph = params[:tombstone]
       success = curation_concern.entomb!( epitaph, current_user )
       msg = if success
@@ -232,7 +234,7 @@ module Hyrax
     end
 
     def tombstone_enabled?
-      true
+      false
     end
 
     ## End Tombstone
