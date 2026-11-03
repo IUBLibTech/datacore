@@ -31,7 +31,7 @@ module Hyrax
     end
 
     def tombstone_enabled?
-      true
+      false
     end
 
   end
