@@ -47,4 +47,8 @@ class User < ApplicationRecord
     end
   end
 
+  def self.batch_user
+    User.find_by_user_key(batch_user_key) || User.create!(Hydra.config.user_key_field => batch_user_key, encrypted_password: Devise.friendly_token[0, 20])
+  end
+
 end
