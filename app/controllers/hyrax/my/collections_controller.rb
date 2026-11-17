@@ -33,8 +33,6 @@ module Hyrax
       after_action :provenance_log_update_after,   only: [:update]
       after_action :visibility_changed_update,     only: [:update]
 
-      protect_from_forgery with: :null_session,    only: [:display_provenance_log]
-
       def my_collections_controller_debug_output
         # ::Deepblue::LoggingHelper.bold_debug [ Deepblue::LoggingHelper.here,
         #                                        Deepblue::LoggingHelper.called_from,

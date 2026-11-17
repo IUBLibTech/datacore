@@ -21,8 +21,6 @@ module Hyrax
     after_action :provenance_log_update_after,   only: [:update]
     after_action :visibility_changed_update,     only: [:update]
 
-    protect_from_forgery with: :null_session,    only: [:display_provenance_log]
-
     with_themed_layout :decide_layout
     load_and_authorize_resource except: %i[index show create], instance_name: :collection
 
