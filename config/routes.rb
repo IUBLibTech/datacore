@@ -96,12 +96,9 @@ Rails.application.routes.draw do
         post   'doi'
         post   'globus_download'
         post   'globus_add_email'
-        get    'globus_add_email'
         delete 'globus_clean_download'
         post   'globus_download_add_email'
-        get    'globus_download_add_email'
         post   'globus_download_notify_me'
-        get    'globus_download_notify_me'
         post   'identifiers'
         post   'tombstone'
         if Settings.zip_download_enabled
