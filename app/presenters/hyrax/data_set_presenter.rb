@@ -148,7 +148,7 @@ module Hyrax
     end
 
     def tombstone_enabled?
-      false
+      Settings.datacore.tombstone_enabled
     end
 
     # end tombstone
