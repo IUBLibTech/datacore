@@ -22,13 +22,6 @@ module Hyrax
     after_action :visibility_changed_update,     only: [:update]
     after_action :provenance_log_update_after,   only: [:update]
 
-    protect_from_forgery with: :null_session,    only: [:display_provenance_log]
-    protect_from_forgery with: :null_session,    only: [:globus_add_email]
-    protect_from_forgery with: :null_session,    only: [:globus_download]
-    protect_from_forgery with: :null_session,    only: [:globus_download_add_email]
-    protect_from_forgery with: :null_session,    only: [:globus_download_notify_me]
-    protect_from_forgery with: :null_session,    only: [:zip_download]
-
     attr_accessor :user_email_one, :user_email_two
 
     attr_accessor :provenance_log_entries

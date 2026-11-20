@@ -20,8 +20,6 @@ module Hyrax
     after_action :provenance_log_create,         only: [:create]
     after_action :provenance_log_update_after,   only: [:update]
 
-    protect_from_forgery with: :null_session,    only: [:display_provenance_log]
-
     ## Provenance log
 
     def provenance_log_create
