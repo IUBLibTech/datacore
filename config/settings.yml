@@ -180,6 +180,9 @@ archive_api:
 browse_everything:
   enabled: false
 
+datacore:
+  tombstone_enabled: false
+
 # keys need to be present in .env as well
 recaptcha:
   minimum_score: 0.5
