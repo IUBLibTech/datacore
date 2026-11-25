@@ -22,4 +22,6 @@ class Users::SessionsController < Devise::SessionsController
     path = options[:logout_url] || '/logout'
     redirect_to "https://#{host}#{path}"
   end
+
+  def log_in_as; end
 end

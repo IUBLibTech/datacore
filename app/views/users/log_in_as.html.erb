@@ -1,0 +1,8 @@
+<div>
+  <% if switch_user_select.present? %>
+  <h2>Log in As</h2>
+  <p>Check the box if you want the ability to return as current user.</p>
+  <%= switch_user_select %>
+  <% end %>
+  <h3>Current User: <%= current_user ? "#{current_user.uid} (#{current_user.email})" : "(none)" %>
+</div>

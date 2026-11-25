@@ -59,6 +59,8 @@ Rails.application.routes.draw do
           as: :destroy_global_session)
       get 'sign_out', to: 'devise/sessions#destroy', as: :destroy_user_session
       get 'users/auth/cas', to: 'users/omniauth_authorize#passthru', defaults: { provider: :cas }, as: "new_user_session"
+      get 'sign_in_as', to: 'users/sessions#become', as: :sign_in_as
+      get 'users/sessions/log_in_as', to: 'users/sessions#log_in_as', as: :log_in_as
     end
   else
     devise_for :users
@@ -145,6 +147,10 @@ Rails.application.routes.draw do
   get '/sda/request/(:collection)/(:object)', to: 'archive#download_request'
   get '/sda/status/(:collection)/(:object)', to: 'archive#status'
   match '/sda/request/:collection/:object', to: 'archive#download_request', constraints: { object: /.*/ }, via: :get
+
+  # Switch routes must come before wildcard route
+  get 'switch_user', to: 'switch_user#set_current_user'
+  get 'switch_user/remember_user', to: 'switch_user#remember_user'
 
   # robots.txt and rack attack config forms
   resource :robots, only: [:show, :edit, :update]
